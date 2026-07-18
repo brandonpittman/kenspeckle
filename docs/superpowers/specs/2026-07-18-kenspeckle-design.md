@@ -90,7 +90,7 @@ Element-bound utilities are attachment-first; a non-attachment form exists only 
 | `useEventListener` | `listen()` | wiring |
 | `useInterval` | `interval()` | wiring |
 | `useSearchParams` + helpers | `searchParams()` + helpers | value factory (the 2100-line keeper) |
-| `resource` / `resourcePre` | unchanged | already functions |
+| `resource` / `resourcePre` | — | **backlog**: Kit remote functions cover server data; see [potential additions](./2026-07-18-potential-additions.md) |
 | `watch` / `watchOnce` | unchanged | wiring |
 | `extract` | unchanged | wiring |
 | `onCleanup` | unchanged | wiring |

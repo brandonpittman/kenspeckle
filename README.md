@@ -92,10 +92,9 @@ Peer dependency: `svelte >= 5.40`. SSR-safe — value factories return inert def
 | `listen()` | wiring | runed `useEventListener` |
 | `interval()` | wiring | runed `useInterval` |
 | `searchParams()` + helpers | value factory | runed `useSearchParams` |
-| `resource()` / `resourcePre()` | unchanged | runed |
 | `watch` / `watchOnce` / `extract` / `onCleanup` / `boolAttr` | unchanged | runed |
 
-Dropped, deliberately: runed's `Context` — Svelte ≥ 5.40's `createContext` returns a typed `[get, set]` pair and covers it.
+Dropped, deliberately: runed's `Context` — Svelte ≥ 5.40's `createContext` returns a typed `[get, set]` pair and covers it. runed's `resource` waits in the backlog — SvelteKit remote functions cover the server-data case; it returns only if a real client-only async need shows up.
 
 `FiniteStateMachine` gains a typed, `$state`-backed `context` object visible to lifecycle hooks and guards — the sidecar-data mechanism every real FSM grows, built in.
 
