@@ -1,65 +1,106 @@
-# Svelte library
+<picture>
+	<source media="(prefers-color-scheme: dark)" srcset="docs/assets/banner-dark.svg">
+	<img src="docs/assets/banner-light.svg" alt="kenspeckle, adjective, Scots, from Old Norse kennispeki: 1. easily recognised; conspicuous; familiar at sight. 2. (of Svelte utilities) knowable from the name alone.">
+</picture>
 
-Everything you need to build a Svelte library, powered by [`sv`](https://npmjs.com/package/sv).
+Svelte utilities you recognize at sight. One naming convention, no `use` prefix, attachments first-class.
 
-Read more about creating a library [in the docs](https://svelte.dev/docs/kit/packaging).
+> **Status:** pre-release. This README is the contract being built against; nothing is on npm yet.
 
-## Creating a project
+## The sentence test
 
-If you're seeing this, you've probably already done this step. Congrats!
+Every export earns its shape by being said aloud: *"I want a new ___."*
 
-```sh
-# create a new project in the current directory
-npx sv create
+- "a new **finite state machine**" — speakable, and you drive it with methods → `new FiniteStateMachine()`
+- "a new **element size**" — not a thing you ask for → `elementSize()`
+- "a new **is idle**" — nonsense → `idle()`
 
-# create a new project in my-app
-npx sv create my-app
+Two rules fall out:
+
+1. **Class** only when "new X" is speakable *and* you drive it with methods. There are exactly two: `FiniteStateMachine` and `StateHistory`.
+2. **Everything else is a camelCase function.** No `use` prefix — that's a React Hooks rule, and Svelte has no such rule. No `is` prefix either — predicates are bare words read as implicit questions: `mounted()`, `idle()`, `documentVisible()`. The question lives in the library, the answer in your variable: `const isMounted = mounted()`.
+
+That's why the name. Kenspeckle things are known at sight; so is every export here. The word is the spec.
+
+## Attachments, curried
+
+Element-bound utilities are one name in two forms. Options only → returns an [attachment](https://svelte.dev/docs/svelte/@attach). Element first → the imperative helper, cleanup returned.
+
+```svelte
+<div {@attach clickOutside(() => close())}>…</div>
+
+<script>
+	// same import, imperative
+	const cleanup = clickOutside(node, () => close());
+</script>
 ```
 
-To recreate this project with the same configuration:
+Value-producing attachments are readable boxes — the factory's return *is* the attachment, carrying reactive getters:
 
-```sh
-# recreate this project
-npx sv@0.16.3 create --template library --types ts --add prettier eslint vitest="usages:unit,component" playwright sveltekit-adapter="adapter:cloudflare+cfTarget:workers" mdsvex mcp="ide:claude-code+setup:remote" experimental="versions:none+features:async,remoteFunctions,explicitEnvironmentVariables,handleRenderingErrors" --install npm kenspeckle
+```svelte
+<script>
+	import { elementSize } from 'kenspeckle';
+
+	const size = elementSize(); // no target yet
+</script>
+
+<div {@attach size}>…</div>
+<p>{size.width} × {size.height}</p>
 ```
 
-## Developing
+The same export works imperatively with a getter: `elementSize(() => node)`. Argument presence picks the mode.
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-Everything inside `src/lib` is part of your library, everything inside `src/routes` can be used as a showcase or preview app.
-
-## Building
-
-To build your library:
+## Install
 
 ```sh
-npm pack
+npm install kenspeckle
 ```
 
-To create a production version of your showcase app:
+Peer dependency: `svelte >= 5.40`. SSR-safe — value factories return inert defaults on the server.
 
-```sh
-npm run build
-```
+## What's inside
 
-You can preview the production build with `npm run preview`.
+| export | form | lineage |
+| --- | --- | --- |
+| `FiniteStateMachine` | class, with typed reactive `context` | runed `FiniteStateMachine` |
+| `StateHistory` | class | runed `StateHistory` |
+| `mounted()` | value factory | runed `IsMounted` |
+| `idle()` | value factory | runed `IsIdle` |
+| `documentVisible()` | value factory | runed `IsDocumentVisible` |
+| `focusWithin()` | attachment, readable box | runed `IsFocusWithin` |
+| `inViewport()` | attachment, readable box | runed `IsInViewport` |
+| `elementSize()` | attachment, readable box | runed `ElementSize` |
+| `elementRect()` | attachment, readable box | runed `ElementRect` |
+| `scrollState()` | attachment, readable box; window form | runed `ScrollState` |
+| `autosize()` | attachment | runed `TextareaAutosize` |
+| `clickOutside()` | attachment + helper | runed `onClickOutside` · svelte-put `clickoutside` |
+| `intersected()` | attachment + helper | runed `useIntersectionObserver` · svelte-put `intersect` |
+| `resized()` | attachment + helper | runed `useResizeObserver` · svelte-put `resize` |
+| `mutated()` | attachment + helper | runed `useMutationObserver` |
+| `copy()` | attachment + helper | svelte-put `copy` |
+| `shortcut()` | attachment + helper | svelte-put `shortcut` |
+| `lockScroll` | attachment ≡ helper, stacked lock counting | new |
+| `dragScroll()` | attachment | svelte-put `dragscroll` |
+| `debounced()` / `throttled()` | value factory | runed `Debounced` / `Throttled` |
+| `debounce()` / `throttle()` | function wrapper | runed `useDebounce` / `useThrottle` |
+| `previous()` | value factory | runed `Previous` |
+| `activeElement()` | value factory | runed `ActiveElement` |
+| `pressedKeys()` | value factory | runed `PressedKeys` |
+| `persisted()` | value factory | runed `PersistedState` |
+| `animationFrames()` | value factory | runed `AnimationFrames` |
+| `geolocation()` | value factory | runed `useGeolocation` |
+| `listen()` | wiring | runed `useEventListener` |
+| `interval()` | wiring | runed `useInterval` |
+| `searchParams()` + helpers | value factory | runed `useSearchParams` |
+| `resource()` / `resourcePre()` | unchanged | runed |
+| `watch` / `watchOnce` / `extract` / `onCleanup` / `boolAttr` | unchanged | runed |
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+Dropped, deliberately: runed's `Context` — Svelte ≥ 5.40's `createContext` returns a typed `[get, set]` pair and covers it.
 
-## Publishing
+`FiniteStateMachine` gains a typed, `$state`-backed `context` object visible to lifecycle hooks and guards — the sidecar-data mechanism every real FSM grows, built in.
 
-Go into the `package.json` and give your package the desired name through the `"name"` option. Also consider adding a `"license"` field and point it to a `LICENSE` file which you can create from a template (one popular option is the [MIT license](https://opensource.org/license/mit/)).
+## Provenance
 
-To publish your library to [npm](https://www.npmjs.com):
+kenspeckle is a curation, not a fork. [runed](https://runed.dev) has genuinely useful utilities under three naming regimes at once — PascalCase classes, bare functions, and React-style `use` hooks, with pairs like `Debounced` / `useDebounce` coexisting. [svelte-put](https://svelte-put.vnphanquang.com) has good actions from the Svelte 4 era, before attachments existed. kenspeckle reshapes both pools under one convention and adds what neither ships: attachments as a first-class layer.
 
-```sh
-npm publish
-```
+Portions adapted from runed (MIT) and svelte-put (MIT). kenspeckle is MIT.

@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400" role="img" aria-label="kenspeckle, adjective, Scots: easily recognised; conspicuous; familiar at sight">
+	<style>
+		text { font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, Baskerville, Georgia, 'Times New Roman', serif; }
+		.headword { font-size: 78px; font-weight: 700; fill: #8ca2e4; letter-spacing: 0.01em; }
+		.dot { fill: #9398a5; font-weight: 400; }
+		.pron { font-size: 27px; fill: #9398a5; }
+		.pos { font-size: 27px; font-style: italic; fill: #e2e4eb; }
+		.etym { font-size: 25px; font-style: italic; fill: #9398a5; }
+		.etym .word { font-style: normal; }
+		.sense { font-size: 29px; fill: #e2e4eb; }
+		.sn { fill: #e57255; font-weight: 700; }
+		.gloss { font-style: italic; fill: #9398a5; font-size: 26px; }
+	</style>
+
+	<text x="64" y="122" class="headword">ken<tspan class="dot">·</tspan>speck<tspan class="dot">·</tspan>le</text>
+	<text x="64" y="170" class="pron">/ˈkɛnspɛkl/ <tspan class="pos" dx="10">adj.</tspan></text>
+	<text x="64" y="216" class="etym">Scots, from Old Norse <tspan class="word">kennispeki</tspan> — ‘quick at recognising’</text>
+
+	<line x1="64" y1="248" x2="1136" y2="248" stroke="#363a45" stroke-width="1"/>
+
+	<text x="64" y="304" class="sense"><tspan class="sn">1.</tspan> easily recognised; conspicuous; familiar at sight.</text>
+	<text x="64" y="352" class="sense"><tspan class="sn">2.</tspan> <tspan class="gloss">(of Svelte utilities)</tspan> knowable from the name alone.</text>
+
+	<!-- speckles -->
+	<g>
+		<circle cx="1010" cy="84" r="5" fill="#e57255"/>
+		<circle cx="1054" cy="118" r="3.5" fill="#8ca2e4"/>
+		<circle cx="1092" cy="72" r="6" fill="#8ca2e4"/>
+		<circle cx="1122" cy="128" r="4" fill="#e57255"/>
+		<circle cx="968" cy="130" r="3" fill="#e57255" opacity="0.75"/>
+		<circle cx="1070" cy="164" r="2.5" fill="#9398a5" opacity="0.7"/>
+		<circle cx="1130" cy="52" r="3" fill="#e57255" opacity="0.8"/>
+		<circle cx="1032" cy="52" r="2.5" fill="#8ca2e4" opacity="0.7"/>
+		<circle cx="1118" cy="182" r="3.5" fill="#8ca2e4" opacity="0.8"/>
+		<circle cx="988" cy="66" r="2" fill="#9398a5" opacity="0.6"/>
+		<circle cx="1146" cy="92" r="2.5" fill="#e57255" opacity="0.65"/>
+		<circle cx="1004" cy="168" r="2" fill="#8ca2e4" opacity="0.55"/>
+		<circle cx="1058" cy="86" r="2" fill="#e57255" opacity="0.5"/>
+		<circle cx="1094" cy="150" r="2" fill="#e57255" opacity="0.5"/>
+		<circle cx="1148" cy="156" r="2" fill="#9398a5" opacity="0.5"/>
+	</g>
+</svg>
