@@ -254,6 +254,12 @@ a:hover {
 	color: oklch(44% 0.13 40);
 }
 
+.type-tag[data-type='function'],
+.filter-chip[data-type='function'] {
+	background: oklch(93% 0.05 95);
+	color: oklch(42% 0.09 95);
+}
+
 .nav-filter {
 	display: flex;
 	flex-wrap: wrap;
@@ -471,4 +477,41 @@ a:hover {
 .prose pre .token.punctuation,
 .prose pre .token.operator {
 	color: oklch(72% 0.015 275);
+}
+
+/* block: roadmap */
+.roadmap-note {
+	margin-block: 0 var(--space-s);
+	font-style: italic;
+	color: var(--color-muted);
+}
+
+.roadmap-list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.roadmap-list li {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	column-gap: var(--space-2xs);
+	row-gap: var(--space-3xs);
+	padding-block: var(--space-2xs);
+}
+
+.roadmap-list li + li {
+	border-block-start: var(--border-thin) solid var(--color-hairline);
+}
+
+.roadmap-name {
+	font-family: var(--font-mono);
+	font-size: 0.85em;
+	font-weight: 600;
+}
+
+.roadmap-blurb {
+	flex: 1 1 14rem;
+	color: var(--color-muted);
 }
