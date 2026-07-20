@@ -1,3 +1,5 @@
+export { copy, copyText } from './copy.js';
+export type { CopyOptions, CopyText } from './copy.js';
 export { FiniteStateMachine } from './finite-state-machine.svelte.js';
 export type {
 	Action,
