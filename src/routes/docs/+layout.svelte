@@ -2,21 +2,26 @@
 	import { afterNavigate } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
+	import { SvelteSet } from 'svelte/reactivity';
 	import { copy } from '$lib/copy.js';
+	import { typeLabels, utilities, utilityTypes, type UtilityType } from './utilities.js';
+	import TypeTag from './TypeTag.svelte';
 	import './docs.css';
 
 	let { children } = $props();
-
-	const items = [
-		{ href: resolve('/docs'), label: 'Introduction' },
-		{ href: resolve('/docs/finite-state-machine'), label: 'FiniteStateMachine' },
-		{ href: resolve('/docs/copy'), label: 'copy' }
-	];
 
 	const wideQuery = '(min-width: 48rem)';
 
 	let navOpen = $state(false);
 	let prose = $state<HTMLElement>();
+	const active = new SvelteSet<UtilityType>(utilityTypes);
+
+	const shown = $derived(utilities.filter((u) => active.has(u.type)));
+
+	function toggle(type: UtilityType) {
+		if (active.has(type)) active.delete(type);
+		else active.add(type);
+	}
 
 	$effect(() => {
 		const wide = window.matchMedia(wideQuery);
@@ -70,15 +75,44 @@
 	<details class="doc-nav" bind:open={navOpen}>
 		<summary>Contents</summary>
 		<nav class="nav-body" aria-label="Docs">
-			<ul>
-				{#each items as item (item.href)}
-					<li>
-						<a href={item.href} aria-current={page.url.pathname === item.href ? 'page' : undefined}>
-							{item.label}
-						</a>
-					</li>
+			<a
+				href={resolve('/docs')}
+				aria-current={page.url.pathname === resolve('/docs') ? 'page' : undefined}
+			>
+				Introduction
+			</a>
+
+			<div class="nav-filter" role="group" aria-label="Filter by type">
+				{#each utilityTypes as type (type)}
+					<button
+						type="button"
+						class="filter-chip"
+						data-type={type}
+						aria-pressed={active.has(type)}
+						onclick={() => toggle(type)}
+					>
+						{typeLabels[type]}
+					</button>
 				{/each}
-			</ul>
+			</div>
+
+			{#if shown.length}
+				<ul>
+					{#each shown as util (util.slug)}
+						<li>
+							<a
+								href={util.href}
+								aria-current={page.url.pathname === util.href ? 'page' : undefined}
+							>
+								{util.label}
+								<TypeTag type={util.type} />
+							</a>
+						</li>
+					{/each}
+				</ul>
+			{:else}
+				<p class="nav-empty">No utilities match.</p>
+			{/if}
 		</nav>
 	</details>
 

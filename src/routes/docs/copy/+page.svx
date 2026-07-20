@@ -1,4 +1,8 @@
-# copy
+<script>
+	import PageHeading from '../PageHeading.svelte';
+</script>
+
+<PageHeading slug="copy" />
 
 Copy text to the clipboard on an event. `copy` is curried: call it with options to get an **attachment**, or with an element first to wire it **imperatively** — one name, typed both ways. Its companion `copyText` is the bare clipboard primitive.
 
@@ -12,13 +16,9 @@ The copy buttons on every code block in these docs are this utility.
 
 Call `copy(options)` and attach the result to any element. It listens for the event (default `click`) and copies:
 
+With a `copied` flag declared as `let copied = $state(false)` in your component script:
+
 ```svelte
-<script>
-  import { copy } from 'kenspeckle';
-
-  let copied = $state(false);
-</script>
-
 <button
   {@attach copy({
     text: 'https://kenspeckle.dev',

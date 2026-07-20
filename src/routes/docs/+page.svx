@@ -4,5 +4,10 @@ _kenspeckle_ (Scots): easily recognized, familiar at sight. Svelte 5 utilities u
 
 ## Utilities
 
+### Classes
+
 - [FiniteStateMachine](/docs/finite-state-machine) — fully typed FSM with reactive context
+
+### Attachments
+
 - [copy](/docs/copy) — clipboard attachment + imperative helper
