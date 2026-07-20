@@ -835,6 +835,23 @@ Run: `npm run check` — expected 0 errors.
 jj commit -m 'feat: fsm debounce, event-first with per-event timers'
 ```
 
+- [ ] **Step 6 (added during execution, from Svelte review): superseded promises must settle**
+
+runed's shape (Step 3 above) leaves a superseded call's promise pending forever. Append inside the debounce describe block:
+
+```ts
+	it('superseded calls resolve with the final state when the last timer fires', async () => {
+		const { f, search } = create();
+		const first = f.debounce('search', 30, 'a');
+		const second = f.debounce('search', 30, 'ab');
+		await expect(first).resolves.toBe('searching');
+		await expect(second).resolves.toBe('searching');
+		expect(search).toHaveBeenCalledTimes(1);
+	});
+```
+
+And replace `#timeouts`/`debounce` so each event keys `{ id, resolvers[] }`: supersede carries resolvers forward, the trailing fire resolves them all with the resulting state. Commit: `fix: fsm debounce resolves superseded calls`.
+
 ---
 
 ### Task 9: Type-level tests

@@ -104,7 +104,7 @@ machine.states                                     // readonly definition
 ```
 
 - `send`/`debounce` pre-bound — pass as callbacks directly.
-- `debounce` keys timers per event: a resend of the same event resets its timer; other events are independent. Event-first order (runed's `debounce(wait, event, …)` made the defaultable param non-omittable).
+- `debounce` keys timers per event: a resend of the same event resets its timer; other events are independent. Event-first order (runed's `debounce(wait, event, …)` made the defaultable param non-omittable). Every coalesced call's promise resolves with the resulting state when the trailing send fires — no dangling promises (runed leaves superseded promises pending forever).
 
 ## Svelte context wiring
 
