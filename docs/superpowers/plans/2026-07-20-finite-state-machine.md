@@ -918,7 +918,7 @@ describe('type-level', () => {
 		);
 		expectTypeOf(g.context).toEqualTypeOf<Ctx>();
 
-		expect(f.current).toBe('idle'); // the load send above vetoed (handler returned undefined)
+		expect(f.current).toBe('busy'); // ts-expect-error is compile-only: the start send above ran and transitioned
 	});
 });
 ```

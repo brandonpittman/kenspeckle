@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import { FiniteStateMachine } from './finite-state-machine.svelte.js';
 
 describe('core: toggle machine', () => {
@@ -361,5 +361,72 @@ describe('debounce', () => {
 		} finally {
 			vi.useRealTimers();
 		}
+	});
+});
+
+describe('type-level', () => {
+	type States = 'idle' | 'busy';
+	type Events = { start: []; load: [id: string, force: boolean] };
+	type Ctx = { n: number };
+
+	it('checks payloads, targets, narrowing, and context overloads', () => {
+		const f = new FiniteStateMachine<States, Events>('idle', {
+			idle: {
+				start: 'busy',
+				load: ({ from, event, args }) => {
+					expectTypeOf(from).toEqualTypeOf<'idle'>();
+					expectTypeOf(event).toEqualTypeOf<'load'>();
+					expectTypeOf(args).toEqualTypeOf<[id: string, force: boolean]>();
+				},
+				_enter: (meta) => {
+					expectTypeOf(meta.to).toEqualTypeOf<'idle'>();
+					if (meta.event === 'load') {
+						expectTypeOf(meta.args).toEqualTypeOf<[id: string, force: boolean]>();
+					}
+				},
+				_exit: (meta) => {
+					expectTypeOf(meta.from).toEqualTypeOf<'idle'>();
+				}
+			},
+			busy: {}
+		});
+
+		expectTypeOf(f.current).toEqualTypeOf<States>();
+		expectTypeOf(f.context).toEqualTypeOf<undefined>();
+		f.send('load', 'a', true);
+
+		// @ts-expect-error unknown event
+		f.send('nope');
+		// @ts-expect-error missing payload
+		f.send('load');
+		// @ts-expect-error wrong payload types
+		f.send('load', 42, 'yes');
+		// @ts-expect-error extra payload on a no-payload event
+		f.send('start', 1);
+		// @ts-expect-error debounce payloads are checked too
+		f.debounce('load', 100, 42, true);
+
+		new FiniteStateMachine<States, Events>('idle', {
+			idle: {
+				// @ts-expect-error string target must be a valid state
+				start: 'nonexistent'
+			},
+			busy: {}
+		});
+
+		// @ts-expect-error no-context machine rejects the options argument
+		new FiniteStateMachine<States, Events>('idle', { idle: {}, busy: {} }, { context: { n: 0 } });
+
+		// @ts-expect-error context machine requires the options argument
+		new FiniteStateMachine<States, Events, Ctx>('idle', { idle: {}, busy: {} });
+
+		const g = new FiniteStateMachine<States, Events, Ctx>(
+			'idle',
+			{ idle: {}, busy: {} },
+			{ context: { n: 0 } }
+		);
+		expectTypeOf(g.context).toEqualTypeOf<Ctx>();
+
+		expect(f.current).toBe('busy'); // ts-expect-error is compile-only: the start send above ran and transitioned
 	});
 });
