@@ -25,8 +25,7 @@ export type EnterMeta<
 	ContextT,
 	CurrentT extends StatesT
 > = { to: CurrentT; context: ContextT } & (
-	| ({ from: StatesT } & EventArgs<EventsT>)
-	| { from: null; event: null; args: [] }
+	({ from: StatesT } & EventArgs<EventsT>) | { from: null; event: null; args: [] }
 );
 
 export type ExitMeta<

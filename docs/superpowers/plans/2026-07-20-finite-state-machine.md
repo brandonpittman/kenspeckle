@@ -17,6 +17,7 @@ npm run test:unit -- --run src/lib/finite-state-machine.svelte.test.ts
 (Server project excludes the file; only the `client` browser project runs it.)
 
 **Files:**
+
 - Create: `src/lib/finite-state-machine.svelte.ts`
 - Create: `src/lib/finite-state-machine.svelte.test.ts`
 - Modify: `src/lib/index.ts`
@@ -27,6 +28,7 @@ npm run test:unit -- --run src/lib/finite-state-machine.svelte.test.ts
 ### Task 1: Dependencies
 
 **Files:**
+
 - Modify: `package.json`
 
 - [ ] **Step 1: Add esm-env as a runtime dependency**
@@ -71,6 +73,7 @@ jj commit -m 'chore: esm-env dep, svelte peer >=5.40'
 ### Task 2: Core — construction, string transitions, lifecycle
 
 **Files:**
+
 - Create: `src/lib/finite-state-machine.svelte.test.ts`
 - Create: `src/lib/finite-state-machine.svelte.ts`
 
@@ -138,9 +141,7 @@ describe('core: toggle machine', () => {
 			args: [],
 			context: undefined
 		});
-		expect(exit.off.mock.invocationCallOrder[0]).toBeLessThan(
-			enter.on.mock.invocationCallOrder[0]
-		);
+		expect(exit.off.mock.invocationCallOrder[0]).toBeLessThan(enter.on.mock.invocationCallOrder[0]);
 		expect(exit.on).not.toHaveBeenCalled();
 	});
 
@@ -188,8 +189,7 @@ export type EnterMeta<
 	ContextT,
 	CurrentT extends StatesT
 > = { to: CurrentT; context: ContextT } & (
-	| ({ from: StatesT } & EventArgs<EventsT>)
-	| { from: null; event: null; args: [] }
+	({ from: StatesT } & EventArgs<EventsT>) | { from: null; event: null; args: [] }
 );
 
 export type ExitMeta<
@@ -305,6 +305,7 @@ jj commit -m 'feat: fsm core, string transitions and lifecycle'
 ### Task 3: Function handlers — meta arg, veto, typed payloads
 
 **Files:**
+
 - Modify: `src/lib/finite-state-machine.svelte.test.ts`
 - Modify: `src/lib/finite-state-machine.svelte.ts`
 
@@ -374,21 +375,21 @@ Expected: the 3 new tests FAIL (handler never called — send only understands s
 Replace the `send` body's middle lines:
 
 ```ts
-	send = <K extends keyof EventsT>(event: K, ...args: EventsT[K]): StatesT => {
-		const action = this.states[this.#current]?.[event] ?? this.states['*']?.[event];
-		if (action === undefined) return this.#current;
-		const target =
-			typeof action === 'function'
-				? (action as (meta: unknown) => StatesT | void)({
-						from: this.#current,
-						event,
-						args,
-						context: this.#context
-					})
-				: action;
-		if (target !== undefined) this.#transition(target, event, args);
-		return this.#current;
-	};
+send = <K extends keyof EventsT>(event: K, ...args: EventsT[K]): StatesT => {
+	const action = this.states[this.#current]?.[event] ?? this.states['*']?.[event];
+	if (action === undefined) return this.#current;
+	const target =
+		typeof action === 'function'
+			? (action as (meta: unknown) => StatesT | void)({
+					from: this.#current,
+					event,
+					args,
+					context: this.#context
+				})
+			: action;
+	if (target !== undefined) this.#transition(target, event, args);
+	return this.#current;
+};
 ```
 
 - [ ] **Step 4: Run tests to verify they pass**
@@ -409,6 +410,7 @@ jj commit -m 'feat: fsm function handlers with meta and veto'
 ### Task 4: Wildcard fallback — events and lifecycle
 
 **Files:**
+
 - Modify: `src/lib/finite-state-machine.svelte.test.ts`
 
 Implementation already resolves via `?? states['*']` in both `send` and `#lifecycle`; this task pins the behavior with tests (they should pass immediately — that's fine, the lookup rule shipped in Task 2 and this locks it).
@@ -481,6 +483,7 @@ jj commit -m 'test: fsm wildcard fallback for events and lifecycle'
 ### Task 5: Re-entry — returned state always transitions
 
 **Files:**
+
 - Modify: `src/lib/finite-state-machine.svelte.test.ts`
 - Modify: `src/lib/finite-state-machine.svelte.ts` (only if needed — Task 3's dispatch already transitions on any returned state)
 
@@ -550,6 +553,7 @@ jj commit -m 'test: fsm re-entry on self-transition'
 ### Task 6: Dev warning + declared ignore
 
 **Files:**
+
 - Modify: `src/lib/finite-state-machine.svelte.test.ts`
 - Modify: `src/lib/finite-state-machine.svelte.ts`
 
@@ -600,14 +604,12 @@ Expected: 'warns once' FAILS (no warning emitted); 'declared no-op' passes.
 In `send`, replace the early return:
 
 ```ts
-		if (action === undefined) {
-			if (DEV) {
-				console.warn(
-					`kenspeckle: unhandled event '${String(event)}' in state '${this.#current}'`
-				);
-			}
-			return this.#current;
-		}
+if (action === undefined) {
+	if (DEV) {
+		console.warn(`kenspeckle: unhandled event '${String(event)}' in state '${this.#current}'`);
+	}
+	return this.#current;
+}
 ```
 
 (Add `import { DEV } from 'esm-env';` now if it was deferred in Task 2.)
@@ -630,6 +632,7 @@ jj commit -m 'feat: fsm dev warning for unhandled events'
 ### Task 7: Context — option, reactivity, mutation, reassignment
 
 **Files:**
+
 - Modify: `src/lib/finite-state-machine.svelte.test.ts`
 
 Runtime support (constructor rest tuple, `#context` `$state`, `context` accessor, `context` in metas) shipped in Task 2; this task proves the behaviors that matter.
@@ -732,6 +735,7 @@ jj commit -m 'test: fsm reactive context'
 ### Task 8: debounce — event-first, per-event keying
 
 **Files:**
+
 - Modify: `src/lib/finite-state-machine.svelte.test.ts`
 - Modify: `src/lib/finite-state-machine.svelte.ts`
 
@@ -840,14 +844,14 @@ jj commit -m 'feat: fsm debounce, event-first with per-event timers'
 runed's shape (Step 3 above) leaves a superseded call's promise pending forever. Append inside the debounce describe block:
 
 ```ts
-	it('superseded calls resolve with the final state when the last timer fires', async () => {
-		const { f, search } = create();
-		const first = f.debounce('search', 30, 'a');
-		const second = f.debounce('search', 30, 'ab');
-		await expect(first).resolves.toBe('searching');
-		await expect(second).resolves.toBe('searching');
-		expect(search).toHaveBeenCalledTimes(1);
-	});
+it('superseded calls resolve with the final state when the last timer fires', async () => {
+	const { f, search } = create();
+	const first = f.debounce('search', 30, 'a');
+	const second = f.debounce('search', 30, 'ab');
+	await expect(first).resolves.toBe('searching');
+	await expect(second).resolves.toBe('searching');
+	expect(search).toHaveBeenCalledTimes(1);
+});
 ```
 
 And replace `#timeouts`/`debounce` so each event keys `{ id, resolvers[] }`: supersede carries resolvers forward, the trailing fire resolves them all with the resulting state. Commit: `fix: fsm debounce resolves superseded calls`.
@@ -857,6 +861,7 @@ And replace `#timeouts`/`debounce` so each event keys `{ id, resolvers[] }`: sup
 ### Task 9: Type-level tests
 
 **Files:**
+
 - Modify: `src/lib/finite-state-machine.svelte.test.ts`
 
 `@ts-expect-error` correctness is enforced by `npm run check` (svelte-check fails on unused suppressions); `expectTypeOf` documents the positive cases.
@@ -959,6 +964,7 @@ jj commit -m 'test: fsm type-level coverage'
 ### Task 10: Export, lint, full suite
 
 **Files:**
+
 - Modify: `src/lib/index.ts`
 
 - [ ] **Step 1: Export from the package entry**

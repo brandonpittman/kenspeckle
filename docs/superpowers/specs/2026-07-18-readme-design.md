@@ -6,11 +6,11 @@
 
 ## Goal
 
-Replace the sv-create scaffold README with the library's real README. The name story is the opening hook: *kenspeckle* means "easily recognized, familiar at sight" — which is the library's thesis (one naming convention, names you recognize at sight). Written as the final published-library README, with a pre-release status line; examples come from the parent spec and become the contract to build against.
+Replace the sv-create scaffold README with the library's real README. The name story is the opening hook: _kenspeckle_ means "easily recognized, familiar at sight" — which is the library's thesis (one naming convention, names you recognize at sight). Written as the final published-library README, with a pre-release status line; examples come from the parent spec and become the contract to build against.
 
 ## Structure (name → proof → practice)
 
-1. **Header** — dictionary-entry open: `ken·speck·le` /ˈkɛnspɛkl/ *adj.* (Scots, from Old Norse *kennispeki*, "quick at recognizing") — easily recognized; familiar at sight. One-line thesis: Svelte utilities you recognize at sight; one naming convention, no `use` prefix, attachments first-class. Pre-release status line.
+1. **Header** — dictionary-entry open: `ken·speck·le` /ˈkɛnspɛkl/ _adj._ (Scots, from Old Norse _kennispeki_, "quick at recognizing") — easily recognized; familiar at sight. One-line thesis: Svelte utilities you recognize at sight; one naming convention, no `use` prefix, attachments first-class. Pre-release status line.
 2. **The sentence test** — the three examples from the parent spec (✓ finite state machine → class; ✗ element size → factory; ✗✗ is idle → `idle()`), the two rules (classes only when "new X" is speakable and driven by methods; everything else camelCase, no `use`/`is` prefixes). Closes tying back to the name: the word is the spec.
 3. **Attachments, curried** — `clickOutside` dual-form snippet + `elementSize` readable-box snippet, verbatim shape from parent spec.
 4. **Install / usage** — `npm install kenspeckle`, minimal import example, peer dep `svelte >= 5.40`.

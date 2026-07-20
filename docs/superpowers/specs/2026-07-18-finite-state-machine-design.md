@@ -48,8 +48,8 @@ Handlers are a string target (checked against `StatesT`) or a meta-first fn:
 ```ts
 // event handler meta — in state `foo`'s block, Current = 'foo'
 type ActionMeta = {
-	from: Current;   // literal current state
-	event: K;        // the event key
+	from: Current; // literal current state
+	event: K; // the event key
 	args: EventsT[K]; // typed tuple
 	context: ContextT;
 };
@@ -72,8 +72,8 @@ Guards are not a separate concept: a handler that returns `undefined` vetoes the
 ## Context
 
 ```ts
-new FiniteStateMachine(initial, states);                      // ContextT = undefined
-new FiniteStateMachine(initial, states, { context: init });   // ContextT inferred
+new FiniteStateMachine(initial, states); // ContextT = undefined
+new FiniteStateMachine(initial, states, { context: init }); // ContextT inferred
 ```
 
 Constructor overloads: the no-context call cannot pass the option; the context call requires it. No-context API is otherwise identical in shape to runed's.
@@ -115,7 +115,7 @@ const [getWizard, setWizard] = createContext<WizardMachine>();
 
 export function createWizard(initial: WizardStep = 'intro') {
 	const m = new FiniteStateMachine<WizardStep, WizardEvents, WizardCtx>(initial, states, {
-		context: { attempts: 0, answers: [] },
+		context: { attempts: 0, answers: [] }
 	});
 	setWizard(m);
 	return m;

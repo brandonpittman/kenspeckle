@@ -57,9 +57,7 @@ describe('core: toggle machine', () => {
 			args: [],
 			context: undefined
 		});
-		expect(exit.off.mock.invocationCallOrder[0]).toBeLessThan(
-			enter.on.mock.invocationCallOrder[0]
-		);
+		expect(exit.off.mock.invocationCallOrder[0]).toBeLessThan(enter.on.mock.invocationCallOrder[0]);
 		expect(exit.on).not.toHaveBeenCalled();
 	});
 

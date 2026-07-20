@@ -3,7 +3,7 @@
 **Date:** 2026-07-18
 **Status:** Approved design; repo scaffolded via sv create
 
-*kenspeckle* (Scots, from Old Norse *kennispeki* / Norwegian *kjennespak*, "quick at recognizing"): easily recognized, familiar at sight.
+_kenspeckle_ (Scots, from Old Norse _kennispeki_ / Norwegian _kjennespak_, "quick at recognizing"): easily recognized, familiar at sight.
 
 ## Problem
 
@@ -49,8 +49,7 @@ Imperative helpers are the primitives: `(element, options) => cleanup`. Attachme
 	const size = elementSize(); // no target yet
 </script>
 
-<div {@attach size}>…</div>
-<p>{size.width} × {size.height}</p>
+<div {@attach size}>…</div><p>{size.width} × {size.height}</p>
 ```
 
 Same export works imperatively with a getter: `elementSize(() => node)`. Arg presence picks the mode.
@@ -59,42 +58,42 @@ Element-bound utilities are attachment-first; a non-attachment form exists only 
 
 ## Disposition of runed's utilities
 
-| runed | kenspeckle | form |
-| --- | --- | --- |
-| `FiniteStateMachine` | `FiniteStateMachine` | class, + typed reactive context (below) |
-| `StateHistory` | `StateHistory` | class |
-| `Context` | — | **dropped**: Svelte ≥5.40 `createContext` returns typed `[get, set]` |
-| `IsMounted` | `mounted()` | value factory |
-| `IsIdle` | `idle()` | value factory |
-| `IsDocumentVisible` | `documentVisible()` | value factory |
-| `IsFocusWithin` | `focusWithin()` | attachment, readable box |
-| `IsInViewport` | `inViewport()` | attachment, readable box |
-| `ElementSize` | `elementSize()` | attachment, readable box |
-| `ElementRect` | `elementRect()` | attachment, readable box |
-| `ScrollState` | `scrollState()` | attachment, readable box; window form |
-| `TextareaAutosize` | `autosize()` | attachment |
-| `onClickOutside` | `clickOutside()` | attachment + curried helper |
-| `useIntersectionObserver` | `intersected()` | attachment + curried helper |
-| `useResizeObserver` | `resized()` | attachment + curried helper |
-| `useMutationObserver` | `mutated()` | attachment + curried helper |
-| `Debounced` | `debounced()` | value factory |
-| `Throttled` | `throttled()` | value factory |
-| `useDebounce` | `debounce()` | function wrapper |
-| `useThrottle` | `throttle()` | function wrapper |
-| `Previous` | `previous()` | value factory |
-| `ActiveElement` | `activeElement()` | value factory |
-| `PressedKeys` | `pressedKeys()` | value factory |
-| `PersistedState` | `persisted()` | value factory |
-| `AnimationFrames` | `animationFrames()` | value factory |
-| `useGeolocation` | `geolocation()` | value factory (kept — free to carry) |
-| `useEventListener` | `listen()` | wiring |
-| `useInterval` | `interval()` | wiring |
-| `useSearchParams` + helpers | `searchParams()` + helpers | value factory (the 2100-line keeper) |
-| `resource` / `resourcePre` | — | **backlog**: Kit remote functions cover server data; see [potential additions](./2026-07-18-potential-additions.md) |
-| `watch` / `watchOnce` | unchanged | wiring |
-| `extract` | unchanged | wiring |
-| `onCleanup` | unchanged | wiring |
-| `boolAttr` | unchanged | helper |
+| runed                       | kenspeckle                 | form                                                                                                                |
+| --------------------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `FiniteStateMachine`        | `FiniteStateMachine`       | class, + typed reactive context (below)                                                                             |
+| `StateHistory`              | `StateHistory`             | class                                                                                                               |
+| `Context`                   | —                          | **dropped**: Svelte ≥5.40 `createContext` returns typed `[get, set]`                                                |
+| `IsMounted`                 | `mounted()`                | value factory                                                                                                       |
+| `IsIdle`                    | `idle()`                   | value factory                                                                                                       |
+| `IsDocumentVisible`         | `documentVisible()`        | value factory                                                                                                       |
+| `IsFocusWithin`             | `focusWithin()`            | attachment, readable box                                                                                            |
+| `IsInViewport`              | `inViewport()`             | attachment, readable box                                                                                            |
+| `ElementSize`               | `elementSize()`            | attachment, readable box                                                                                            |
+| `ElementRect`               | `elementRect()`            | attachment, readable box                                                                                            |
+| `ScrollState`               | `scrollState()`            | attachment, readable box; window form                                                                               |
+| `TextareaAutosize`          | `autosize()`               | attachment                                                                                                          |
+| `onClickOutside`            | `clickOutside()`           | attachment + curried helper                                                                                         |
+| `useIntersectionObserver`   | `intersected()`            | attachment + curried helper                                                                                         |
+| `useResizeObserver`         | `resized()`                | attachment + curried helper                                                                                         |
+| `useMutationObserver`       | `mutated()`                | attachment + curried helper                                                                                         |
+| `Debounced`                 | `debounced()`              | value factory                                                                                                       |
+| `Throttled`                 | `throttled()`              | value factory                                                                                                       |
+| `useDebounce`               | `debounce()`               | function wrapper                                                                                                    |
+| `useThrottle`               | `throttle()`               | function wrapper                                                                                                    |
+| `Previous`                  | `previous()`               | value factory                                                                                                       |
+| `ActiveElement`             | `activeElement()`          | value factory                                                                                                       |
+| `PressedKeys`               | `pressedKeys()`            | value factory                                                                                                       |
+| `PersistedState`            | `persisted()`              | value factory                                                                                                       |
+| `AnimationFrames`           | `animationFrames()`        | value factory                                                                                                       |
+| `useGeolocation`            | `geolocation()`            | value factory (kept — free to carry)                                                                                |
+| `useEventListener`          | `listen()`                 | wiring                                                                                                              |
+| `useInterval`               | `interval()`               | wiring                                                                                                              |
+| `useSearchParams` + helpers | `searchParams()` + helpers | value factory (the 2100-line keeper)                                                                                |
+| `resource` / `resourcePre`  | —                          | **backlog**: Kit remote functions cover server data; see [potential additions](./2026-07-18-potential-additions.md) |
+| `watch` / `watchOnce`       | unchanged                  | wiring                                                                                                              |
+| `extract`                   | unchanged                  | wiring                                                                                                              |
+| `onCleanup`                 | unchanged                  | wiring                                                                                                              |
+| `boolAttr`                  | unchanged                  | helper                                                                                                              |
 
 Nothing else dropped.
 
@@ -102,18 +101,18 @@ Nothing else dropped.
 
 svelte-put's actions (Svelte-4 era) are the second source pool after runed — reborn as kenspeckle attachments, same curried dual-form (helper + attachment; svelte-put's own copy/copyToClipboard pattern, generalized). Low-hanging fruit only in v0; the rest is backlog.
 
-| svelte-put | kenspeckle | notes |
-| --- | --- | --- |
-| `clickoutside` | `clickOutside()` | already in spec (runed overlap) |
-| `intersect` | `intersected()` | already in spec (runed overlap) |
-| `resize` | `resized()` | already in spec (runed overlap) |
-| `copy` | `copy()` | v0: attachment + imperative clipboard helper, one curried name |
-| `shortcut` | `shortcut()` | v0: attachment; window-level helper form too |
-| `lockscroll` | `lockScroll` | v0: port from brain-life-platform, not svelte-put (`src/lib/attachments/lock-scroll.ts` + `body-scroll-lock.svelte.ts`). Degenerate curried case: imperative `(node) => cleanup` IS the attachment signature — `{@attach lockScroll}` uncalled, `lockScroll(node)` imperative, `lockScroll(opts)` curried. BLP's body counter generalizes to a per-element lock count inside: stacked locks need matching releases; `lockBodyScroll()` ≡ `lockScroll(document.body)`; reactive predicate `scrollLocked(node)` replaces `bodyScrollLocked()`. Pairs with `scrollbar-gutter: stable` |
-| `dragscroll` | `dragScroll()` | v0: attachment |
-| `movable`, `swipeable`, `inline-svg`, `toc`, `qr` | backlog | port on demand, same conventions |
-| `preaction`, `preprocess-*` | — | out: Svelte-4 glue / preprocessors |
-| `async-stack`, `avatar`, `popover`, `ui`, `cloudflare-turnstile` | — | out: components / service-specific |
+| svelte-put                                                       | kenspeckle       | notes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| ---------------------------------------------------------------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `clickoutside`                                                   | `clickOutside()` | already in spec (runed overlap)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `intersect`                                                      | `intersected()`  | already in spec (runed overlap)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `resize`                                                         | `resized()`      | already in spec (runed overlap)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `copy`                                                           | `copy()`         | v0: attachment + imperative clipboard helper, one curried name                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| `shortcut`                                                       | `shortcut()`     | v0: attachment; window-level helper form too                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `lockscroll`                                                     | `lockScroll`     | v0: port from brain-life-platform, not svelte-put (`src/lib/attachments/lock-scroll.ts` + `body-scroll-lock.svelte.ts`). Degenerate curried case: imperative `(node) => cleanup` IS the attachment signature — `{@attach lockScroll}` uncalled, `lockScroll(node)` imperative, `lockScroll(opts)` curried. BLP's body counter generalizes to a per-element lock count inside: stacked locks need matching releases; `lockBodyScroll()` ≡ `lockScroll(document.body)`; reactive predicate `scrollLocked(node)` replaces `bodyScrollLocked()`. Pairs with `scrollbar-gutter: stable` |
+| `dragscroll`                                                     | `dragScroll()`   | v0: attachment                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| `movable`, `swipeable`, `inline-svg`, `toc`, `qr`                | backlog          | port on demand, same conventions                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `preaction`, `preprocess-*`                                      | —                | out: Svelte-4 glue / preprocessors                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `async-stack`, `avatar`, `popover`, `ui`, `cloudflare-turnstile` | —                | out: components / service-specific                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 
 ## FiniteStateMachine: typed reactive context
 
@@ -121,7 +120,7 @@ runed's FSM holds only finite state; real apps grow sidecar data mechanisms (see
 
 ```ts
 const machine = new FiniteStateMachine<States, Events, Ctx>(initial, states, {
-	context: { n: 0, results: [] }, // $state-backed, typed
+	context: { n: 0, results: [] } // $state-backed, typed
 });
 machine.context.n; // reactive
 // lifecycle fns + guards receive it: _enter({ from, to, event, context })
