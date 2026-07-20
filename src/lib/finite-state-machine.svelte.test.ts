@@ -68,3 +68,53 @@ describe('core: toggle machine', () => {
 		expect(f.states.off.toggle).toBe('on');
 	});
 });
+
+describe('function handlers', () => {
+	type States = 'idle' | 'painted';
+	type Events = { paint: [color: string, coats: number] };
+
+	function create() {
+		const idleExit = vi.fn();
+		const paintedEnter = vi.fn();
+		const paint = vi.fn(({ args }: { args: [string, number] }) =>
+			args[0] === 'red' ? ('painted' as const) : undefined
+		);
+		const f = new FiniteStateMachine<States, Events>('idle', {
+			idle: { paint, _exit: idleExit },
+			painted: { _enter: paintedEnter }
+		});
+		return { f, paint, idleExit, paintedEnter };
+	}
+
+	it('calls the handler with a full meta and transitions on its return', () => {
+		const { f, paint } = create();
+		f.send('paint', 'red', 2);
+		expect(paint).toHaveBeenCalledExactlyOnceWith({
+			from: 'idle',
+			event: 'paint',
+			args: ['red', 2],
+			context: undefined
+		});
+		expect(f.current).toBe('painted');
+	});
+
+	it('vetoes: undefined return stays put, no lifecycle', () => {
+		const { f, idleExit, paintedEnter } = create();
+		f.send('paint', 'blue', 1);
+		expect(f.current).toBe('idle');
+		expect(idleExit).not.toHaveBeenCalled();
+		expect(paintedEnter).not.toHaveBeenCalled();
+	});
+
+	it('passes typed args through to lifecycle metas', () => {
+		const { f, paintedEnter } = create();
+		f.send('paint', 'red', 2);
+		expect(paintedEnter).toHaveBeenCalledExactlyOnceWith({
+			from: 'idle',
+			to: 'painted',
+			event: 'paint',
+			args: ['red', 2],
+			context: undefined
+		});
+	});
+});
