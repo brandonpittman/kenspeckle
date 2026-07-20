@@ -309,3 +309,57 @@ describe('context', () => {
 		expect(n).toBe(11);
 	});
 });
+
+describe('debounce', () => {
+	type States = 'idle' | 'searching' | 'paused';
+	type Events = { search: [q: string]; pause: [] };
+
+	function create() {
+		const search = vi.fn(() => 'searching' as const);
+		const f = new FiniteStateMachine<States, Events>('idle', {
+			idle: { search, pause: 'paused' },
+			searching: { search, pause: 'paused' },
+			paused: {}
+		});
+		return { f, search };
+	}
+
+	it('coalesces same-event sends; last args win', async () => {
+		const { f, search } = create();
+		await Promise.any([f.debounce('search', 30, 'a'), f.debounce('search', 30, 'ab')]);
+		expect(search).toHaveBeenCalledExactlyOnceWith({
+			from: 'idle',
+			event: 'search',
+			args: ['ab'],
+			context: undefined
+		});
+		expect(f.current).toBe('searching');
+	});
+
+	it('later call resets the timer even with a different wait', async () => {
+		const { f, search } = create();
+		await Promise.any([f.debounce('search', 60, 'a'), f.debounce('search', 30, 'ab')]);
+		expect(search).toHaveBeenCalledTimes(1);
+	});
+
+	it('keys timers per event — different events do not cancel each other', async () => {
+		const { f, search } = create();
+		await Promise.all([f.debounce('search', 30, 'a'), f.debounce('pause', 30)]);
+		expect(search).toHaveBeenCalledTimes(1);
+		expect(f.current).toBe('paused'); // search fired first, then pause
+	});
+
+	it('defaults wait to 500', async () => {
+		vi.useFakeTimers();
+		try {
+			const { f } = create();
+			const p = f.debounce('search', undefined, 'a');
+			vi.advanceTimersByTime(499);
+			expect(f.current).toBe('idle');
+			vi.advanceTimersByTime(1);
+			await expect(p).resolves.toBe('searching');
+		} finally {
+			vi.useRealTimers();
+		}
+	});
+});
