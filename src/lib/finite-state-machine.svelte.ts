@@ -89,7 +89,15 @@ export class FiniteStateMachine<
 	send = <K extends keyof EventsT>(event: K, ...args: EventsT[K]): StatesT => {
 		const action = this.states[this.#current]?.[event] ?? this.states['*']?.[event];
 		if (action === undefined) return this.#current;
-		const target = typeof action === 'string' ? (action as StatesT) : undefined;
+		const target =
+			typeof action === 'function'
+				? (action as (meta: unknown) => StatesT | void)({
+						from: this.#current,
+						event,
+						args,
+						context: this.#context
+					})
+				: (action as StatesT);
 		if (target !== undefined) this.#transition(target, event, args);
 		return this.#current;
 	};
