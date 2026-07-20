@@ -34,7 +34,7 @@
 		}
 	},
 	"peerDependencies": {
-		"svelte": "^5.0.0"
+		"svelte": "^5.40.0"
 	},
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",
@@ -65,5 +65,8 @@
 	},
 	"keywords": [
 		"svelte"
-	]
+	],
+	"dependencies": {
+		"esm-env": "^1.2.2"
+	}
 }
