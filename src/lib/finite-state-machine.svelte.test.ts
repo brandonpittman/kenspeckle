@@ -235,3 +235,77 @@ describe('dev warnings', () => {
 		warn.mockRestore();
 	});
 });
+
+describe('context', () => {
+	type States = 'idle' | 'done';
+	type Events = { incr: []; record: [name: string]; finish: [] };
+	type Ctx = { n: number; results: string[] };
+
+	function create() {
+		const enter = vi.fn();
+		const f = new FiniteStateMachine<States, Events, Ctx>(
+			'idle',
+			{
+				idle: {
+					incr: ({ context }) => {
+						context.n++;
+					},
+					record: ({ context, args: [name] }) => {
+						context.results.push(name);
+					},
+					finish: 'done',
+					_enter: enter
+				},
+				done: { _enter: enter }
+			},
+			{ context: { n: 0, results: [] } }
+		);
+		return { f, enter };
+	}
+
+	it('initializes from the option and appears in metas', () => {
+		const { f, enter } = create();
+		expect(f.context.n).toBe(0);
+		expect(enter).toHaveBeenCalledExactlyOnceWith({
+			from: null,
+			to: 'idle',
+			event: null,
+			args: [],
+			context: { n: 0, results: [] }
+		});
+	});
+
+	it('handlers mutate context through the meta; veto still applies the mutation', () => {
+		const { f } = create();
+		f.send('incr');
+		f.send('incr');
+		expect(f.current).toBe('idle'); // handlers returned undefined
+		expect(f.context.n).toBe(2);
+	});
+
+	it('is deeply reactive', () => {
+		const { f } = create();
+		const total = $derived(f.context.n + f.context.results.length);
+		expect(total).toBe(0);
+		f.send('incr');
+		f.send('record', 'a');
+		expect(total).toBe(2);
+	});
+
+	it('current is reactive', () => {
+		const { f } = create();
+		const done = $derived(f.current === 'done');
+		expect(done).toBe(false);
+		f.send('finish');
+		expect(done).toBe(true);
+	});
+
+	it('supports whole-value reassignment, still reactive', () => {
+		const { f } = create();
+		const n = $derived(f.context.n);
+		f.context = { n: 10, results: ['x'] };
+		expect(n).toBe(10);
+		f.send('incr');
+		expect(n).toBe(11);
+	});
+});
