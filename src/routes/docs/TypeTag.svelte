@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { typeLabels, type UtilityType } from './utilities.js';
+	import { tagLabels, type TagType } from './utilities.js';
 
-	let { type }: { type: UtilityType } = $props();
+	let { type }: { type: TagType } = $props();
 </script>
 
-<span class="type-tag" data-type={type}>{typeLabels[type]}</span>
+<span class="type-tag" data-type={type}>{tagLabels[type]}</span>

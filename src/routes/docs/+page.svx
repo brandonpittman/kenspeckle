@@ -2,6 +2,8 @@
 
 _kenspeckle_ (Scots): easily recognized, familiar at sight. Svelte 5 utilities under one naming convention — no `use` prefix, no forced classes, attachments as a first-class layer.
 
+See the [roadmap](/docs/roadmap) for what's shipped and what's coming.
+
 ## Utilities
 
 ### Classes

@@ -4,7 +4,7 @@
 	import { page } from '$app/state';
 	import { SvelteSet } from 'svelte/reactivity';
 	import { copy } from '$lib/copy.js';
-	import { typeLabels, utilities, utilityTypes, type UtilityType } from './utilities.js';
+	import { tagLabels, utilities, utilityTypes, type UtilityType } from './utilities.js';
 	import TypeTag from './TypeTag.svelte';
 	import './docs.css';
 
@@ -91,7 +91,7 @@
 						aria-pressed={active.has(type)}
 						onclick={() => toggle(type)}
 					>
-						{typeLabels[type]}
+						{tagLabels[type]}
 					</button>
 				{/each}
 			</div>
@@ -113,6 +113,13 @@
 			{:else}
 				<p class="nav-empty">No utilities match.</p>
 			{/if}
+
+			<a
+				href={resolve('/docs/roadmap')}
+				aria-current={page.url.pathname === resolve('/docs/roadmap') ? 'page' : undefined}
+			>
+				Roadmap
+			</a>
 		</nav>
 	</details>
 
