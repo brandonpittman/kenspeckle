@@ -77,7 +77,7 @@ export class FiniteStateMachine<
 	) {
 		this.#current = initial;
 		this.states = states;
-		this.#context = (options[0]?.context ?? undefined) as ContextT;
+		this.#context = options[0]?.context as ContextT;
 		this.#lifecycle('_enter', initial, {
 			from: null,
 			to: initial,
@@ -104,7 +104,7 @@ export class FiniteStateMachine<
 						context: this.#context
 					})
 				: (action as StatesT);
-		if (target !== undefined) this.#transition(target, event, args);
+		if (target != null) this.#transition(target, event, args);
 		return this.#current;
 	};
 
@@ -139,6 +139,7 @@ export class FiniteStateMachine<
 	#transition(to: StatesT, event: keyof EventsT, args: unknown[]) {
 		const from = this.#current;
 		this.#lifecycle('_exit', from, { from, to, event, args, context: this.#context });
+		if (this.#current !== from) return; // _exit sent elsewhere; that transition supersedes
 		this.#current = to;
 		this.#lifecycle('_enter', to, { from, to, event, args, context: this.#context });
 	}
