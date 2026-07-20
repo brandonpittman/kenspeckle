@@ -1,4 +1,8 @@
-# FiniteStateMachine
+<script>
+	import PageHeading from '../PageHeading.svelte';
+</script>
+
+<PageHeading slug="finite-state-machine" />
 
 A strongly-typed finite state machine with reactive state and context. One of exactly two classes in kenspeckle — it passes the sentence test: "I want a _new finite state machine_."
 
