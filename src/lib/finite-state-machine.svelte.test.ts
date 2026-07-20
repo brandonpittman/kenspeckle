@@ -118,3 +118,47 @@ describe('function handlers', () => {
 		});
 	});
 });
+
+describe('wildcard fallback', () => {
+	type States = 'a' | 'b' | 'done';
+	type Events = { go: []; finish: [] };
+
+	it('falls back to * for events the current state lacks; own handler wins', () => {
+		const f = new FiniteStateMachine<States, Events>('a', {
+			a: { go: 'b' },
+			b: {},
+			done: {},
+			'*': { go: 'a', finish: 'done' }
+		});
+		f.send('go'); // own handler: a -> b
+		expect(f.current).toBe('b');
+		f.send('go'); // b lacks go, * sends back to a
+		expect(f.current).toBe('a');
+		f.send('finish'); // only on *
+		expect(f.current).toBe('done');
+	});
+
+	it('shares one _enter via *; a state with its own _enter overrides', () => {
+		const shared = vi.fn();
+		const own = vi.fn();
+		const f = new FiniteStateMachine<States, Events>('a', {
+			a: { go: 'b' },
+			b: { go: 'done', _enter: own },
+			done: {},
+			'*': { _enter: shared }
+		});
+		expect(shared).toHaveBeenCalledTimes(1); // initial enter of a
+		f.send('go');
+		expect(own).toHaveBeenCalledTimes(1); // b's own wins
+		expect(shared).toHaveBeenCalledTimes(1); // not called for b
+		f.send('go');
+		expect(shared).toHaveBeenCalledTimes(2); // done falls back
+		expect(shared).toHaveBeenLastCalledWith({
+			from: 'b',
+			to: 'done',
+			event: 'go',
+			args: [],
+			context: undefined
+		});
+	});
+});
