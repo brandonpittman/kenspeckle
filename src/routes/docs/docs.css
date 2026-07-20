@@ -1,0 +1,405 @@
+/* tokens */
+:root {
+	--font-serif: 'Iowan Old Style', 'Palatino Linotype', Palatino, Baskerville, Georgia, serif;
+	--font-mono: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace;
+
+	--color-bg: oklch(98.5% 0.003 275);
+	--color-ink: oklch(24% 0.02 275);
+	--color-indigo: oklch(38% 0.14 275);
+	--color-rust: oklch(50% 0.14 35);
+	--color-muted: oklch(47% 0.025 275);
+	--color-hairline: oklch(86% 0.008 275);
+	--color-panel: oklch(23% 0.025 275);
+	--color-panel-ink: oklch(95% 0.005 275);
+	--color-chip: oklch(94.5% 0.008 275);
+
+	--step-0: clamp(1rem, 0.96rem + 0.2vw, 1.125rem);
+	--step-1: clamp(1.25rem, 1.19rem + 0.31vw, 1.44rem);
+	--step-2: clamp(1.56rem, 1.46rem + 0.5vw, 1.86rem);
+	--step-3: clamp(1.95rem, 1.79rem + 0.78vw, 2.44rem);
+
+	--space-3xs: 0.25rem;
+	--space-2xs: 0.5rem;
+	--space-xs: 0.75rem;
+	--space-s: 1rem;
+	--space-m: 1.5rem;
+	--space-l: 2rem;
+	--space-xl: 3rem;
+
+	--measure: 65ch;
+	--sidebar-width: 14rem;
+	--shell-max: 74rem;
+	--radius: 3px;
+	--border-thin: 1px;
+}
+
+/* global base */
+body {
+	margin: 0;
+	font-family: var(--font-serif);
+	font-size: var(--step-0);
+	line-height: 1.6;
+	color: var(--color-ink);
+	background: var(--color-bg);
+}
+
+a {
+	color: var(--color-indigo);
+	text-decoration-color: var(--color-hairline);
+	text-underline-offset: 0.2em;
+	transition:
+		color 150ms ease-out,
+		text-decoration-color 150ms ease-out;
+}
+
+a:hover {
+	color: var(--color-rust);
+	text-decoration-color: currentColor;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	a {
+		transition: none;
+	}
+}
+
+/* utility */
+.flow > * + * {
+	margin-block-start: var(--flow-space, var(--space-m));
+}
+
+.cluster {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--space-s);
+	align-items: baseline;
+	justify-content: flex-start;
+}
+
+/* block: site header */
+.site-header {
+	position: relative;
+	padding: var(--space-m) var(--space-m) var(--space-s);
+	border-block-end: var(--border-thin) solid var(--color-hairline);
+	justify-content: space-between;
+}
+
+.site-header::before {
+	content: '';
+	position: absolute;
+	inset-inline: 0;
+	inset-block-start: 0;
+	block-size: 5px;
+	background: repeating-linear-gradient(
+		90deg,
+		var(--color-indigo) 0 64px,
+		var(--color-rust) 64px 70px,
+		var(--color-indigo) 70px 78px,
+		var(--color-rust) 78px 84px,
+		var(--color-indigo) 84px 148px,
+		var(--color-muted) 148px 152px
+	);
+}
+
+.wordmark {
+	font-size: var(--step-2);
+	font-weight: 700;
+	letter-spacing: 0.01em;
+	color: var(--color-indigo);
+	text-decoration: none;
+}
+
+.wordmark .dot {
+	color: var(--color-muted);
+	font-weight: 400;
+}
+
+.wordmark:hover {
+	color: var(--color-indigo);
+}
+
+.site-header .gloss {
+	margin: 0;
+	font-style: italic;
+	color: var(--color-muted);
+}
+
+/* composition: docs shell — narrow-first block flow, sidebar+content grid when wide */
+.docs-shell {
+	max-inline-size: var(--shell-max);
+	margin-inline: auto;
+	padding-inline: var(--space-m);
+	padding-block-end: var(--space-xl);
+}
+
+@media (min-width: 48rem) {
+	.docs-shell {
+		display: grid;
+		grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+		gap: var(--space-xl);
+		align-items: start;
+	}
+}
+
+/* block: docs nav — disclosure on narrow, pinned sidebar when wide */
+.doc-nav {
+	margin-block: var(--space-s) var(--space-m);
+	border-block-end: var(--border-thin) solid var(--color-hairline);
+	font-size: calc(var(--step-0) * 0.95);
+}
+
+.doc-nav > summary {
+	display: flex;
+	align-items: center;
+	gap: var(--space-2xs);
+	padding-block: var(--space-2xs);
+	list-style: none;
+	cursor: pointer;
+	font-style: italic;
+	color: var(--color-muted);
+}
+
+.doc-nav > summary::-webkit-details-marker {
+	display: none;
+}
+
+.doc-nav > summary::before {
+	content: '';
+	inline-size: 0.5em;
+	block-size: 0.5em;
+	border-inline-end: 2px solid currentColor;
+	border-block-end: 2px solid currentColor;
+	transform: rotate(45deg);
+	transition: transform 150ms ease-out;
+}
+
+.doc-nav[open] > summary::before {
+	transform: rotate(-135deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.doc-nav > summary::before {
+		transition: none;
+	}
+}
+
+.nav-body {
+	max-block-size: 60vh;
+	overflow-y: auto;
+	padding-block-end: var(--space-2xs);
+}
+
+.nav-body ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.nav-body li + li {
+	border-block-start: var(--border-thin) solid var(--color-hairline);
+}
+
+.nav-body a {
+	display: block;
+	padding: var(--space-2xs) var(--space-3xs);
+	text-decoration: none;
+	color: var(--color-ink);
+}
+
+.nav-body a:hover {
+	color: var(--color-rust);
+}
+
+.nav-body a[aria-current='page'] {
+	color: var(--color-rust);
+	font-weight: 700;
+}
+
+.nav-body a[aria-current='page']::before {
+	content: '· ';
+}
+
+@media (min-width: 48rem) {
+	.doc-nav {
+		position: sticky;
+		inset-block-start: var(--space-l);
+		align-self: start;
+		max-block-size: calc(100vh - var(--space-l) * 2);
+		overflow-y: auto;
+		margin-block: 0;
+		border-block-end: none;
+	}
+
+	.doc-nav > summary {
+		display: none;
+	}
+
+	.doc-nav::details-content {
+		content-visibility: visible;
+	}
+
+	.nav-body {
+		max-block-size: none;
+		overflow: visible;
+	}
+}
+
+/* block: prose (mdsvex output), centered reading measure */
+.content {
+	min-inline-size: 0;
+}
+
+.prose {
+	max-inline-size: var(--measure);
+	margin-inline: auto;
+	padding-block-start: var(--space-l);
+	counter-reset: sense;
+}
+
+.prose h1 {
+	margin: 0;
+	font-size: var(--step-3);
+	line-height: 1.15;
+	letter-spacing: 0.01em;
+	color: var(--color-indigo);
+	text-wrap: balance;
+}
+
+.prose h2 {
+	--flow-space: var(--space-xl);
+	font-size: var(--step-2);
+	line-height: 1.2;
+	padding-block-start: var(--space-m);
+	border-block-start: var(--border-thin) solid var(--color-hairline);
+	text-wrap: balance;
+}
+
+.prose h2::before {
+	counter-increment: sense;
+	content: counter(sense) '.';
+	margin-inline-end: var(--space-2xs);
+	color: var(--color-rust);
+}
+
+.prose h3 {
+	--flow-space: var(--space-l);
+	font-size: var(--step-1);
+	line-height: 1.25;
+	text-wrap: balance;
+}
+
+.prose p,
+.prose li {
+	text-wrap: pretty;
+}
+
+.prose li + li {
+	margin-block-start: var(--space-2xs);
+}
+
+.prose li::marker {
+	color: var(--color-rust);
+}
+
+.prose em {
+	color: var(--color-muted);
+}
+
+.prose code {
+	font-family: var(--font-mono);
+	font-size: 0.86em;
+	background: var(--color-chip);
+	border: var(--border-thin) solid var(--color-hairline);
+	border-radius: var(--radius);
+	padding: 0.08em 0.3em;
+}
+
+.prose pre {
+	position: relative;
+	background: var(--color-panel);
+	color: var(--color-panel-ink);
+	padding: var(--space-m);
+	border-radius: var(--radius);
+	line-height: 1.55;
+}
+
+.prose pre code {
+	display: block;
+	overflow-x: auto;
+	background: none;
+	border: none;
+	padding: 0;
+	font-size: 0.82em;
+}
+
+/* block: copy button (injected onto each code block) */
+.copy-button {
+	position: absolute;
+	inset-block-start: var(--space-2xs);
+	inset-inline-end: var(--space-2xs);
+	font-family: var(--font-mono);
+	font-size: 0.72rem;
+	letter-spacing: 0.02em;
+	color: var(--color-panel-ink);
+	background: oklch(31% 0.03 275);
+	border: var(--border-thin) solid oklch(44% 0.03 275);
+	border-radius: var(--radius);
+	padding: 0.25em 0.6em;
+	cursor: pointer;
+	opacity: 0.55;
+	transition:
+		opacity 150ms ease-out,
+		background 150ms ease-out,
+		color 150ms ease-out;
+}
+
+.prose pre:hover .copy-button,
+.copy-button:focus-visible {
+	opacity: 1;
+}
+
+.copy-button:hover {
+	background: oklch(37% 0.04 275);
+}
+
+.copy-button[data-copied] {
+	opacity: 1;
+	color: oklch(78% 0.11 40);
+	border-color: currentColor;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.copy-button {
+		transition: none;
+	}
+}
+
+/* prism tokens on the dark panel */
+.prose pre .token.comment {
+	color: oklch(64% 0.02 275);
+	font-style: italic;
+}
+
+.prose pre .token.keyword,
+.prose pre .token.boolean,
+.prose pre .token.number,
+.prose pre .token.tag {
+	color: oklch(79% 0.09 35);
+}
+
+.prose pre .token.string,
+.prose pre .token.attr-value {
+	color: oklch(81% 0.07 275);
+}
+
+.prose pre .token.class-name,
+.prose pre .token.function,
+.prose pre .token.attr-name,
+.prose pre .token.builtin {
+	color: oklch(92% 0.02 275);
+}
+
+.prose pre .token.punctuation,
+.prose pre .token.operator {
+	color: oklch(72% 0.015 275);
+}
