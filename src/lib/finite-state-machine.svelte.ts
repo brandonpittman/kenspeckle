@@ -109,19 +109,31 @@ export class FiniteStateMachine<
 		return this.#current;
 	};
 
-	#timeouts: { [K in keyof EventsT]?: ReturnType<typeof setTimeout> } = {};
+	#timeouts: {
+		[K in keyof EventsT]?: {
+			id: ReturnType<typeof setTimeout>;
+			resolvers: ((state: StatesT) => void)[];
+		};
+	} = {};
 
 	debounce = <K extends keyof EventsT>(
 		event: K,
 		wait: number = 500,
 		...args: EventsT[K]
 	): Promise<StatesT> => {
-		clearTimeout(this.#timeouts[event]);
+		const pending = this.#timeouts[event];
+		if (pending) clearTimeout(pending.id);
+		const resolvers = pending?.resolvers ?? [];
 		return new Promise((resolve) => {
-			this.#timeouts[event] = setTimeout(() => {
-				delete this.#timeouts[event];
-				resolve(this.send(event, ...args));
-			}, wait);
+			resolvers.push(resolve);
+			this.#timeouts[event] = {
+				id: setTimeout(() => {
+					delete this.#timeouts[event];
+					const state = this.send(event, ...args);
+					for (const r of resolvers) r(state);
+				}, wait),
+				resolvers
+			};
 		});
 	};
 

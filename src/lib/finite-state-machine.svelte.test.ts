@@ -362,6 +362,15 @@ describe('debounce', () => {
 			vi.useRealTimers();
 		}
 	});
+
+	it('superseded calls resolve with the final state when the last timer fires', async () => {
+		const { f, search } = create();
+		const first = f.debounce('search', 30, 'a');
+		const second = f.debounce('search', 30, 'ab');
+		await expect(first).resolves.toBe('searching');
+		await expect(second).resolves.toBe('searching');
+		expect(search).toHaveBeenCalledTimes(1);
+	});
 });
 
 describe('type-level', () => {
