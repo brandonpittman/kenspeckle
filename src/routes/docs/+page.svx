@@ -1,0 +1,7 @@
+# kenspeckle docs
+
+_kenspeckle_ (Scots): easily recognized, familiar at sight. Svelte 5 utilities under one naming convention — no `use` prefix, no forced classes, attachments as a first-class layer.
+
+## Utilities
+
+- [FiniteStateMachine](/docs/finite-state-machine) — fully typed FSM with reactive context

@@ -1,0 +1,187 @@
+# FiniteStateMachine
+
+A strongly-typed finite state machine with reactive state and context. One of exactly two classes in kenspeckle — it passes the sentence test: "I want a _new finite state machine_."
+
+```ts
+import { FiniteStateMachine } from 'kenspeckle';
+```
+
+## Typed states and events
+
+States are a string union. Events are a **payload map** — each event declares its argument tuple, and everything downstream is checked:
+
+```ts
+type States = 'idle' | 'searching' | 'done';
+
+type Events = {
+	search: [query: string];
+	cancel: [];
+};
+
+const machine = new FiniteStateMachine<States, Events>('idle', {
+	idle: { search: 'searching' },
+	searching: { cancel: 'idle', search: 'searching' },
+	done: {}
+});
+
+machine.send('search', 'red');  // ok
+machine.send('search');         // compile error: missing payload
+machine.send('serach', 'red');  // compile error: unknown event
+```
+
+`machine.current` is `$state`-backed — read it in templates and deriveds and it updates reactively. `_enter` and `_exit` are reserved names (lifecycle slots); don't use them as event names.
+
+## Sending and transitions
+
+A handler is either a **string target** or a **function**. Functions receive a meta object and decide the transition by what they return:
+
+```ts
+searching: {
+	// string target: unconditional transition
+	cancel: 'idle',
+
+	// function: return a state to transition, undefined to stay
+	result: ({ from, event, args, context }) =>
+		args[0].length > 0 ? 'done' : undefined
+}
+```
+
+- Returning a state **always transitions** — returning the current state re-enters it, firing `_exit` and `_enter` again. (Replay flows work; there is no silent self-transition no-op.)
+- Returning `undefined` vetoes: the machine stays put and no lifecycle fires. Guards aren't a separate concept — a handler that returns `undefined` is the guard.
+- `send` returns the resulting state.
+
+Meta fields are narrowed per state block: inside `idle`'s handlers, `from` is the literal type `'idle'`; for the `search` handler, `args` is `[query: string]`.
+
+### The `'*'` fallback
+
+Events (and lifecycle functions) not found on the current state fall back to the `'*'` pseudo-state:
+
+```ts
+'*': {
+	reset: 'idle'   // handled from any state that doesn't define its own
+}
+```
+
+A state's own handler always wins over `'*'`.
+
+## Lifecycle
+
+Each state (and `'*'`) may declare `_enter` and `_exit`. On a transition, the old state's `_exit` fires, then `current` changes, then the new state's `_enter` fires:
+
+```ts
+searching: {
+	_enter: ({ from, to, event, args, context }) => {
+		// to is narrowed to 'searching' here
+	},
+	_exit: ({ from, to, event, args, context }) => {
+		// from is narrowed to 'searching' here
+	}
+}
+```
+
+Construction fires a synthetic `_enter` for the initial state with `{ from: null, event: null, args: [] }`.
+
+One shared `_enter` on `'*'` observes every state that doesn't define its own — no need to copy it into each state:
+
+```ts
+'*': {
+	_enter: ({ to }) => {
+		trackStep(to);
+	}
+}
+```
+
+Narrowing the meta's `event` narrows its `args` (they're a discriminated union).
+
+**Re-entry hazard.** Because returned states always transition, a `'*'` catch-all like `'*': { complete: 'complete' }` means a _second_ `send('complete')` re-enters `complete` and re-runs its `_enter` side effects. Declare the event on the target state as a no-op to ignore it instead:
+
+```ts
+complete: {
+	reset: 'idle',
+	complete: () => {}   // declared ignore — no re-entry, no dev warning
+}
+```
+
+Sends from inside lifecycle functions run synchronously (no queue). A send from `_enter` runs after the state is set, and the outer `send` returns the final state. A transition completed inside `_exit` supersedes the outer one — the outer transition aborts.
+
+## Context
+
+The third generic adds typed, deeply reactive extended state. When you declare it, the constructor requires it — and when you don't, the option can't be passed:
+
+```ts
+type Ctx = { attempts: number; results: string[] };
+
+const machine = new FiniteStateMachine<States, Events, Ctx>('idle', states, {
+	context: { attempts: 0, results: [] }
+});
+
+machine.context.attempts;      // reactive read
+machine.context = { ... };     // whole-value reassignment, stays reactive
+```
+
+Handlers and lifecycle functions receive the live context in their meta and mutate it directly:
+
+```ts
+searching: {
+	result: ({ context, args: [query] }) => {
+		context.attempts++;
+		context.results.push(query);   // deep mutation is reactive
+		return context.attempts > 3 ? 'done' : undefined;
+	}
+}
+```
+
+Keep domain verbs out of the machine — wrap it in an app-facing class or factory when consumers need an API richer than `send`.
+
+## Debounce
+
+`debounce` schedules a send, keyed **per event**: re-debouncing the same event resets its timer; different events don't interfere.
+
+```ts
+machine.debounce('search', 300, query);   // fires send('search', query) after 300ms of quiet
+machine.debounce('search');               // wait defaults to 500
+```
+
+Every coalesced call's promise resolves with the resulting state when the trailing send fires — superseded calls don't hang.
+
+`send` and `debounce` are pre-bound; pass them as event handlers directly.
+
+## Dev warnings
+
+In dev (via `esm-env`, stripped from production builds), sending an event with no handler in the current state or `'*'` warns:
+
+```
+kenspeckle: unhandled event 'keydown' in state 'idle'
+```
+
+If ignoring is intentional — e.g. keyboard events fired at the machine in every state — declare a no-op handler where they should be dropped and the warning stays meaningful everywhere else.
+
+## Sharing a machine via context
+
+No wrapper needed — Svelte ≥ 5.40's `createContext` covers it. The factory recipe:
+
+```ts
+// wizard-machine.svelte.ts
+import { createContext } from 'svelte';
+import { FiniteStateMachine } from 'kenspeckle';
+
+type WizardMachine = FiniteStateMachine<WizardStep, WizardEvents, WizardCtx>;
+
+const [getWizard, setWizard] = createContext<WizardMachine>();
+
+export function createWizard(initial: WizardStep = 'intro') {
+	const machine = new FiniteStateMachine<WizardStep, WizardEvents, WizardCtx>(initial, states, {
+		context: { attempts: 0, answers: [] }
+	});
+	setWizard(machine);
+	return machine;
+}
+
+export { getWizard };
+```
+
+The parent layout calls `createWizard()`; any descendant calls `getWizard()` and gets the fully-typed machine.
+
+## SSR
+
+The machine is plain reactive state — no DOM access, constructible anywhere, including on the server and outside component initialization.
