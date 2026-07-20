@@ -109,6 +109,22 @@ export class FiniteStateMachine<
 		return this.#current;
 	};
 
+	#timeouts: { [K in keyof EventsT]?: ReturnType<typeof setTimeout> } = {};
+
+	debounce = <K extends keyof EventsT>(
+		event: K,
+		wait: number = 500,
+		...args: EventsT[K]
+	): Promise<StatesT> => {
+		clearTimeout(this.#timeouts[event]);
+		return new Promise((resolve) => {
+			this.#timeouts[event] = setTimeout(() => {
+				delete this.#timeouts[event];
+				resolve(this.send(event, ...args));
+			}, wait);
+		});
+	};
+
 	#transition(to: StatesT, event: keyof EventsT, args: unknown[]) {
 		const from = this.#current;
 		this.#lifecycle('_exit', from, { from, to, event, args, context: this.#context });

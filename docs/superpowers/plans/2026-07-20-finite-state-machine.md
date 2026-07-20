@@ -748,7 +748,7 @@ describe('debounce', () => {
 		const search = vi.fn(() => 'searching' as const);
 		const f = new FiniteStateMachine<States, Events>('idle', {
 			idle: { search, pause: 'paused' },
-			searching: { search },
+			searching: { search, pause: 'paused' },
 			paused: {}
 		});
 		return { f, search };
