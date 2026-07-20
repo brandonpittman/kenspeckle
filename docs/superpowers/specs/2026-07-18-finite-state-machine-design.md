@@ -65,7 +65,8 @@ Guards are not a separate concept: a handler that returns `undefined` vetoes the
 - Lookup rule, uniform for events and lifecycle: `states[current][key] ?? states['*'][key]`. One shared `_enter` on `'*'` replaces per-state copies; a state's own `_enter` overrides (call the shared one manually to get both).
 - Handler resolves to a state → transition **always**, same state included: re-entry fires `_exit` + `_enter`. Resolves to `undefined` → stay, no lifecycle. Both behaviors expressible; runed's silent self-transition no-op is gone.
 - Construction fires synthetic `_enter` for the initial state (`from: null, event: null`).
-- Sends from inside lifecycle fns run synchronously, no queue (documented).
+- Sends from inside lifecycle fns run synchronously, no queue (documented). `_enter` sends run after the state is set; a transition completed inside `_exit` supersedes the outer one (the outer transition aborts).
+- Veto is `undefined` — and `null` from an untyped JS handler also vetoes rather than producing a `null` state.
 
 **Re-entry hazard, documented:** re-entry-always plus a `'*'` catch-all (e.g. `'*': { complete: 'complete' }`) means a repeated send re-enters and re-runs `_enter` side effects. Intentional-ignore is the fix: declare the event on the target state (`complete: { complete: () => {} }`).
 
@@ -143,7 +144,7 @@ Walked against the parked TestSession design; every mechanism maps:
 
 TDD. runed's FSM suite ported as behavioral baseline, adjusted where semantics deliberately diverge (re-entry, warnings, handler signature, debounce order). New coverage:
 
-- Context reactivity in components (vitest-browser-svelte)
+- Context reactivity in browser mode via `$derived` (vitest browser project)
 - Re-entry lifecycle; `'*'` lifecycle fallback; declared-ignore silencing
 - Debounce per-event keying
 - Dev-warn cases
@@ -153,4 +154,5 @@ TDD. runed's FSM suite ported as behavioral baseline, adjusted where semantics d
 
 ## Unresolved questions
 
-- Lifecycle `args` discriminated-union narrowing: confirm the mapped-type gymnastics hold up in TS without wrecking inference at the states-object literal; degrade to `EventsT[keyof EventsT]` union only if they don't.
+- ~~Lifecycle `args` discriminated-union narrowing~~ — resolved at implementation: narrowing holds, pinned by type-level tests; fallback not needed.
+- Backlog-grade: the `_exit` supersede guard is value-equality on `#current` — an `_exit` send whose transition chain cycles back to the origin state is invisible to it and the outer transition proceeds. A transition generation counter would be airtight. Also backlog: reserved-name docs (`_enter`/`_exit`/`'*'`), debounce dispose on discarded machines.

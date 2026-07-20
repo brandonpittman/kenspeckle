@@ -437,3 +437,58 @@ describe('type-level', () => {
 		expect(f.current).toBe('busy'); // ts-expect-error is compile-only: the start send above ran and transitioned
 	});
 });
+
+describe('sends during lifecycle', () => {
+	type States = 'a' | 'b' | 'c';
+	type Events = { go: []; jump: [] };
+
+	it('send from _enter runs after the state is set; outer send returns the final state', () => {
+		const f: FiniteStateMachine<States, Events> = new FiniteStateMachine<States, Events>('a', {
+			a: { go: 'b' },
+			b: {
+				jump: 'c',
+				_enter: () => {
+					f.send('jump');
+				}
+			},
+			c: {}
+		});
+		expect(f.send('go')).toBe('c');
+	});
+
+	it('a transition completed inside _exit supersedes the outer one', () => {
+		const enterB = vi.fn();
+		const f: FiniteStateMachine<States, Events> = new FiniteStateMachine<States, Events>('a', {
+			a: {
+				go: 'b',
+				jump: 'c',
+				_exit: ({ to }) => {
+					if (to === 'b') f.send('jump');
+				}
+			},
+			b: { _enter: enterB },
+			c: {}
+		});
+		expect(f.send('go')).toBe('c');
+		expect(enterB).not.toHaveBeenCalled();
+	});
+});
+
+describe('edge cases', () => {
+	it('preserves a null initial context', () => {
+		type S = 'x';
+		type E = { go: [] };
+		const f = new FiniteStateMachine<S, E, string | null>('x', { x: {} }, { context: null });
+		expect(f.context).toBeNull();
+	});
+
+	it('null from an untyped handler vetoes instead of transitioning to a null state', () => {
+		type S = 'x' | 'y';
+		type E = { go: [] };
+		const f = new FiniteStateMachine<S, E>('x', {
+			x: { go: (() => null) as never },
+			y: {}
+		});
+		expect(f.send('go')).toBe('x');
+	});
+});
