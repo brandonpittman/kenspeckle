@@ -1,3 +1,5 @@
+import { DEV } from 'esm-env';
+
 export type EventMap = Record<string, unknown[]>;
 
 type EventArgs<EventsT extends EventMap> = {
@@ -88,7 +90,12 @@ export class FiniteStateMachine<
 
 	send = <K extends keyof EventsT>(event: K, ...args: EventsT[K]): StatesT => {
 		const action = this.states[this.#current]?.[event] ?? this.states['*']?.[event];
-		if (action === undefined) return this.#current;
+		if (action === undefined) {
+			if (DEV) {
+				console.warn(`kenspeckle: unhandled event '${String(event)}' in state '${this.#current}'`);
+			}
+			return this.#current;
+		}
 		const target =
 			typeof action === 'function'
 				? (action as (meta: unknown) => StatesT | void)({

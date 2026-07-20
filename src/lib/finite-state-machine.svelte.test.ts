@@ -204,3 +204,34 @@ describe('re-entry', () => {
 		expect(enter).toHaveBeenCalledTimes(1);
 	});
 });
+
+describe('dev warnings', () => {
+	type States = 'idle' | 'busy';
+	type Events = { start: []; keydown: [key: string] };
+
+	it('warns once for an unhandled event', () => {
+		const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+		const f = new FiniteStateMachine<States, Events>('idle', {
+			idle: { start: 'busy' },
+			busy: {}
+		});
+		f.send('keydown', 'a');
+		expect(f.current).toBe('idle');
+		expect(warn).toHaveBeenCalledExactlyOnceWith(
+			"kenspeckle: unhandled event 'keydown' in state 'idle'"
+		);
+		warn.mockRestore();
+	});
+
+	it('declared no-op handler is a silent ignore', () => {
+		const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+		const f = new FiniteStateMachine<States, Events>('idle', {
+			idle: { start: 'busy', keydown: () => {} },
+			busy: {}
+		});
+		f.send('keydown', 'a');
+		expect(f.current).toBe('idle');
+		expect(warn).not.toHaveBeenCalled();
+		warn.mockRestore();
+	});
+});
