@@ -4,6 +4,10 @@
 - **Package Manager**: npm
 - **Add-ons**: prettier, eslint, vitest, playwright, sveltekit-adapter, mdsvex, mcp, experimental
 
+## Docs
+
+Every user-facing feature ships with a docs page under `src/routes/docs/<utility>/+page.svx`, wired into the sidebar nav (`src/routes/docs/+layout.svelte`) and the index list (`src/routes/docs/+page.svx`). Keep docs in sync with the code in the same change — API shape, option names, and examples must match what shipped. Code examples: 2-space indent, comments on their own line (never trailing/inline).
+
 ---
 
 You are able to use the Svelte MCP server, where you have access to comprehensive Svelte 5 and SvelteKit documentation. Here's how to use the available tools effectively:

@@ -9,7 +9,8 @@
 
 	const items = [
 		{ href: resolve('/docs'), label: 'Introduction' },
-		{ href: resolve('/docs/finite-state-machine'), label: 'FiniteStateMachine' }
+		{ href: resolve('/docs/finite-state-machine'), label: 'FiniteStateMachine' },
+		{ href: resolve('/docs/copy'), label: 'copy' }
 	];
 
 	const wideQuery = '(min-width: 48rem)';
