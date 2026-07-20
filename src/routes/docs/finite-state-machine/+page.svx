@@ -24,9 +24,12 @@ const machine = new FiniteStateMachine<States, Events>('idle', {
   done: {}
 });
 
-machine.send('search', 'red'); // ok
-machine.send('search'); // compile error: missing payload
-machine.send('serach', 'red'); // compile error: unknown event
+// ok
+machine.send('search', 'red');
+// compile error: missing payload
+machine.send('search');
+// compile error: unknown event
+machine.send('serach', 'red');
 ```
 
 `machine.current` is `$state`-backed — read it in templates and deriveds and it updates reactively. `_enter` and `_exit` are reserved names (lifecycle slots); don't use them as event names.
@@ -58,7 +61,8 @@ Events (and lifecycle functions) not found on the current state fall back to the
 
 ```ts
 '*': {
-  reset: 'idle' // handled from any state that doesn't define its own
+  // handled from any state that doesn't define its own
+  reset: 'idle'
 }
 ```
 
@@ -98,7 +102,8 @@ Narrowing the meta's `event` narrows its `args` (they're a discriminated union).
 ```ts
 complete: {
   reset: 'idle',
-  complete: () => {} // declared ignore — no re-entry, no dev warning
+  // declared ignore — no re-entry, no dev warning
+  complete: () => {}
 }
 ```
 
@@ -115,8 +120,10 @@ const machine = new FiniteStateMachine<States, Events, Ctx>('idle', states, {
   context: { attempts: 0, results: [] }
 });
 
-machine.context.attempts; // reactive read
-machine.context = { ... }; // whole-value reassignment, stays reactive
+// reactive read
+machine.context.attempts;
+// whole-value reassignment, stays reactive
+machine.context = { ... };
 ```
 
 Handlers and lifecycle functions receive the live context in their meta and mutate it directly:
@@ -125,7 +132,8 @@ Handlers and lifecycle functions receive the live context in their meta and muta
 searching: {
   result: ({ context, args: [query] }) => {
     context.attempts++;
-    context.results.push(query); // deep mutation is reactive
+    // deep mutation is reactive
+    context.results.push(query);
     return context.attempts > 3 ? 'done' : undefined;
   }
 }
@@ -138,8 +146,10 @@ Keep domain verbs out of the machine — wrap it in an app-facing class or facto
 `debounce` schedules a send, keyed **per event**: re-debouncing the same event resets its timer; different events don't interfere.
 
 ```ts
-machine.debounce('search', 300, query); // fires send('search', query) after 300ms of quiet
-machine.debounce('search'); // wait defaults to 500
+// fires send('search', query) after 300ms of quiet
+machine.debounce('search', 300, query);
+// wait defaults to 500
+machine.debounce('search');
 ```
 
 Every coalesced call's promise resolves with the resulting state when the trailing send fires — superseded calls don't hang.
