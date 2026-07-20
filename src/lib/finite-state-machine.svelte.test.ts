@@ -162,3 +162,45 @@ describe('wildcard fallback', () => {
 		});
 	});
 });
+
+describe('re-entry', () => {
+	type States = 'question' | 'done';
+	type Events = { replay: []; finish: [] };
+
+	it('self-transition fires _exit and _enter (from === to)', () => {
+		const enter = vi.fn();
+		const exit = vi.fn();
+		const f = new FiniteStateMachine<States, Events>('question', {
+			question: { replay: 'question', finish: 'done', _enter: enter, _exit: exit },
+			done: {}
+		});
+		enter.mockClear(); // drop initial enter
+		f.send('replay');
+		expect(f.current).toBe('question');
+		expect(exit).toHaveBeenCalledExactlyOnceWith({
+			from: 'question',
+			to: 'question',
+			event: 'replay',
+			args: [],
+			context: undefined
+		});
+		expect(enter).toHaveBeenCalledExactlyOnceWith({
+			from: 'question',
+			to: 'question',
+			event: 'replay',
+			args: [],
+			context: undefined
+		});
+	});
+
+	it('handler returning the current state also re-enters', () => {
+		const enter = vi.fn();
+		const f = new FiniteStateMachine<States, Events>('question', {
+			question: { replay: () => 'question', finish: 'done', _enter: enter },
+			done: {}
+		});
+		enter.mockClear();
+		f.send('replay');
+		expect(enter).toHaveBeenCalledTimes(1);
+	});
+});
