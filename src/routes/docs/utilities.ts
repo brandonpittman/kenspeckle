@@ -1,10 +1,9 @@
 import { resolve } from '$app/paths';
 import type { ResolvedPathname } from '$app/types';
 
-export type UtilityType = 'class' | 'value' | 'attachment';
+export type UtilityType = 'class' | 'value' | 'attachment' | 'function';
 
-// superset of UtilityType — the roadmap also tags wiring/wrapper functions
-export type TagType = UtilityType | 'function';
+export type TagType = UtilityType;
 
 export interface Utility {
 	slug: string;
@@ -21,7 +20,7 @@ export const tagLabels: Record<TagType, string> = {
 	function: 'function'
 };
 
-export const utilityTypes: UtilityType[] = ['class', 'value', 'attachment'];
+export const utilityTypes: UtilityType[] = ['class', 'value', 'attachment', 'function'];
 
 export const utilities: Utility[] = [
 	{
@@ -37,6 +36,20 @@ export const utilities: Utility[] = [
 		label: 'copy',
 		type: 'attachment',
 		blurb: 'clipboard attachment + imperative helper'
+	},
+	{
+		slug: 'view-transition',
+		href: resolve('/docs/view-transition'),
+		label: 'viewTransition',
+		type: 'function',
+		blurb: 'view transitions, with a SvelteKit navigation tier'
+	},
+	{
+		slug: 'view-transition-name',
+		href: resolve('/docs/view-transition-name'),
+		label: 'viewTransitionName',
+		type: 'attachment',
+		blurb: 'name an element for the transition it takes part in'
 	}
 ];
 
