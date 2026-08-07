@@ -71,30 +71,30 @@ context, and the alternative costs a permanent exception to the naming conventio
 
 ### Primitive options
 
-| option | default | why |
-| --- | --- | --- |
-| `deadline` | `600` | past this a crossfade reads as a hang — rendering is suspended for the whole update |
-| `onStart` | — | runs synchronously before the old snapshot is captured |
-| `onSettle` | — | runs once `finished` settles, resolved OR rejected |
-| `reducedMotion` | `() => prefersReducedMotion.current` | returns without transitioning — no animation AND no freeze |
-| `start` | lazy `document.startViewTransition` | injected for tests; keeps `bind` internal and init SSR-safe |
+| option          | default                              | why                                                                                 |
+| --------------- | ------------------------------------ | ----------------------------------------------------------------------------------- |
+| `deadline`      | `600`                                | past this a crossfade reads as a hang — rendering is suspended for the whole update |
+| `onStart`       | —                                    | runs synchronously before the old snapshot is captured                              |
+| `onSettle`      | —                                    | runs once `finished` settles, resolved OR rejected                                  |
+| `reducedMotion` | `() => prefersReducedMotion.current` | returns without transitioning — no animation AND no freeze                          |
+| `start`         | lazy `document.startViewTransition`  | injected for tests; keeps `bind` internal and init SSR-safe                         |
 
 ## The attachment
 
 ```ts
 /** Structural, not imported — any router handing over a completion promise fits. */
 type Navigation = {
-  complete: Promise<void>;
-  type?: string;
-  from?: { url: URL } | null;
-  to?: { url: URL } | null;
+	complete: Promise<void>;
+	type?: string;
+	from?: { url: URL } | null;
+	to?: { url: URL } | null;
 };
 
 type Options = {
-  /** Only claim the name for navigations this returns true for. */
-  when?: (navigation: Navigation) => boolean;
-  /** Claim it inside the update callback, for elements that mount during the transition. */
-  onArrival?: boolean;
+	/** Only claim the name for navigations this returns true for. */
+	when?: (navigation: Navigation) => boolean;
+	/** Claim it inside the update callback, for elements that mount during the transition. */
+	onArrival?: boolean;
 };
 ```
 
@@ -107,7 +107,7 @@ without it.
 
 **`onArrival`** covers the one case static CSS structurally cannot. The default moment is before the
 old snapshot, which only reaches elements already on the outgoing page. An element that mounts
-*during* the transition — the destination half of a morph — needs naming inside the update callback,
+_during_ the transition — the destination half of a morph — needs naming inside the update callback,
 after the DOM commits and before the new snapshot. That is the only window it can join.
 
 Cut during design: `name` as a function (each item's attachment closes over its own id, so the gate
@@ -147,19 +147,19 @@ const el = () => document.body.appendChild(document.createElement('div'));
 
 // drive a transition without a component to host onNavigate
 const drive = (nav = { complete: Promise.resolve(), to: { url: new URL('https://x.test/a') } }) =>
-  viewTransition({ start: fakeStart })(nav);
+	viewTransition({ start: fakeStart })(nav);
 ```
 
 Both forms run the same six assertions from a shared table, differing only in constructor:
 
-| behaviour | attachment | imperative |
-| --- | --- | --- |
-| unnamed while idle | `viewTransitionName('hero')(el)` | `viewTransitionName(el, 'hero')` |
-| named during a transition | drive, assert `'hero'` | same |
-| cleared when `finished` settles | resolve `finished`, assert `''` | same |
-| `when` false → never named | drive, assert `''` | same |
-| `onArrival` → named in the update callback, not before | assert inside the callback | same |
-| cleanup detaches | cleanup, drive again, assert `''` | same |
+| behaviour                                              | attachment                        | imperative                       |
+| ------------------------------------------------------ | --------------------------------- | -------------------------------- |
+| unnamed while idle                                     | `viewTransitionName('hero')(el)`  | `viewTransitionName(el, 'hero')` |
+| named during a transition                              | drive, assert `'hero'`            | same                             |
+| cleared when `finished` settles                        | resolve `finished`, assert `''`   | same                             |
+| `when` false → never named                             | drive, assert `''`                | same                             |
+| `onArrival` → named in the update callback, not before | assert inside the callback        | same                             |
+| cleanup detaches                                       | cleanup, drive again, assert `''` | same                             |
 
 Shipping both forms is defensible only with both tested — that is the condition on including the
 imperative form, which has no consumer in either app.
@@ -234,7 +234,7 @@ Both are mechanical once step 1 fixes the API. They are independent of each othe
 
 - **`resolve()` before `await`** breaks a mutual wait: Kit holds the navigation until the returned
   promise settles; the browser holds the snapshot until the update callback settles. Source is Geoff
-  Rich, *Unlocking view transitions in SvelteKit 1.24* (svelte.dev blog, 2023-08-31) — NOT the API
+  Rich, _Unlocking view transitions in SvelteKit 1.24_ (svelte.dev blog, 2023-08-31) — NOT the API
   reference, which mentions `startViewTransition` but ships no snippet.
 - **Clear the deadline on `updateCallbackDone`, never `finished`.** Suspension lifts with the update
   callback; left on `finished` the timer stays armed through the animation and snaps a running morph
