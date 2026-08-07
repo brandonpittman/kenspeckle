@@ -120,11 +120,15 @@ describe('viewTransition — bailing out', () => {
 			value: undefined,
 			configurable: true
 		});
-		viewTransition(update);
-		Object.defineProperty(document, 'startViewTransition', {
-			value: original,
-			configurable: true
-		});
+		// finally: a throw here would otherwise leave the global stubbed for every later test.
+		try {
+			viewTransition(update);
+		} finally {
+			Object.defineProperty(document, 'startViewTransition', {
+				value: original,
+				configurable: true
+			});
+		}
 		expect(update).toHaveBeenCalledTimes(1);
 	});
 });
