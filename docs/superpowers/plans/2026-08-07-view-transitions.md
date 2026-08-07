@@ -1560,7 +1560,9 @@ viewTransitionName('hero', {
 
 - [ ] **Step 3: Verify the pages render**
 
-Ask the user to start the dev server — do not start one yourself. Once running, load `/docs/view-transition` and `/docs/view-transition-name` and confirm both render with a heading and its type tag, and that the sidebar shows a `function` filter chip.
+Check for a running server before starting one — `lsof -nP -iTCP:5173 -sTCP:LISTEN`. On this machine 5173 and 5174 are usually taken by other apps (cq-test-web and navigator), so kenspeckle's `npm run dev` will land on the next free port; read the port off vite's own output rather than assuming 5173.
+
+Load `/docs/view-transition` and `/docs/view-transition-name`. Confirm both render with a heading and its type tag, and that the sidebar shows a `function` filter chip.
 
 If a page returns a 500 at SSR while `npm run check` passes, it is the `.svx` fence gotcha above — find the raw `<script>` or `<style>` tag inside a ` ```svelte ` fence and rewrite that example.
 
