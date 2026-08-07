@@ -4,6 +4,12 @@
 - **Package Manager**: npm
 - **Add-ons**: prettier, eslint, vitest, playwright, sveltekit-adapter, mdsvex, mcp, experimental
 
+## Gates
+
+Run `npm run check` BEFORE `npm run build`, never after. The build writes `.svelte-kit/cloudflare/_worker.js`, which makes the next `wrangler types` emit a `Cloudflare.GlobalProps.mainModule` block — so `check` fails with "Types at worker-configuration.d.ts are out of date" and regenerating bakes a reference to a gitignored artifact into a committed file. Recover with `rm -rf .svelte-kit/cloudflare && jj restore worker-configuration.d.ts`.
+
+`npm run lint` reports 2 warnings (0 errors) in the generated `worker-configuration.d.ts` — pre-existing, unrelated to any change. `npm run test:unit` without `--run` watches and never exits.
+
 ## Docs
 
 Every user-facing feature ships with a docs page under `src/routes/docs/<utility>/+page.svx` and an entry in the registry `src/routes/docs/utilities.ts` (`slug`, `href`, `label`, `type`, `blurb`). The registry is the single source of truth — it drives the sidebar nav, the type filter, and the pastel type tags. `type` is one of `class | value | attachment | function`. Each page renders its title + tag with `<PageHeading slug="…" />` (not a markdown `#` heading). The `/docs` landing page (`src/routes/docs/+page.svx`) lists utilities by hand and does NOT read the registry — add the new entry there too, or the index silently contradicts the sidebar beside it. The roadmap lives in `src/routes/docs/roadmap.ts` — when a feature ships, move its entry from `planned` to `shipped` there in the same change. Keep docs in sync with the code in the same change — API shape, option names, and examples must match what shipped. Code examples: 2-space indent, comments on their own line (never trailing/inline). Gotcha: never put a raw `<script>`/`<style>` tag inside a ` ```svelte ` fence in a `.svx` — the mdsvex→Kit preprocess pipeline mishandles it and the page 500s at SSR (compile/`svelte-check` pass, so it only shows at runtime). Show script logic in prose or a ` ```ts ` fence instead; template-only markup in the ` ```svelte ` fence is fine.
