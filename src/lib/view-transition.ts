@@ -1,3 +1,4 @@
+import { settled } from 'svelte';
 import { prefersReducedMotion } from 'svelte/motion';
 
 export type StartViewTransition = (update: () => void | Promise<void>) => ViewTransition;
@@ -63,7 +64,12 @@ export function runViewTransition(
 	root().dataset.viewTransition = state;
 	onStart?.();
 
-	const transition = startTransition(update);
+	// `settled()`, not `tick()`: the browser snapshots the moment this callback resolves, and an async
+	// component's commit is batched — `tick()` only flushes synchronous updates and passes by luck.
+	const transition = startTransition(async () => {
+		await update();
+		await settled();
+	});
 
 	const timer = setTimeout(() => transition.skipTransition(), deadline);
 

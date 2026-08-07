@@ -13,6 +13,13 @@ vi.mock('svelte/motion', () => ({
 	}
 }));
 
+const settled = vi.hoisted(() => vi.fn(() => Promise.resolve()));
+
+vi.mock('svelte', async (importOriginal) => ({
+	...(await importOriginal<typeof import('svelte')>()),
+	settled
+}));
+
 const root = () => document.documentElement;
 const state = () => root().dataset.viewTransition;
 
@@ -51,6 +58,17 @@ describe('viewTransition — the transition', () => {
 	it('returns the transition object', () => {
 		const { start } = fakeStart();
 		expect(viewTransition(() => {}, { start })).toBeDefined();
+	});
+
+	it('flushes pending svelte updates before the snapshot is taken', async () => {
+		const { start } = fakeStart();
+		const order: string[] = [];
+		settled.mockImplementation(() => {
+			order.push('settled');
+			return Promise.resolve();
+		});
+		viewTransition(() => order.push('update'), { start });
+		await vi.waitFor(() => expect(order).toEqual(['update', 'settled']));
 	});
 
 	it('accepts a concise arrow that returns a value', () => {
