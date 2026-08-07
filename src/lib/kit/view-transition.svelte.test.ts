@@ -12,6 +12,8 @@ const nav = (overrides: Partial<Navigation> = {}): Navigation => ({
 
 afterEach(() => {
 	retreat(() => false);
+	// The registry is module scope, and a test whose `finished` never settles leaves a phase in flight.
+	endTransition();
 });
 
 describe('retreat', () => {
@@ -118,8 +120,6 @@ describe('navigationTransition — the ordering guarantee', () => {
 
 describe('navigationTransition — naming integration', () => {
 	afterEach(() => {
-		// The registry is module scope, and a test whose `finished` never settles leaves a phase in flight.
-		endTransition();
 		delete root().dataset.viewTransition;
 		document.body.replaceChildren();
 	});
