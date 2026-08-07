@@ -22,7 +22,19 @@ export const roadmap: RoadmapGroup[] = [
 		note: 'Available now.',
 		items: [
 			{ name: 'FiniteStateMachine', type: 'class', blurb: 'typed FSM with reactive context' },
-			{ name: 'copy', type: 'attachment', blurb: 'clipboard attachment + imperative helper' }
+			{ name: 'copy', type: 'attachment', blurb: 'clipboard attachment + imperative helper' },
+			{
+				name: 'viewTransition',
+				type: 'function',
+				blurb: 'view transitions, with a SvelteKit navigation tier'
+			},
+			{
+				name: 'viewTransitionName',
+				type: 'attachment',
+				blurb: 'name an element for the transition it takes part in'
+			},
+			{ name: 'retreat', type: 'function', blurb: 'which navigations animate in reverse' },
+			{ name: 'samePath', type: 'function', blurb: 'trailing-slash-tolerant path comparison' }
 		]
 	},
 	{
