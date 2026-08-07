@@ -13,3 +13,8 @@ See the [roadmap](/docs/roadmap) for what's shipped and what's coming.
 ### Attachments
 
 - [copy](/docs/copy) — clipboard attachment + imperative helper
+- [viewTransitionName](/docs/view-transition-name) — name an element for the transition it takes part in
+
+### Functions
+
+- [viewTransition](/docs/view-transition) — view transitions, with a SvelteKit navigation tier
