@@ -10,3 +10,5 @@ export type {
 	StateHandler,
 	Transition
 } from './finite-state-machine.svelte.js';
+export { viewTransition } from './view-transition.js';
+export type { StartViewTransition, ViewTransitionOptions } from './view-transition.js';
