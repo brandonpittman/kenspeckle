@@ -2,6 +2,10 @@ import { prefersReducedMotion } from 'svelte/motion';
 
 export type StartViewTransition = (update: () => void | Promise<void>) => ViewTransition;
 
+/** A union of signatures, not `() => void | Promise<void>`: TS's void-return relaxation applies per
+ *  member, so only this shape accepts a concise arrow like `() => (count += 1)`. */
+export type ViewTransitionUpdate = (() => void) | (() => Promise<void>);
+
 export interface ViewTransitionOptions {
 	/** Reverse direction — writes `step-retreat` instead of `step-forward`. */
 	retreat?: boolean;
@@ -23,7 +27,7 @@ const ignore = () => {};
 const root = () => document.documentElement;
 
 export function viewTransition(
-	update: () => void | Promise<void>,
+	update: ViewTransitionUpdate,
 	options: ViewTransitionOptions = {}
 ): ViewTransition | undefined {
 	return runViewTransition(update, {
@@ -34,7 +38,7 @@ export function viewTransition(
 
 /** @internal */
 export function runViewTransition(
-	update: () => void | Promise<void>,
+	update: ViewTransitionUpdate,
 	{
 		deadline = 600,
 		onStart,

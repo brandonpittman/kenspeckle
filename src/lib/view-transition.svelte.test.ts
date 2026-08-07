@@ -52,6 +52,14 @@ describe('viewTransition — the transition', () => {
 		const { start } = fakeStart();
 		expect(viewTransition(() => {}, { start })).toBeDefined();
 	});
+
+	it('accepts a concise arrow that returns a value', () => {
+		const { start } = fakeStart();
+		let count = 0;
+		// Compile-time guard: `() => void | Promise<void>` rejects this, a union of signatures accepts it.
+		viewTransition(() => (count += 1), { start });
+		expect(count).toBe(1);
+	});
 });
 
 describe('viewTransition — the attribute', () => {
