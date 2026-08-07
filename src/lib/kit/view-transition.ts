@@ -2,7 +2,8 @@ import { onNavigate } from '$app/navigation';
 import {
 	runViewTransition,
 	viewTransition as directTransition,
-	type ViewTransitionOptions
+	type ViewTransitionOptions,
+	type ViewTransitionUpdate
 } from '../view-transition.js';
 import { beginPhase, endTransition } from './view-transition-name.js';
 import type { Navigation } from './types.js';
@@ -66,11 +67,11 @@ export function navigationTransition({
 
 export function viewTransition(options?: NavigationTransitionOptions): void;
 export function viewTransition(
-	update: () => void | Promise<void>,
+	update: ViewTransitionUpdate,
 	options?: ViewTransitionOptions
 ): ViewTransition | undefined;
 export function viewTransition(
-	first?: NavigationTransitionOptions | (() => void | Promise<void>),
+	first?: NavigationTransitionOptions | ViewTransitionUpdate,
 	second?: ViewTransitionOptions
 ): ViewTransition | undefined | void {
 	if (typeof first === 'function') return directTransition(first, second);
