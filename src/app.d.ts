@@ -14,6 +14,14 @@ declare global {
 		// interface PageData {}
 		// interface PageState {}
 	}
+
+	// Probes written by the view-transition demo layout, read by its e2e.
+	interface Window {
+		__vtStart?: string;
+		__vtAttr?: string;
+		__vtSettle?: string;
+		__vtSettleAttr?: string;
+	}
 }
 
 export {};
