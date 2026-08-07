@@ -33,8 +33,7 @@ export const roadmap: RoadmapGroup[] = [
 				type: 'attachment',
 				blurb: 'name an element for the transition it takes part in'
 			},
-			{ name: 'retreat', type: 'function', blurb: 'which navigations animate in reverse' },
-			{ name: 'samePath', type: 'function', blurb: 'trailing-slash-tolerant path comparison' }
+			{ name: 'retreat', type: 'function', blurb: 'which navigations animate in reverse' }
 		]
 	},
 	{

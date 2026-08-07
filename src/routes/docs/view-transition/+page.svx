@@ -13,7 +13,7 @@ import { viewTransition } from 'kenspeckle';
 SvelteKit apps import from the `/kit` entry point instead, which adds navigation:
 
 ```ts
-import { viewTransition, retreat, samePath } from 'kenspeckle/kit';
+import { viewTransition, retreat, viewTransitionName } from 'kenspeckle/kit';
 ```
 
 ## Around a DOM update
@@ -56,19 +56,23 @@ Every client-side navigation now runs inside a transition. Nothing else is requi
 `retreat` registers a predicate that decides which navigations animate in reverse. It is consulted per navigation, at transition time:
 
 ```ts
-import { retreat, samePath } from 'kenspeckle/kit';
+import { retreat } from 'kenspeckle/kit';
 
-retreat((navigation) => samePath(navigation.to, previousStep));
+retreat((navigation) => navigation.to?.url.pathname === previousStep);
 ```
 
 A `popstate` — the browser back button — is always a retreat, whatever the predicate returns.
 
 Register a predicate, never set a flag at click time. SvelteKit skips `beforeNavigate` for a navigation begun while another is still in flight, so a flag set by one click can be left behind and reverse a later, unrelated navigation. There is no boolean that closes this.
 
-`samePath` compares a navigation target against a configured path, tolerating a trailing-slash difference. Configured paths often keep the slash; Kit strips it from navigation targets, so a bare `===` matches nothing:
+One trap when the path you compare against is configured rather than observed: Kit strips the trailing slash from `navigation.to`, so `'/profile/gender/'` never equals it and the predicate matches nothing. Normalize both sides — Kit exports `normalizeUrl` for exactly this:
 
 ```ts
-samePath(navigation.to, '/profile/gender/');
+import { normalizeUrl } from '@sveltejs/kit';
+
+const path = (value: string) => normalizeUrl(value).url.pathname;
+
+retreat((navigation) => path(navigation.to?.url.pathname ?? '') === path(previousStep));
 ```
 
 ## The attribute

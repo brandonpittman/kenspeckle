@@ -34,8 +34,8 @@ root attribute, the naming attachment.
 
 `$app/navigation` is a Kit virtual module resolved by the consumer's Vite plugin — `svelte-package`
 leaves it in `dist`, which is how every Kit library ships (verified against `sveltekit-view-transition`'s
-published dist, which opens with `import { onNavigate } from '$app/navigation'`). The only genuine
-npm import is `normalizeUrl` in `samePath`.
+published dist, which opens with `import { onNavigate } from '$app/navigation'`). It is the only
+import in the tier, so `@sveltejs/kit` never has to resolve at runtime.
 
 ```json
 "exports": {
@@ -58,7 +58,6 @@ viewTransition(update, options?)              // delegates to the primitive
 viewTransitionName(name, options?)            // → attachment
 viewTransitionName(element, name, options?)   // → imperative, returns cleanup
 retreat(predicate)
-samePath(a, b)
 ```
 
 `/kit`'s `viewTransition` is a superset discriminated on `typeof first === 'function'`, so a Kit app
@@ -167,8 +166,8 @@ imperative form, which has no consumer in either app.
 The primitive and the registration get their own suites. cq's existing 31 tests port over nearly
 unchanged, since its core is already injectable via `start`.
 
-Client project (`*.svelte.test.ts`, real chromium) for anything touching the DOM or a transition;
-node project (plain `*.test.ts`) for `samePath`.
+Everything here touches the DOM or a transition, so it all runs in the client project
+(`*.svelte.test.ts`, real chromium).
 
 ## Docs
 
@@ -176,10 +175,10 @@ Per kenspeckle's CLAUDE.md, every user-facing feature ships a `.svx` page, a `ut
 entry, and a roadmap entry in the same change. Nothing transition-shaped is on the roadmap today, so
 these are new `shipped` items, not moves from `planned`.
 
-Two pages: `viewTransition` (both call shapes, `retreat`, `samePath`, and the root-snapshot section
-below), and `viewTransitionName` (both forms, `when`, `onArrival`). `retreat` and `samePath` are
-sections on the first page rather than pages of their own — they are meaningless without it — so
-they get roadmap entries but no separate registry rows.
+Two pages: `viewTransition` (both call shapes, `retreat`, and the root-snapshot section below), and
+`viewTransitionName` (both forms, `when`, `onArrival`). `retreat` is a section on the first page
+rather than a page of its own — it is meaningless without it — so it gets a roadmap entry but no
+separate registry row.
 
 **Blocked on a registry change.** `Utility.type` is `UtilityType = 'class' | 'value' | 'attachment'`;
 `'function'` exists only in `TagType`, which the roadmap uses. Its own comment concedes the gap:
@@ -258,9 +257,8 @@ Both are mechanical once step 1 fixes the API. They are independent of each othe
   `skipTransition`, `.catch(console.error)` on all three promises, and a permanent latch when
   `finished` rejects.
 
-## Unresolved
-
-- Whether `samePath` ships at all. It is correct for any app comparing configured paths against
-  navigation targets, but its only known consumer is cq, and cq's flow model should arguably
-  normalize its own pathnames — which would delete the reason it exists. Decide before 0.1.0;
-  omitting it is easier than removing it later.
+- **`samePath` does not ship, deliberately.** Dropping it leaves `$app/navigation` as the only import
+  in `/kit` — a Vite virtual module the consumer resolves — so `@sveltejs/kit` is a peer that never
+  has to resolve at runtime. Its one consumer, cq, keeps a six-line helper beside `getPrevPathname`
+  in `user-flow.ts`, which already normalizes the same way in three other places. The trailing-slash
+  trap it existed for is real and survives as prose on the `viewTransition` docs page.
