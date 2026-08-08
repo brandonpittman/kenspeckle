@@ -27,6 +27,18 @@ export interface RunOptions extends ViewTransitionOptions {
 const ignore = () => {};
 const root = () => document.documentElement;
 
+// A consumer throw must not strand the transition, so it goes to the page's error handling instead.
+const guard = (callback?: () => void) => {
+	try {
+		callback?.();
+	} catch (error) {
+		reportError(error);
+	}
+};
+
+// One transition per document: starting a second skips the first, whose `finished` then settles.
+let active: ViewTransition | undefined;
+
 export function viewTransition(
 	update: ViewTransitionUpdate,
 	options: ViewTransitionOptions = {}
@@ -62,7 +74,7 @@ export function runViewTransition(
 	}
 
 	root().dataset.viewTransition = state;
-	onStart?.();
+	guard(onStart);
 
 	// `settled()`, not `tick()`: the browser snapshots the moment this callback resolves, and an async
 	// component's commit is batched — `tick()` only flushes synchronous updates and passes by luck.
@@ -71,6 +83,9 @@ export function runViewTransition(
 		await settled();
 	});
 
+	// Synchronously, before any microtask: a superseded predecessor settles one tick later.
+	active = transition;
+
 	const timer = setTimeout(() => transition.skipTransition(), deadline);
 
 	// Disarmed on the update callback, not `finished`: armed through the animation it snaps a running morph.
@@ -78,8 +93,11 @@ export function runViewTransition(
 
 	// Swallowed so cleanup still runs when the update callback threw; a skip fulfils `finished`.
 	void transition.finished.catch(ignore).finally(() => {
+		// Superseded: the successor owns the state and the claimed names, so its cleanup is not ours to run.
+		if (active !== transition) return;
+		active = undefined;
 		delete root().dataset.viewTransition;
-		onSettle?.();
+		guard(onSettle);
 	});
 
 	// A skip rejects `ready`; unhandled, Chrome logs AbortError on the slow navigations the deadline rescues.

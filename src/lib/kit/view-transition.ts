@@ -15,19 +15,29 @@ export interface NavigationTransitionOptions extends Omit<
 	onStart?: (navigation: Navigation) => void;
 }
 
-let predicate: (navigation: Navigation) => boolean = () => false;
+const forward = () => false;
+
+let predicate: (navigation: Navigation) => boolean = forward;
 
 /**
  * A predicate, never a flag: Kit skips `beforeNavigate` for a navigation begun while another is in
  * flight, so a flag set at click time can be stranded and reverse a later navigation.
+ *
+ * Returns a disposer shaped for `$effect` cleanup.
  */
-export function retreat(next: (navigation: Navigation) => boolean) {
+export function retreat(next: (navigation: Navigation) => boolean): () => void {
 	predicate = next;
+	return () => {
+		// Identity-guarded: a stale disposer must not unregister whoever replaced it.
+		if (predicate === next) predicate = forward;
+	};
 }
 
 /** @internal */
 export function isRetreat(navigation: Navigation): boolean {
-	return navigation.type === 'popstate' || predicate(navigation);
+	// Kit sets delta only on a popstate: negative is Back, positive Forward. Absent, assume Back.
+	const back = navigation.type === 'popstate' && (navigation.delta ?? -1) < 0;
+	return back || predicate(navigation);
 }
 
 /** @internal — the handler `viewTransition()` registers, exported so it is testable without a component. */

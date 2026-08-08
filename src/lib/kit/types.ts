@@ -2,6 +2,7 @@
 export interface Navigation {
 	complete: Promise<void>;
 	type?: string;
+	delta?: number | null;
 	from?: { url: URL } | null;
 	to?: { url: URL } | null;
 }

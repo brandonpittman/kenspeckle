@@ -61,7 +61,15 @@ import { retreat } from 'kenspeckle/kit';
 retreat((navigation) => navigation.to?.url.pathname === previousStep);
 ```
 
-A `popstate` — the browser back button — is always a retreat, whatever the predicate returns.
+A backward `popstate` — the browser back button — is always a retreat, whatever the predicate returns. Forward is an ordinary forward navigation, which the predicate can still claim.
+
+It returns a disposer that unregisters the predicate, so a predicate registered by a component can live and die with it — return it straight from an `$effect` and Svelte runs it as the cleanup:
+
+```ts
+$effect(() => retreat((navigation) => navigation.to?.url.pathname === previousStep));
+```
+
+Without that, the predicate outlives the page that registered it and keeps closing over dead state for the rest of the session. The disposer is identity-guarded: it only unregisters its own predicate, so a late cleanup cannot clobber a newer registration.
 
 Register a predicate, never set a flag at click time. SvelteKit skips `beforeNavigate` for a navigation begun while another is still in flight, so a flag set by one click can be left behind and reverse a later, unrelated navigation. There is no boolean that closes this.
 
@@ -123,12 +131,14 @@ viewTransition(update, {
   deadline: 600,
   // runs synchronously before the old snapshot is captured
   onStart: () => {},
-  // runs once the transition settles, resolved or rejected
+  // runs once the transition settles, resolved or rejected — not when a later transition supersedes it
   onSettle: () => {},
   // return true to skip the transition entirely
   reducedMotion: () => prefersReducedMotion.current
 });
 ```
+
+A throw out of `onStart` or `onSettle` is handed to the page's global error handling via `reportError` and goes no further: the transition still runs, the attribute is still cleared, and a navigation still completes.
 
 The navigation form takes the same options except `retreat` — that is what the predicate is for — and its `onStart` receives the navigation:
 
