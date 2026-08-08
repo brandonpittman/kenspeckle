@@ -120,6 +120,34 @@ describe('viewTransition — the attribute', () => {
 	});
 });
 
+describe('viewTransition — supersession', () => {
+	it('leaves the successor alone when a superseded transition finishes', async () => {
+		const first = fakeStart();
+		const second = fakeStart();
+		const onSettleFirst = vi.fn();
+		const onSettleSecond = vi.fn();
+		viewTransition(() => {}, { start: first.start, onSettle: onSettleFirst });
+		viewTransition(() => {}, { start: second.start, onSettle: onSettleSecond, retreat: true });
+		first.finish();
+		await new Promise((r) => setTimeout(r));
+		expect(state()).toBe('step-retreat');
+		expect(onSettleFirst).not.toHaveBeenCalled();
+		expect(onSettleSecond).not.toHaveBeenCalled();
+	});
+
+	it('still settles the successor when its own finished settles', async () => {
+		const first = fakeStart();
+		const second = fakeStart();
+		const onSettle = vi.fn();
+		viewTransition(() => {}, { start: first.start });
+		viewTransition(() => {}, { start: second.start, onSettle });
+		first.finish();
+		second.finish();
+		await vi.waitFor(() => expect(onSettle).toHaveBeenCalledTimes(1));
+		expect(state()).toBeUndefined();
+	});
+});
+
 describe('viewTransition — bailing out', () => {
 	it('runs the update without a transition under reduced motion', () => {
 		const { start } = fakeStart();
@@ -186,6 +214,42 @@ describe('viewTransition — promise rejections', () => {
 		finish();
 		await vi.waitFor(() => expect(onSettle).toHaveBeenCalledTimes(1));
 		expect(state()).toBeUndefined();
+	});
+
+	it('reports a throwing onStart out of band and still runs the transition to completion', async () => {
+		const reported = vi.spyOn(window, 'reportError').mockImplementation(() => {});
+		const { start, finish } = fakeStart();
+		const boom = new Error('onStart');
+		expect(() =>
+			viewTransition(() => {}, {
+				start,
+				onStart: () => {
+					throw boom;
+				}
+			})
+		).not.toThrow();
+		expect(start).toHaveBeenCalledTimes(1);
+		expect(state()).toBe('step-forward');
+		finish();
+		await vi.waitFor(() => expect(state()).toBeUndefined());
+		expect(reported).toHaveBeenCalledWith(boom);
+		reported.mockRestore();
+	});
+
+	it('reports a throwing onSettle out of band and still clears the attribute', async () => {
+		const reported = vi.spyOn(window, 'reportError').mockImplementation(() => {});
+		const { start, finish } = fakeStart();
+		const boom = new Error('onSettle');
+		viewTransition(() => {}, {
+			start,
+			onSettle: () => {
+				throw boom;
+			}
+		});
+		finish();
+		await vi.waitFor(() => expect(reported).toHaveBeenCalledWith(boom));
+		expect(state()).toBeUndefined();
+		reported.mockRestore();
 	});
 
 	it('leaves no unhandled rejection when ready rejects', async () => {

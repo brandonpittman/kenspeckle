@@ -31,10 +31,38 @@ describe('retreat', () => {
 		expect(isRetreat(nav({ type: 'popstate' }))).toBe(true);
 	});
 
+	it('treats a backward popstate as a retreat', () => {
+		retreat(() => false);
+		expect(isRetreat(nav({ type: 'popstate', delta: -1 }))).toBe(true);
+	});
+
+	it('treats a forward popstate as a forward navigation', () => {
+		retreat(() => false);
+		expect(isRetreat(nav({ type: 'popstate', delta: 1 }))).toBe(false);
+	});
+
+	it('still consults the predicate on a forward popstate', () => {
+		retreat(() => true);
+		expect(isRetreat(nav({ type: 'popstate', delta: 1 }))).toBe(true);
+	});
+
 	it('replaces the predicate rather than stacking them', () => {
 		retreat(() => true);
 		retreat(() => false);
 		expect(isRetreat(nav())).toBe(false);
+	});
+
+	it('stops consulting a disposed predicate', () => {
+		const dispose = retreat(() => true);
+		dispose();
+		expect(isRetreat(nav())).toBe(false);
+	});
+
+	it('leaves a newer predicate installed when a stale disposer runs', () => {
+		const dispose = retreat(() => false);
+		retreat(() => true);
+		dispose();
+		expect(isRetreat(nav())).toBe(true);
 	});
 });
 
@@ -148,6 +176,42 @@ describe('navigationTransition — naming integration', () => {
 		commit();
 		await vi.waitFor(() => expect(node.style.viewTransitionName).toBe('hero'));
 		cleanup();
+	});
+
+	it('keeps the successor navigation names when a superseded transition finishes', async () => {
+		const node = document.createElement('div');
+		document.body.appendChild(node);
+		const cleanup = viewTransitionName(node, 'hero');
+		const first = fakeStart();
+		const second = fakeStart();
+		void navigationTransition({ start: first.start })(nav());
+		void navigationTransition({ start: second.start })(nav());
+		first.finish();
+		await new Promise((r) => setTimeout(r));
+		expect(node.style.viewTransitionName).toBe('hero');
+		expect(state()).toBe('forward');
+		cleanup();
+	});
+
+	it('resolves the navigation and releases the name when a consumer onStart throws', async () => {
+		const reported = vi.spyOn(window, 'reportError').mockImplementation(() => {});
+		const node = document.createElement('div');
+		document.body.appendChild(node);
+		const cleanup = viewTransitionName(node, 'hero');
+		const { start, finish } = fakeStart();
+		const boom = new Error('onStart');
+		await navigationTransition({
+			start,
+			onStart: () => {
+				throw boom;
+			}
+		})(nav());
+		expect(node.style.viewTransitionName).toBe('hero');
+		finish();
+		await vi.waitFor(() => expect(node.style.viewTransitionName).toBe(''));
+		expect(reported).toHaveBeenCalledWith(boom);
+		cleanup();
+		reported.mockRestore();
 	});
 
 	it('leaves claims alone when reduced motion skips the transition', async () => {
