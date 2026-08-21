@@ -55,11 +55,31 @@ npm install kenspeckle
 
 Peer dependencies: `svelte >= 5.40`, plus `@sveltejs/kit >= 2` for the `kenspeckle/kit` subpath (optional). SSR-safe — value factories return inert defaults on the server.
 
-## What's inside
+## What's shipped
+
+Five exports, two entry points. `kenspeckle` is Svelte-only; `kenspeckle/kit` adds the SvelteKit
+pieces, so `$app/navigation` never enters the main entry.
+
+| export                  | form                                   | lineage                    |
+| ----------------------- | -------------------------------------- | -------------------------- |
+| `FiniteStateMachine`    | class, with typed reactive `context`   | runed `FiniteStateMachine` |
+| `copy()` / `copyText()` | attachment + helper                    | svelte-put `copy`          |
+| `viewTransition()`      | function; navigation form under `/kit` | new                        |
+| `viewTransitionName()`  | attachment + helper, `/kit`            | new                        |
+| `retreat()`             | function, returns a disposer, `/kit`   | new                        |
+
+`FiniteStateMachine` gains a typed, `$state`-backed `context` object visible to lifecycle hooks and
+guards — the sidecar-data mechanism every real FSM grows, built in.
+
+View transitions are what the package is for so far; they get their own section below.
+
+## Planned
+
+The rest of the curation. These names are the design, not an API you can call — nothing below has
+shipped.
 
 | export                                                       | form                                       | lineage                                                  |
 | ------------------------------------------------------------ | ------------------------------------------ | -------------------------------------------------------- |
-| `FiniteStateMachine`                                         | class, with typed reactive `context`       | runed `FiniteStateMachine`                               |
 | `StateHistory`                                               | class                                      | runed `StateHistory`                                     |
 | `mounted()`                                                  | value factory                              | runed `IsMounted`                                        |
 | `idle()`                                                     | value factory                              | runed `IsIdle`                                           |
@@ -74,13 +94,9 @@ Peer dependencies: `svelte >= 5.40`, plus `@sveltejs/kit >= 2` for the `kenspeck
 | `intersected()`                                              | attachment + helper                        | runed `useIntersectionObserver` · svelte-put `intersect` |
 | `resized()`                                                  | attachment + helper                        | runed `useResizeObserver` · svelte-put `resize`          |
 | `mutated()`                                                  | attachment + helper                        | runed `useMutationObserver`                              |
-| `copy()`                                                     | attachment + helper                        | svelte-put `copy`                                        |
 | `shortcut()`                                                 | attachment + helper                        | svelte-put `shortcut`                                    |
 | `lockScroll`                                                 | attachment ≡ helper, stacked lock counting | new                                                      |
 | `dragScroll()`                                               | attachment                                 | svelte-put `dragscroll`                                  |
-| `viewTransition()`                                           | function; navigation form under `/kit`     | new                                                      |
-| `viewTransitionName()`                                       | attachment + helper                        | new                                                      |
-| `retreat()`                                                  | function, returns a disposer               | new                                                      |
 | `debounced()` / `throttled()`                                | value factory                              | runed `Debounced` / `Throttled`                          |
 | `debounce()` / `throttle()`                                  | function wrapper                           | runed `useDebounce` / `useThrottle`                      |
 | `previous()`                                                 | value factory                              | runed `Previous`                                         |
@@ -94,11 +110,9 @@ Peer dependencies: `svelte >= 5.40`, plus `@sveltejs/kit >= 2` for the `kenspeck
 | `searchParams()` + helpers                                   | value factory                              | runed `useSearchParams`                                  |
 | `watch` / `watchOnce` / `extract` / `onCleanup` / `boolAttr` | unchanged                                  | runed                                                    |
 
-Dropped, deliberately: runed's `Context` — Svelte ≥ 5.40's `createContext` returns a typed `[get, set]` pair and covers it. runed's `resource` waits in the backlog — SvelteKit remote functions cover the server-data case; it returns only if a real client-only async need shows up.
-
-`FiniteStateMachine` gains a typed, `$state`-backed `context` object visible to lifecycle hooks and guards — the sidecar-data mechanism every real FSM grows, built in.
-
-View transitions ship in two tiers. `viewTransition(update)` animates a state change within a route; the SvelteKit navigation form, plus `viewTransitionName` and `retreat`, come from the `kenspeckle/kit` subpath — separate so `$app/navigation` never enters the main entry. Both tiers fall back cleanly: with no `document.startViewTransition`, or under `prefers-reduced-motion`, the update still runs, untransitioned.
+Dropped, deliberately: runed's `Context` — Svelte ≥ 5.40's `createContext` returns a typed
+`[get, set]` pair and covers it. runed's `resource` waits in the backlog — SvelteKit remote functions
+cover the server-data case; it returns only if a real client-only async need shows up.
 
 ## View transitions
 
