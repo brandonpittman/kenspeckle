@@ -206,6 +206,18 @@ const dispose = viewTransitionName(element, 'back-button');
 `viewTransition(update)` on a same-route step names nothing. Morph a stepping element with static
 `view-transition-name` in CSS instead.
 
+## Claude Code plugin
+
+This repo doubles as a Claude Code plugin. `skills/view-transitions/` is the
+agent-facing guide to the view-transition tier — the `data-view-transition`
+contract, `viewTransitionName` claims and their phases, the duplicate-name
+abort, and the list of things the library already handles so an agent stops
+reimplementing them. Point a marketplace entry at this repo
+(`.claude-plugin/plugin.json` is at the root) and it installs as `kenspeckle`,
+invoked as `/kenspeckle:view-transitions`.
+
+The skill and the code ship in the same change, same rule as the docs pages.
+
 ## Provenance
 
 kenspeckle is a curation, not a fork. [runed](https://runed.dev) has genuinely useful utilities under three naming regimes at once — PascalCase classes, bare functions, and React-style `use` hooks, with pairs like `Debounced` / `useDebounce` coexisting. [svelte-put](https://svelte-put.vnphanquang.com) has good actions from the Svelte 4 era, before attachments existed. kenspeckle reshapes both pools under one convention and adds what neither ships: attachments as a first-class layer.
