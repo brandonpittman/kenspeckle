@@ -55,7 +55,7 @@ The same export works imperatively with a getter: `elementSize(() => node)`. Arg
 npm install kenspeckle
 ```
 
-Peer dependency: `svelte >= 5.40`. SSR-safe — value factories return inert defaults on the server.
+Peer dependencies: `svelte >= 5.40`, plus `@sveltejs/kit >= 2` for the `kenspeckle/kit` subpath (optional). SSR-safe — value factories return inert defaults on the server.
 
 ## What's inside
 
@@ -101,6 +101,98 @@ Dropped, deliberately: runed's `Context` — Svelte ≥ 5.40's `createContext` r
 `FiniteStateMachine` gains a typed, `$state`-backed `context` object visible to lifecycle hooks and guards — the sidecar-data mechanism every real FSM grows, built in.
 
 View transitions ship in two tiers. `viewTransition(update)` animates a state change within a route; the SvelteKit navigation form, plus `viewTransitionName` and `retreat`, come from the `kenspeckle/kit` subpath — separate so `$app/navigation` never enters the main entry. Both tiers fall back cleanly: with no `document.startViewTransition`, or under `prefers-reduced-motion`, the update still runs, untransitioned.
+
+## View transitions
+
+Two entry points. `kenspeckle` exports the same-route form; `kenspeckle/kit` adds the SvelteKit
+navigation form, so `$app/navigation` never enters the main entry. The `/kit` subpath expects
+`@sveltejs/kit` — an optional peer.
+
+### The contract
+
+One attribute on `<html>`, absent when idle:
+
+| `data-view-transition` | written by                                            |
+| ---------------------- | ----------------------------------------------------- |
+| `forward`              | a navigation                                          |
+| `retreat`              | a navigation the predicate claims, or a Back popstate |
+| `step-forward`         | `viewTransition(update)`                              |
+| `step-retreat`         | `viewTransition(update, { retreat: true })`           |
+
+Every animation is yours, keyed off that value. An unprefixed `::view-transition-old|new(name)` rule
+matches both kinds, so scope it when a step and a navigation must differ.
+
+```css
+html[data-view-transition='forward']::view-transition-old(root) {
+	animation: slide-out-left 300ms;
+}
+```
+
+### Navigations
+
+Register once, from the root layout:
+
+```svelte
+<script>
+	import { viewTransition } from 'kenspeckle/kit';
+
+	viewTransition();
+</script>
+```
+
+Direction is a predicate, never a flag: Kit skips `beforeNavigate` for a navigation begun while
+another is in flight, so a flag set at click time can be stranded and reverse a later navigation.
+`retreat()` returns an identity-guarded disposer, shaped for `$effect` cleanup.
+
+```svelte
+<script>
+	import { retreat } from 'kenspeckle/kit';
+
+	$effect(() => retreat((navigation) => navigation.to?.route.id === '/'));
+</script>
+```
+
+A Back popstate is a retreat without asking. A Forward popstate is not.
+
+### Steps within a route
+
+`onNavigate` never fires for a wizard advancing its own state, so drive the primitive directly:
+
+```svelte
+<script>
+	import { viewTransition } from 'kenspeckle';
+
+	let step = $state(0);
+	const go = (delta) => viewTransition(() => (step += delta), { retreat: delta < 0 });
+</script>
+```
+
+The update callback suspends rendering until it settles, which past half a second reads as a hang —
+`deadline` (600ms) skips the transition rather than let it. With no `document.startViewTransition`,
+or under `prefers-reduced-motion`, the update still runs, untransitioned, and no attribute is
+written.
+
+### Named elements
+
+`viewTransitionName` claims `view-transition-name` for the duration of a transition and releases it
+after. Two elements holding one name silently abort the whole transition, which is why claims are
+scoped rather than left in static CSS.
+
+```svelte
+<button {@attach viewTransitionName('back-button')}>Back</button>
+```
+
+`when` claims only for navigations it accepts; `onArrival` claims inside the update callback instead,
+for an element that mounts during the transition. The imperative form takes the element first and
+returns a disposer:
+
+```js
+const dispose = viewTransitionName(element, 'back-button');
+```
+
+**Claims are navigation-only.** The registration form drives the capture and arrival phases;
+`viewTransition(update)` on a same-route step names nothing. Morph a stepping element with static
+`view-transition-name` in CSS instead.
 
 ## Provenance
 
