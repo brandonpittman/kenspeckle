@@ -5,8 +5,6 @@
 
 Svelte utilities you recognize at sight. One naming convention, no `use` prefix, attachments first-class.
 
-> **Status:** pre-release. This README is the contract being built against; nothing is on npm yet.
-
 ## The sentence test
 
 Every export earns its shape by being said aloud: _"I want a new \___."_
