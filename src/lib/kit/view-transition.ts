@@ -46,8 +46,15 @@ export function navigationTransition({
 	onSettle,
 	...rest
 }: NavigationTransitionOptions = {}) {
-	return (navigation: Navigation): Promise<void> =>
-		new Promise<void>((resolve) => {
+	return (navigation: Navigation): Promise<void> => {
+		// SvelteKit 3 fires onNavigate for a shallow navigation; Kit 2 never did. The route is
+		// unchanged, so there is no arrival to cross-fade to, and holding the navigation suspends
+		// rendering — a call site that strips a query param and then calls window.print()
+		// synchronously would print a suspended page. A consumer who does want a shallow change
+		// animated has `viewTransition(update)`, which says so at the call site.
+		if (navigation.shallow) return Promise.resolve();
+
+		return new Promise<void>((resolve) => {
 			let transitioning = false;
 			runViewTransition(
 				async () => {
@@ -73,6 +80,7 @@ export function navigationTransition({
 				}
 			);
 		});
+	};
 }
 
 export function viewTransition(options?: NavigationTransitionOptions): void;

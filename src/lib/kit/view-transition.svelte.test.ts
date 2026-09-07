@@ -144,6 +144,13 @@ describe('navigationTransition — the ordering guarantee', () => {
 		expect(start).not.toHaveBeenCalled();
 		expect(state()).toBeUndefined();
 	});
+
+	it('resolves a shallow navigation without starting a transition', async () => {
+		const { start } = fakeStart();
+		await navigationTransition({ start })(nav({ shallow: true }));
+		expect(start).not.toHaveBeenCalled();
+		expect(state()).toBeUndefined();
+	});
 });
 
 describe('navigationTransition — naming integration', () => {
