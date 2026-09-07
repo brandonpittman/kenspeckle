@@ -186,7 +186,7 @@ Retune or kill the default page crossfade:
 
 **With the root group gone, "nothing animates" is often correct rather than
 broken.** Only named elements animate, and a pair that sits in the same place on
-both screens is imperceptible. Check that something is named on *both* sides
+both screens is imperceptible. Check that something is named on _both_ sides
 before debugging a missing animation.
 
 **The duplicate-name trap, twice, both silent.** A name must be unique among
@@ -257,7 +257,7 @@ ran on finish" assertion needs.
 **One flake to recognise, not chase.** `<html …> intercepts pointer events`, or
 Playwright timing out on `waiting for element to be visible, enabled and
 stable`, means a click landed while a real transition was running — "stable"
-means *not animating*. Re-run the file alone before concluding anything; if it
+means _not animating_. Re-run the file alone before concluding anything; if it
 reproduces identically on an idle box, it is your change.
 
 ## Reference files
