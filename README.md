@@ -60,13 +60,13 @@ Peer dependencies: `svelte >= 5.40`, plus `@sveltejs/kit >= 2` for the `kenspeck
 Five exports, two entry points, each documented under [`src/routes/docs/`](src/routes/docs/). `kenspeckle` is Svelte-only; `kenspeckle/kit` adds the SvelteKit
 pieces, so `$app/navigation` never enters the main entry.
 
-| export                                                                   | form                                   | lineage                    |
-| ------------------------------------------------------------------------ | -------------------------------------- | -------------------------- |
-| [`FiniteStateMachine`](src/routes/docs/finite-state-machine/+page.svx)   | class, with typed reactive `context`   | runed `FiniteStateMachine` |
-| [`copy()` / `copyText()`](src/routes/docs/copy/+page.svx)                | attachment + helper                    | svelte-put `copy`          |
-| [`viewTransition()`](src/routes/docs/view-transition/+page.svx)          | function; navigation form under `/kit` | new                        |
-| [`viewTransitionName()`](src/routes/docs/view-transition-name/+page.svx) | attachment + helper, `/kit`            | new                        |
-| [`retreat()`](src/routes/docs/view-transition/+page.svx)                 | function, returns a disposer, `/kit`   | new                        |
+| export                                                                  | form                                   | lineage                    |
+| ----------------------------------------------------------------------- | -------------------------------------- | -------------------------- |
+| [`FiniteStateMachine`](src/routes/docs/finite-state-machine/+page.md)   | class, with typed reactive `context`   | runed `FiniteStateMachine` |
+| [`copy()` / `copyText()`](src/routes/docs/copy/+page.md)                | attachment + helper                    | svelte-put `copy`          |
+| [`viewTransition()`](src/routes/docs/view-transition/+page.md)          | function; navigation form under `/kit` | new                        |
+| [`viewTransitionName()`](src/routes/docs/view-transition-name/+page.md) | attachment + helper, `/kit`            | new                        |
+| [`retreat()`](src/routes/docs/view-transition/+page.md)                 | function, returns a disposer, `/kit`   | new                        |
 
 `FiniteStateMachine` gains a typed, `$state`-backed `context` object visible to lifecycle hooks and
 guards — the sidecar-data mechanism every real FSM grows, built in.
