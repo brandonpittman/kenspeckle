@@ -10,7 +10,7 @@
 		{
 			"name": "kenspeckle",
 			"source": "./",
-			"description": "Skills for the kenspeckle Svelte utility library: view-transitions (viewTransition/retreat/viewTransitionName, the data-view-transition contract, named-element claims and duplicate-name aborts, migrating off sveltekit-view-transition)",
+			"description": "Skills for the kenspeckle Svelte utility library: finite-state-machine (FiniteStateMachine transitions, lifecycle, context, the re-entry hazard); view-transitions (viewTransition/retreat/viewTransitionName, the data-view-transition contract, named-element claims and duplicate-name aborts, migrating off sveltekit-view-transition)",
 			"version": "0.1.3",
 			"author": { "name": "Brandon Pittman" }
 		}

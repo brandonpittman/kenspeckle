@@ -57,16 +57,16 @@ Peer dependencies: `svelte >= 5.40`, plus `@sveltejs/kit >= 2` for the `kenspeck
 
 ## What's shipped
 
-Five exports, two entry points. `kenspeckle` is Svelte-only; `kenspeckle/kit` adds the SvelteKit
+Five exports, two entry points, each documented under [`src/routes/docs/`](src/routes/docs/). `kenspeckle` is Svelte-only; `kenspeckle/kit` adds the SvelteKit
 pieces, so `$app/navigation` never enters the main entry.
 
-| export                  | form                                   | lineage                    |
-| ----------------------- | -------------------------------------- | -------------------------- |
-| `FiniteStateMachine`    | class, with typed reactive `context`   | runed `FiniteStateMachine` |
-| `copy()` / `copyText()` | attachment + helper                    | svelte-put `copy`          |
-| `viewTransition()`      | function; navigation form under `/kit` | new                        |
-| `viewTransitionName()`  | attachment + helper, `/kit`            | new                        |
-| `retreat()`             | function, returns a disposer, `/kit`   | new                        |
+| export                                                                   | form                                   | lineage                    |
+| ------------------------------------------------------------------------ | -------------------------------------- | -------------------------- |
+| [`FiniteStateMachine`](src/routes/docs/finite-state-machine/+page.svx)   | class, with typed reactive `context`   | runed `FiniteStateMachine` |
+| [`copy()` / `copyText()`](src/routes/docs/copy/+page.svx)                | attachment + helper                    | svelte-put `copy`          |
+| [`viewTransition()`](src/routes/docs/view-transition/+page.svx)          | function; navigation form under `/kit` | new                        |
+| [`viewTransitionName()`](src/routes/docs/view-transition-name/+page.svx) | attachment + helper, `/kit`            | new                        |
+| [`retreat()`](src/routes/docs/view-transition/+page.svx)                 | function, returns a disposer, `/kit`   | new                        |
 
 `FiniteStateMachine` gains a typed, `$state`-backed `context` object visible to lifecycle hooks and
 guards — the sidecar-data mechanism every real FSM grows, built in.
@@ -208,13 +208,15 @@ const dispose = viewTransitionName(element, 'back-button');
 
 ## Claude Code plugin
 
-This repo doubles as a Claude Code plugin. `skills/view-transitions/` is the
-agent-facing guide to the view-transition tier — the `data-view-transition`
-contract, `viewTransitionName` claims and their phases, the duplicate-name
-abort, and the list of things the library already handles so an agent stops
-reimplementing them. Point a marketplace entry at this repo
+This repo doubles as a Claude Code plugin with two agent-facing guides.
+`skills/view-transitions/` covers the view-transition tier — the
+`data-view-transition` contract, `viewTransitionName` claims and their phases,
+the duplicate-name abort, and the list of things the library already handles so
+an agent stops reimplementing them. `skills/finite-state-machine/` covers
+`FiniteStateMachine` — the always-transitions rule, the `'*'` re-entry hazard,
+lifecycle ordering and context. Point a marketplace entry at this repo
 (`.claude-plugin/plugin.json` is at the root) and it installs as `kenspeckle`,
-invoked as `/kenspeckle:view-transitions`.
+invoked as `/kenspeckle:view-transitions` and `/kenspeckle:finite-state-machine`.
 
 The skill and the code ship in the same change, same rule as the docs pages.
 
