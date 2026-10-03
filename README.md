@@ -217,6 +217,8 @@ an agent stops reimplementing them. `skills/finite-state-machine/` covers
 lifecycle ordering and context. Point a marketplace entry at this repo
 (`.claude-plugin/plugin.json` is at the root) and it installs as `kenspeckle`,
 invoked as `/kenspeckle:view-transitions` and `/kenspeckle:finite-state-machine`.
+It bundles no MCP server; for the Svelte MCP, install the official `svelte`
+plugin from [`sveltejs/ai-tools`](https://github.com/sveltejs/ai-tools).
 
 The skill and the code ship in the same change, same rule as the docs pages.
 
