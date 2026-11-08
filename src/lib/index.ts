@@ -14,6 +14,8 @@ export type {
 	StateHandler,
 	Transition
 } from './finite-state-machine.svelte.js';
+export { scrollEdges } from './scroll-edges.js';
+export type { ScrollEdges, ScrollEdgesOptions } from './scroll-edges.js';
 export { throttle } from './throttle.svelte.js';
 export type { ThrottledFunction } from './throttle.svelte.js';
 export { viewTransition } from './view-transition.js';

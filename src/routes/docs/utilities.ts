@@ -45,6 +45,13 @@ export const utilities: Utility[] = [
 		blurb: 'clipboard attachment + imperative helper'
 	},
 	{
+		slug: 'scroll-edges',
+		href: resolve('/docs/scroll-edges'),
+		label: 'scrollEdges',
+		type: 'attachment',
+		blurb: 'which scroll edges an element has reached'
+	},
+	{
 		slug: 'view-transition',
 		href: resolve('/docs/view-transition'),
 		label: 'viewTransition',

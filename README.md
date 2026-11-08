@@ -42,7 +42,7 @@ An attachment that observes the element hands what it sees to a callback, so the
 	let atBottom = $state(false);
 </script>
 
-<div {@attach scrollEdges((edges) => (atBottom = edges.bottom))}>…</div>
+<div {@attach scrollEdges((edges) => (atBottom = edges.blockEnd))}>…</div>
 ```
 
 ## Install
@@ -55,19 +55,20 @@ Peer dependencies: `svelte >= 5.40`, plus `@sveltejs/kit >= 2` for the `kenspeck
 
 ## What's shipped
 
-Eight exports, two entry points, each documented under [`src/routes/docs/`](src/routes/docs/). `kenspeckle` is Svelte-only; `kenspeckle/kit` adds the SvelteKit
+Nine exports, two entry points, each documented under [`src/routes/docs/`](src/routes/docs/). `kenspeckle` is Svelte-only; `kenspeckle/kit` adds the SvelteKit
 pieces, so `$app/navigation` never enters the main entry.
 
-| export                                                                  | form                                   |
-| ----------------------------------------------------------------------- | -------------------------------------- |
-| [`FiniteStateMachine`](src/routes/docs/finite-state-machine/+page.md)   | class, with typed reactive `context`   |
-| [`documentVisible`](src/routes/docs/document-visible/+page.md)          | singleton, `.current`                  |
-| [`copy()` / `copyText()`](src/routes/docs/copy/+page.md)                | attachment + helper                    |
-| [`viewTransition()`](src/routes/docs/view-transition/+page.md)          | function; navigation form under `/kit` |
-| [`viewTransitionName()`](src/routes/docs/view-transition-name/+page.md) | attachment + helper, `/kit`            |
-| [`retreat()`](src/routes/docs/view-transition/+page.md)                 | function, returns a disposer, `/kit`   |
-| [`debounce()`](src/routes/docs/debounce/+page.md)                       | function wrapper                       |
-| [`throttle()`](src/routes/docs/throttle/+page.md)                       | function wrapper                       |
+| export                                                                  | form                                     |
+| ----------------------------------------------------------------------- | ---------------------------------------- |
+| [`FiniteStateMachine`](src/routes/docs/finite-state-machine/+page.md)   | class, with typed reactive `context`     |
+| [`documentVisible`](src/routes/docs/document-visible/+page.md)          | singleton, `.current`                    |
+| [`copy()` / `copyText()`](src/routes/docs/copy/+page.md)                | attachment + helper                      |
+| [`scrollEdges()`](src/routes/docs/scroll-edges/+page.md)                | attachment + helper, edges to a callback |
+| [`viewTransition()`](src/routes/docs/view-transition/+page.md)          | function; navigation form under `/kit`   |
+| [`viewTransitionName()`](src/routes/docs/view-transition-name/+page.md) | attachment + helper, `/kit`              |
+| [`retreat()`](src/routes/docs/view-transition/+page.md)                 | function, returns a disposer, `/kit`     |
+| [`debounce()`](src/routes/docs/debounce/+page.md)                       | function wrapper                         |
+| [`throttle()`](src/routes/docs/throttle/+page.md)                       | function wrapper                         |
 
 `FiniteStateMachine` has a typed, `$state`-backed `context` object visible to lifecycle hooks and
 guards — the sidecar-data mechanism every real FSM grows, built in.
@@ -88,7 +89,6 @@ shipped.
 | `CurrentPosition`     | class: `new CurrentPosition(options)`, `.current`                                                                   |
 | `pressedKeys`         | singleton, read like a set: `.has(key)`                                                                             |
 | `clickOutside()`      | attachment + helper                                                                                                 |
-| `scrollEdges()`       | attachment, edges reached to a callback                                                                             |
 | `shortcut()`          | attachment + helper                                                                                                 |
 | `lockScroll`          | attachment ≡ helper, stacked lock counting                                                                          |
 | `dragScroll()`        | attachment                                                                                                          |

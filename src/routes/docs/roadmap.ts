@@ -25,6 +25,11 @@ export const roadmap: RoadmapGroup[] = [
 			{ name: 'documentVisible', type: 'value', blurb: 'page visibility, a document singleton' },
 			{ name: 'copy', type: 'attachment', blurb: 'clipboard attachment + imperative helper' },
 			{
+				name: 'scrollEdges',
+				type: 'attachment',
+				blurb: 'which scroll edges an element has reached'
+			},
+			{
 				name: 'viewTransition',
 				type: 'function',
 				blurb: 'view transitions, with a SvelteKit navigation tier'
@@ -59,11 +64,6 @@ export const roadmap: RoadmapGroup[] = [
 			{ name: 'CurrentPosition', type: 'class', blurb: 'reactive geolocation' },
 			{ name: 'pressedKeys', type: 'value', blurb: 'currently held keys, read like a set' },
 			{ name: 'clickOutside', type: 'attachment', blurb: 'fire when a pointer lands outside' },
-			{
-				name: 'scrollEdges',
-				type: 'attachment',
-				blurb: 'which scroll edges an element has reached'
-			},
 			{ name: 'shortcut', type: 'attachment', blurb: 'keyboard shortcuts on an element' },
 			{ name: 'lockScroll', type: 'attachment', blurb: 'lock scroll, stacked releases' },
 			{ name: 'dragScroll', type: 'attachment', blurb: 'drag to scroll' }
