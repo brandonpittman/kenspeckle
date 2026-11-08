@@ -35,20 +35,36 @@ export class Scheduler<Args extends unknown[], Return> {
 	#timer: ReturnType<typeof setTimeout> | undefined;
 	/** Plain, so a call made inside an `$effect` doesn't make the effect depend on it. */
 	#scheduled: Scheduled<Args, Return> | undefined;
-	#pending = $state(false);
+	#reactive: boolean;
+	#tracked = $state(false);
+	#untracked = false;
 
+	/**
+	 * `reactive: false` keeps `pending` out of Svelte's graph, so a `$derived` or template expression
+	 * can call the scheduler: writing `$state` there throws `state_unsafe_mutation`.
+	 */
 	constructor(
 		callback: (...args: Args) => Return,
 		wait: () => number,
-		{ leading = false }: { leading?: boolean } = {}
+		{ leading = false, reactive = true }: { leading?: boolean; reactive?: boolean } = {}
 	) {
 		this.#callback = callback;
 		this.#wait = wait;
 		this.#leading = leading;
+		this.#reactive = reactive;
 	}
 
 	get pending(): boolean {
 		return this.#pending;
+	}
+
+	get #pending(): boolean {
+		return this.#reactive ? this.#tracked : this.#untracked;
+	}
+
+	set #pending(value: boolean) {
+		if (this.#reactive) this.#tracked = value;
+		else this.#untracked = value;
 	}
 
 	call(...args: Args): Promise<Awaited<Return>> {

@@ -1,3 +1,4 @@
+import { flushSync } from 'svelte';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import { FiniteStateMachine } from './finite-state-machine.svelte.js';
 
@@ -338,6 +339,72 @@ describe('debounce', () => {
 		const { f, search } = create();
 		await Promise.any([f.debounce('search', 60, 'a'), f.debounce('search', 30, 'ab')]);
 		expect(search).toHaveBeenCalledTimes(1);
+	});
+
+	it('fires on the shorter wait of a later call', () => {
+		vi.useFakeTimers();
+		try {
+			const { f } = create();
+			f.debounce('search', 60, 'a');
+			f.debounce('search', 30, 'ab');
+			vi.advanceTimersByTime(29);
+			expect(f.current).toBe('idle');
+			vi.advanceTimersByTime(1);
+			expect(f.current).toBe('searching');
+		} finally {
+			vi.useRealTimers();
+		}
+	});
+
+	it('runs an $effect that debounces once', () => {
+		vi.useFakeTimers();
+		try {
+			const { f, search } = create();
+			let runs = 0;
+			const cleanup = $effect.root(() => {
+				$effect(() => {
+					runs++;
+					f.debounce('search', 30, 'a');
+				});
+			});
+			flushSync();
+			vi.advanceTimersByTime(30);
+			flushSync();
+			expect(runs).toBe(1);
+			expect(search).toHaveBeenCalledTimes(1);
+			cleanup();
+		} finally {
+			vi.useRealTimers();
+		}
+	});
+
+	it('debounces from a $derived that reruns', () => {
+		vi.useFakeTimers();
+		try {
+			const { f, search } = create();
+			let q = $state('a');
+			let read = '';
+			const cleanup = $effect.root(() => {
+				const derived = $derived((f.debounce('search', 30, q), q));
+				$effect(() => {
+					read = derived;
+				});
+			});
+			flushSync();
+			q = 'ab';
+			flushSync();
+			expect(read).toBe('ab');
+			vi.advanceTimersByTime(30);
+			expect(search).toHaveBeenCalledExactlyOnceWith({
+				from: 'idle',
+				event: 'search',
+				args: ['ab'],
+				context: undefined
+			});
+			cleanup();
+		} finally {
+			vi.useRealTimers();
+		}
 	});
 
 	it('keys timers per event — different events do not cancel each other', async () => {
