@@ -2,7 +2,7 @@
 
 _kenspeckle_ (Scots): easily recognized, familiar at sight. Svelte 5 utilities shaped the way Svelte shapes its own APIs — singletons and classes with `current`, attachments for element behavior, no `use` prefix.
 
-See the [roadmap](/docs/roadmap) for what's shipped and what's coming.
+See the [roadmap](/docs/roadmap) for what's shipped and what's coming, and the [recipes](/docs/recipes) for what Svelte and the platform already cover.
 
 ## Utilities
 

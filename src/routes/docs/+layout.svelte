@@ -115,6 +115,12 @@
 			{/if}
 
 			<a
+				href={resolve('/docs/recipes')}
+				aria-current={page.url.pathname === resolve('/docs/recipes') ? 'page' : undefined}
+			>
+				Recipes
+			</a>
+			<a
 				href={resolve('/docs/roadmap')}
 				aria-current={page.url.pathname === resolve('/docs/roadmap') ? 'page' : undefined}
 			>
