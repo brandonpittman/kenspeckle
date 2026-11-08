@@ -45,6 +45,45 @@ Write the rule on `html`, not `body`. The browser applies the root element's `ov
 
 `scrollbar-gutter: stable` keeps the space a classic scrollbar took after `overflow: hidden` removes it, so the page doesn't shift sideways. It has been Baseline only since December 2024; older browsers lock the page but let it shift. Overlay scrollbars, the macOS and mobile default, take no space, so nothing shifts there anyway. On a page too short to scroll, with classic scrollbars, the lock adds a gutter that wasn't there, and the content under the overlay moves by one scrollbar's width. If that shows in your layout, set `scrollbar-gutter: stable` on `html` for the whole site instead, which reserves the space even when nothing scrolls.
 
+## Close something when the user clicks outside it
+
+For a menu, dropdown or popup, the `popover` attribute does it without JavaScript. It has been Baseline since April 2024:
+
+```svelte
+<button popovertarget={id}>Options</button>
+
+<div {id} popover ontoggle={(event) => (open = event.newState === 'open')}>…</div>
+```
+
+A `popover` (its `auto` state) closes when the user clicks outside it or presses Escape, and opening one closes any other open one unless it's nested inside. The button toggles it. Take `id` from `$props.id()` in the component script so two instances never share one. `ontoggle` keeps `open` in step with the element for anything else that reads it; leave it off if nothing does.
+
+A modal `<dialog>` opened with `showModal()` closes on Escape but not on a click outside. `closedby="any"` adds that, but it isn't Baseline yet. Until it is, close the dialog when a click lands on the dialog element itself. A click on the backdrop has the dialog as its target, and so does a click on the dialog's own padding, so move the padding to an inner element:
+
+```svelte
+<dialog
+  onclick={(event) => {
+    if (event.target === event.currentTarget) event.currentTarget.close();
+  }}
+>
+  <div class="content">…</div>
+</dialog>
+```
+
+For anything that isn't an overlay, listen on the window from an inline attachment. `on` comes from `svelte/events`:
+
+```svelte
+<div
+  {@attach (node) =>
+    on(window, 'click', (event) => {
+      if (!event.composedPath().includes(node)) open = false;
+    })}
+>
+  …
+</div>
+```
+
+`composedPath()` is the path the click took when it was dispatched, so it still includes the element when an earlier handler removed the clicked node, and when the element sits inside a shadow root that retargets `event.target` away from it. `node.contains(event.target)` reads outside in both cases. `on` returns the listener's removal, so the attachment cleans up after itself.
+
 ## Know when an element is on screen
 
 An inline attachment creates the observer and returns its cleanup:

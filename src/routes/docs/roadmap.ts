@@ -64,7 +64,6 @@ export const roadmap: RoadmapGroup[] = [
 			},
 			{ name: 'CurrentPosition', type: 'class', blurb: 'reactive geolocation' },
 			{ name: 'pressedKeys', type: 'value', blurb: 'currently held keys, read like a set' },
-			{ name: 'clickOutside', type: 'attachment', blurb: 'fire when a pointer lands outside' },
 			{ name: 'shortcut', type: 'attachment', blurb: 'keyboard shortcuts on an element' },
 			{ name: 'dragScroll', type: 'attachment', blurb: 'drag to scroll' }
 		]
