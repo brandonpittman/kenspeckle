@@ -55,12 +55,13 @@ Peer dependencies: `svelte >= 5.40`, plus `@sveltejs/kit >= 2` for the `kenspeck
 
 ## What's shipped
 
-Nine exports, two entry points, each documented under [`src/routes/docs/`](src/routes/docs/). `kenspeckle` is Svelte-only; `kenspeckle/kit` adds the SvelteKit
+Ten exports, two entry points, each documented under [`src/routes/docs/`](src/routes/docs/). `kenspeckle` is Svelte-only; `kenspeckle/kit` adds the SvelteKit
 pieces, so `$app/navigation` never enters the main entry.
 
 | export                                                                  | form                                   |
 | ----------------------------------------------------------------------- | -------------------------------------- |
 | [`FiniteStateMachine`](src/routes/docs/finite-state-machine/+page.md)   | class, with typed reactive `context`   |
+| [`PersistedState`](src/routes/docs/persisted-state/+page.md)            | class, `.current`                      |
 | [`documentVisible`](src/routes/docs/document-visible/+page.md)          | singleton, `.current`                  |
 | [`copy()` / `copyText()`](src/routes/docs/copy/+page.md)                | attachment                             |
 | [`scrollEdges()`](src/routes/docs/scroll-edges/+page.md)                | attachment, edges to a callback        |
@@ -80,18 +81,17 @@ View transitions are what the package is for so far; they get their own section 
 The rest of the plan. These names are the design, not an API you can call — nothing below has
 shipped.
 
-| export                | form                                                                                                                |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| `StateHistory`        | class: `new StateHistory(get, set)`, `.undo()`, `.redo()`                                                           |
-| `Idle`                | class: `new Idle(ms)`, `.current`                                                                                   |
-| `PersistedState`      | class: `new PersistedState(key, initial, { storage })`, `.current`; `storage` is `'local'` (default) or `'session'` |
-| `AsyncPersistedState` | class over IndexedDB: `await` it, or read `.current`, `.loading`, `.error`, like a remote `query`                   |
-| `CurrentPosition`     | class: `new CurrentPosition(options)`, `.current`                                                                   |
-| `pressedKeys`         | singleton, read like a set: `.has(key)`                                                                             |
-| `clickOutside()`      | attachment                                                                                                          |
-| `shortcut()`          | attachment                                                                                                          |
-| `lockScroll`          | attachment ≡ helper, stacked lock counting                                                                          |
-| `dragScroll()`        | attachment                                                                                                          |
+| export                | form                                                                                              |
+| --------------------- | ------------------------------------------------------------------------------------------------- |
+| `StateHistory`        | class: `new StateHistory(get, set)`, `.undo()`, `.redo()`                                         |
+| `Idle`                | class: `new Idle(ms)`, `.current`                                                                 |
+| `AsyncPersistedState` | class over IndexedDB: `await` it, or read `.current`, `.loading`, `.error`, like a remote `query` |
+| `CurrentPosition`     | class: `new CurrentPosition(options)`, `.current`                                                 |
+| `pressedKeys`         | singleton, read like a set: `.has(key)`                                                           |
+| `clickOutside()`      | attachment                                                                                        |
+| `shortcut()`          | attachment                                                                                        |
+| `lockScroll`          | attachment ≡ helper, stacked lock counting                                                        |
+| `dragScroll()`        | attachment                                                                                        |
 
 Dropped, deliberately, because Svelte, Kit or the platform already handles it:
 

@@ -22,6 +22,11 @@ export const roadmap: RoadmapGroup[] = [
 		note: 'Available now.',
 		items: [
 			{ name: 'FiniteStateMachine', type: 'class', blurb: 'typed FSM with reactive context' },
+			{
+				name: 'PersistedState',
+				type: 'class',
+				blurb: 'a value synced to localStorage or sessionStorage'
+			},
 			{ name: 'documentVisible', type: 'value', blurb: 'page visibility, a document singleton' },
 			{ name: 'copy', type: 'attachment', blurb: 'clipboard attachment' },
 			{
@@ -51,11 +56,6 @@ export const roadmap: RoadmapGroup[] = [
 		items: [
 			{ name: 'StateHistory', type: 'class', blurb: 'undo/redo over a getter and setter' },
 			{ name: 'Idle', type: 'class', blurb: 'has the user gone idle, after a set time' },
-			{
-				name: 'PersistedState',
-				type: 'class',
-				blurb: 'a value synced to localStorage or sessionStorage'
-			},
 			{
 				name: 'AsyncPersistedState',
 				type: 'class',

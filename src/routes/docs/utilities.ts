@@ -31,6 +31,13 @@ export const utilities: Utility[] = [
 		blurb: 'fully typed FSM with reactive context'
 	},
 	{
+		slug: 'persisted-state',
+		href: resolve('/docs/persisted-state'),
+		label: 'PersistedState',
+		type: 'class',
+		blurb: 'a value synced to localStorage or sessionStorage'
+	},
+	{
 		slug: 'document-visible',
 		href: resolve('/docs/document-visible'),
 		label: 'documentVisible',
