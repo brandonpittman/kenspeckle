@@ -1,5 +1,3 @@
-export { copy, copyText } from './copy.js';
-export type { CopyOptions, CopyText } from './copy.js';
 export { Countdown } from './countdown.svelte.js';
 export { debounce } from './debounce.svelte.js';
 export type { DebouncedFunction } from './debounce.svelte.js';

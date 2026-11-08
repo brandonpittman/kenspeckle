@@ -2,7 +2,6 @@
 	import { afterNavigate } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
-	import { copy } from '$lib/copy.js';
 	import { groupLabels, utilities, utilityTypes } from './utilities.js';
 	import './docs.css';
 
@@ -38,17 +37,15 @@
 			button.textContent = 'Copy';
 			button.setAttribute('aria-label', 'Copy code');
 			pre.appendChild(button);
-			copy({
-				text: source,
-				onCopy: () => {
-					button.textContent = 'Copied';
-					button.dataset.copied = 'true';
-					setTimeout(() => {
-						button.textContent = 'Copy';
-						delete button.dataset.copied;
-					}, 1600);
-				}
-			})(button);
+			button.addEventListener('click', async () => {
+				await navigator.clipboard.writeText(source);
+				button.textContent = 'Copied';
+				button.dataset.copied = 'true';
+				setTimeout(() => {
+					button.textContent = 'Copy';
+					delete button.dataset.copied;
+				}, 1600);
+			});
 		}
 	}
 

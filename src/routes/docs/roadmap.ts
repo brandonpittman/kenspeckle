@@ -28,7 +28,6 @@ export const roadmap: RoadmapGroup[] = [
 				blurb: 'a value synced to localStorage or sessionStorage'
 			},
 			{ name: 'Countdown', type: 'class', blurb: 'milliseconds left until a deadline' },
-			{ name: 'copy', type: 'attachment', blurb: 'clipboard attachment' },
 			{
 				name: 'scrollEdges',
 				type: 'attachment',

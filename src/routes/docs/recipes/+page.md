@@ -96,6 +96,33 @@ For anything that isn't an overlay, listen on the window:
 </div>
 ```
 
+## Copy text to the clipboard
+
+Call `navigator.clipboard.writeText` from the click:
+
+```svelte
+<button onclick={() => navigator.clipboard.writeText(url).then(() => (copied = true))}>
+  {copied ? 'Copied' : 'Copy link'}
+</button>
+```
+
+The write has to start inside the click. WebKit's words: "The request to write to the clipboard must be triggered during a user gesture." Anything you `await` before calling `writeText` can end the click first, and then Safari rejects the write. The usual sign is a button that fails on the first click and works on the second: a framework that loads event handlers lazily, or text fetched on demand, costs a wait the first time and nothing once it's cached.
+
+When the text isn't ready at the click, start the write anyway and hand the clipboard a promise of the text. `ClipboardItem` takes one, and it has been Baseline since February 2025:
+
+```svelte
+<button
+  onclick={() =>
+    navigator.clipboard.write([
+      new ClipboardItem({ 'text/plain': fetch(href).then((response) => response.text()) })
+    ])}
+>
+  Copy page source
+</button>
+```
+
+`write` is called inside the click, and the text follows when the promise resolves.
+
 ## Know when an element is on screen
 
 An inline attachment creates the observer and returns its cleanup:

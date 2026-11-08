@@ -52,13 +52,6 @@ export const utilities: Utility[] = [
 		blurb: 'milliseconds left until a deadline'
 	},
 	{
-		slug: 'copy',
-		href: resolve('/docs/copy'),
-		label: 'copy',
-		type: 'attachment',
-		blurb: 'clipboard attachment'
-	},
-	{
 		slug: 'scroll-edges',
 		href: resolve('/docs/scroll-edges'),
 		label: 'scrollEdges',
