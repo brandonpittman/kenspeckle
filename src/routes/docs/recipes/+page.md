@@ -81,3 +81,27 @@ For a value, listen for focus moving in and out. `focusout` fires before focus l
 ```
 
 When focus leaves the window or moves into an iframe, `relatedTarget` is `null`, so `inside` becomes `false`.
+
+## Keep the previous value
+
+Where you write the value, save the old one first:
+
+```ts
+previous = count;
+count = next;
+```
+
+For a value you don't write, such as a prop, an `$effect.pre` in the component script saves it before the new one renders:
+
+```ts
+let { value } = $props();
+let previous = $state();
+let last;
+
+$effect.pre(() => {
+  previous = last;
+  last = value;
+});
+```
+
+`last` is a plain variable, not state, so the effect re-runs only when `value` changes. `previous` is `undefined` until the first change.

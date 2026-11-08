@@ -48,7 +48,6 @@ export const roadmap: RoadmapGroup[] = [
 			{ name: 'Idle', type: 'class', blurb: 'has the user gone idle, after a set time' },
 			{ name: 'PersistedState', type: 'class', blurb: 'a value synced to storage' },
 			{ name: 'CurrentPosition', type: 'class', blurb: 'reactive geolocation' },
-			{ name: 'Previous', type: 'class', blurb: 'the previous value of a getter, via Previous.of' },
 			{ name: 'pressedKeys', type: 'value', blurb: 'currently held keys, read like a set' },
 			{ name: 'clickOutside', type: 'attachment', blurb: 'fire when a pointer lands outside' },
 			{

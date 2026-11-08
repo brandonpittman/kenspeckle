@@ -12,7 +12,7 @@ Every export takes the shape Svelte already uses for the same kind of thing. Ask
 1. **Does Svelte or Kit already do it?** Then nothing ships. A binding, `on()`, `onDestroy`, `<svelte:document>` or an `$effect` with a returned cleanup beats a wrapper around it.
 2. **Is it global browser state?** A singleton with `current`, like `innerWidth` in `svelte/reactivity/window`: `documentVisible.current`. It reads the live value, and on the server it is `undefined`, as Svelte's are. Where a `<svelte:document>` or `<svelte:window>` binding already exists, the singleton earns its place only if modules need to read it outside a component: a polling store that pauses in a hidden tab does, and focus logic, which lives with its element, doesn't.
 3. **Is it a value configured at construction?** A class with `current`, like `new MediaQuery(query)`: `new Idle(60_000)`, `new PersistedState('theme', 'light')`.
-4. **Is it a value that follows another over time?** A class with `.of(fn)`, like `Spring.of(() => number)`, called in an effect root such as component init: `Previous.of(() => count)`. It earns the class only if `current` holds something you couldn't produce where the value is written, the way a tween's in-between frames are. A debounced value fails this: it is a value already written, just later, so `debounce()` at the write site covers it.
+4. **Is it a value that follows another over time?** A class with `.of(fn)`, like `Spring.of(() => number)`, called in an effect root such as component init. It earns the class only if `current` holds something you couldn't produce where the value is written, the way a tween's in-between frames are. A debounced value and a previous value both fail this: each is a value already written, so `debounce()` or a saved copy at the write site covers it.
 5. **Do you drive it with methods?** A class: `new FiniteStateMachine()`, `new StateHistory()`.
 6. **Is it behavior on an element?** An attachment, named for what it does, as `copy` and `fade` are (`dragScroll`, `lockScroll`), or for the event it answers (`clickOutside`). An element value flows into your own `$state` through a callback, the way a function binding does (`bind:clientWidth={null, setWidth}`), never through a box the library owns, and it is named for that value, as a binding is (`scrollEdges`).
 7. **Otherwise**, a plain function, with no `use` prefix, which is a React Hooks rule Svelte doesn't have.
@@ -84,7 +84,6 @@ shipped.
 | `Idle`            | class: `new Idle(ms)`, `.current`                         | runed `IsIdle`                                     |
 | `PersistedState`  | class: `new PersistedState(key, initial)`, `.current`     | runed `PersistedState`                             |
 | `CurrentPosition` | class: `new CurrentPosition(options)`, `.current`         | runed `useGeolocation`                             |
-| `Previous`        | class: `Previous.of(() => x)`, `.current`                 | runed `Previous`                                   |
 | `pressedKeys`     | singleton, read like a set: `.has(key)`                   | runed `PressedKeys`                                |
 | `clickOutside()`  | attachment + helper                                       | runed `onClickOutside` · svelte-put `clickoutside` |
 | `scrollEdges()`   | attachment, edges reached to a callback                   | runed `ScrollState`                                |
@@ -103,6 +102,7 @@ Dropped, deliberately, because Svelte or Kit already does it:
 - `focusWithin`: CSS `:focus-within` for styling, and `onfocusin` / `onfocusout` with `relatedTarget` for a value.
 - `scrollState`, except its edges: `onscroll` gives an element's position, a comparison with the last value gives direction, and `<svelte:window bind:scrollY>` covers the window.
 - `activeElement`: `<svelte:document bind:activeElement />`, since focus logic lives in the component that holds the element.
+- `Previous`: save the old value where you write the new one (`previous = count; count = next`); for a prop you don't write, an `$effect.pre` does it.
 - `mounted`: `onMount` setting a `$state`.
 - `listen`: `on()` from `svelte/events`.
 - `interval`, `animationFrames`: an `$effect` that starts the timer or loop and returns its cleanup.
@@ -111,7 +111,7 @@ Dropped, deliberately, because Svelte or Kit already does it:
 - `extract`: nothing here takes a value-or-getter.
 - `boolAttr`: Svelte omits nullish attributes, so `data-x={flag || undefined}`.
 
-The [recipes](src/routes/docs/recipes/+page.md) page spells out the replacements for `autosize`, `intersected`, `mutated` and `focusWithin`.
+The [recipes](src/routes/docs/recipes/+page.md) page spells out the replacements for `autosize`, `intersected`, `mutated`, `focusWithin` and `Previous`.
 
 Waiting in the backlog: runed's `resource`, since SvelteKit remote functions cover the server-data case, and `searchParams`, since Kit's `page.url.searchParams` and `goto` cover reads and writes until a typed layer earns its place.
 
