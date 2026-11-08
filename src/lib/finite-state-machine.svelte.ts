@@ -1,5 +1,5 @@
 import { DEV } from 'esm-env';
-import { Scheduler } from './debounce.svelte.js';
+import { DEFAULT_WAIT, Scheduler } from './debounce.svelte.js';
 
 export type EventMap = Record<string, unknown[]>;
 
@@ -120,7 +120,7 @@ export class FiniteStateMachine<
 
 	debounce = <K extends keyof EventsT>(
 		event: K,
-		wait: number = 500,
+		wait: number = DEFAULT_WAIT,
 		...args: EventsT[K]
 	): Promise<StatesT> => {
 		const debounced: Debounced<EventsT[K], StatesT> = (this.#debounced[event] ??= {

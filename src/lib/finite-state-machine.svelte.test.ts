@@ -414,14 +414,15 @@ describe('debounce', () => {
 		expect(f.current).toBe('paused'); // search fired first, then pause
 	});
 
-	it('defaults wait to 500', async () => {
+	it('defaults wait to 250', async () => {
 		vi.useFakeTimers();
 		try {
 			const { f } = create();
 			const p = f.debounce('search', undefined, 'a');
-			vi.advanceTimersByTime(499);
+			vi.advanceTimersByTime(249);
 			expect(f.current).toBe('idle');
 			vi.advanceTimersByTime(1);
+			expect(f.current).toBe('searching');
 			await expect(p).resolves.toBe('searching');
 		} finally {
 			vi.useRealTimers();
