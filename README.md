@@ -55,22 +55,23 @@ Peer dependencies: `svelte >= 5.40`, plus `@sveltejs/kit >= 2` for the `kenspeck
 
 ## What's shipped
 
-Eleven exports, two entry points, each documented under [the docs site](https://kenspeckle.brandonpittman.workers.dev/docs). `kenspeckle` is Svelte-only; `kenspeckle/kit` adds the SvelteKit
+Twelve exports, two entry points, each documented under [the docs site](https://kenspeckle.brandonpittman.workers.dev/docs). `kenspeckle` is Svelte-only; `kenspeckle/kit` adds the SvelteKit
 pieces, so `$app/navigation` never enters the main entry.
 
-| export                                                                                            | form                                   |
-| ------------------------------------------------------------------------------------------------- | -------------------------------------- |
-| [`FiniteStateMachine`](https://kenspeckle.brandonpittman.workers.dev/docs/finite-state-machine)   | class, with typed reactive `context`   |
-| [`PersistedState`](https://kenspeckle.brandonpittman.workers.dev/docs/persisted-state)            | class, `.current`                      |
-| [`Countdown`](https://kenspeckle.brandonpittman.workers.dev/docs/countdown)                       | class, `.current`                      |
-| [`documentVisible`](https://kenspeckle.brandonpittman.workers.dev/docs/document-visible)          | singleton, `.current`                  |
-| [`copy()` / `copyText()`](https://kenspeckle.brandonpittman.workers.dev/docs/copy)                | attachment                             |
-| [`scrollEdges()`](https://kenspeckle.brandonpittman.workers.dev/docs/scroll-edges)                | attachment, edges to a callback        |
-| [`viewTransition()`](https://kenspeckle.brandonpittman.workers.dev/docs/view-transition)          | function; navigation form under `/kit` |
-| [`viewTransitionName()`](https://kenspeckle.brandonpittman.workers.dev/docs/view-transition-name) | attachment, `/kit`                     |
-| [`retreat()`](https://kenspeckle.brandonpittman.workers.dev/docs/view-transition)                 | function, returns a disposer, `/kit`   |
-| [`debounce()`](https://kenspeckle.brandonpittman.workers.dev/docs/debounce)                       | function wrapper                       |
-| [`throttle()`](https://kenspeckle.brandonpittman.workers.dev/docs/throttle)                       | function wrapper                       |
+| export                                                                                            | form                                 |
+| ------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| [`FiniteStateMachine`](https://kenspeckle.brandonpittman.workers.dev/docs/finite-state-machine)   | class, with typed reactive `context` |
+| [`PersistedState`](https://kenspeckle.brandonpittman.workers.dev/docs/persisted-state)            | class, `.current`                    |
+| [`Countdown`](https://kenspeckle.brandonpittman.workers.dev/docs/countdown)                       | class, `.current`                    |
+| [`documentVisible`](https://kenspeckle.brandonpittman.workers.dev/docs/document-visible)          | singleton, `.current`                |
+| [`copy()` / `copyText()`](https://kenspeckle.brandonpittman.workers.dev/docs/copy)                | attachment                           |
+| [`scrollEdges()`](https://kenspeckle.brandonpittman.workers.dev/docs/scroll-edges)                | attachment, edges to a callback      |
+| [`viewTransition()`](https://kenspeckle.brandonpittman.workers.dev/docs/view-transition)          | function                             |
+| [`enableViewTransitions()`](https://kenspeckle.brandonpittman.workers.dev/docs/view-transition)   | function, `/kit`                     |
+| [`viewTransitionName()`](https://kenspeckle.brandonpittman.workers.dev/docs/view-transition-name) | attachment, `/kit`                   |
+| [`retreat()`](https://kenspeckle.brandonpittman.workers.dev/docs/view-transition)                 | function, returns a disposer, `/kit` |
+| [`debounce()`](https://kenspeckle.brandonpittman.workers.dev/docs/debounce)                       | function wrapper                     |
+| [`throttle()`](https://kenspeckle.brandonpittman.workers.dev/docs/throttle)                       | function wrapper                     |
 
 `FiniteStateMachine` has a typed, `$state`-backed `context` object visible to lifecycle hooks and
 guards — the sidecar-data mechanism every real FSM grows, built in.
@@ -120,8 +121,8 @@ Waiting in the backlog: `resource`, since SvelteKit remote functions cover the s
 
 ## View transitions
 
-Two entry points. `kenspeckle` exports the same-route form; `kenspeckle/kit` adds the SvelteKit
-navigation form, so `$app/navigation` never enters the main entry. The `/kit` subpath expects
+Two entry points. `kenspeckle` exports `viewTransition` for a same-route step; `kenspeckle/kit` adds
+`enableViewTransitions` for navigations, so `$app/navigation` never enters the main entry. The `/kit` subpath expects
 `@sveltejs/kit` — an optional peer.
 
 ### The contract
@@ -150,9 +151,9 @@ Register once, from the root layout:
 
 ```svelte
 <script>
-	import { viewTransition } from 'kenspeckle/kit';
+	import { enableViewTransitions } from 'kenspeckle/kit';
 
-	viewTransition();
+	enableViewTransitions();
 </script>
 ```
 
@@ -206,7 +207,7 @@ element to get its disposer:
 const dispose = viewTransitionName('back-button')(element);
 ```
 
-**Claims are navigation-only.** The registration form drives the capture and arrival phases;
+**Claims are navigation-only.** `enableViewTransitions` drives the capture and arrival phases;
 `viewTransition(update)` on a same-route step names nothing. Morph a stepping element with static
 `view-transition-name` in CSS instead.
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { viewTransition } from '$lib/kit/view-transition.js';
+	import { enableViewTransitions } from '$lib/kit/view-transition.js';
 
 	let { children } = $props();
 
@@ -7,7 +7,7 @@
 		document.querySelector<HTMLElement>('.hero')?.style.viewTransitionName ?? '(gone)';
 
 	// Probes for the e2e: the only place that can observe naming mid-transition from outside.
-	viewTransition({
+	enableViewTransitions({
 		onStart: () => {
 			window.__vtStart = hero();
 			window.__vtAttr = document.documentElement.dataset.viewTransition ?? '';

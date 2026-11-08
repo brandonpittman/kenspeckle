@@ -10,10 +10,10 @@ Run a DOM update inside a CSS view transition. `viewTransition` handles the part
 import { viewTransition } from 'kenspeckle';
 ```
 
-SvelteKit apps import from the `/kit` entry point instead, which adds navigation:
+SvelteKit apps add navigation from the `/kit` entry point:
 
 ```ts
-import { viewTransition, retreat, viewTransitionName } from 'kenspeckle/kit';
+import { enableViewTransitions, retreat, viewTransitionName } from 'kenspeckle/kit';
 ```
 
 ## Around a DOM update
@@ -41,12 +41,12 @@ If the browser lacks the API, or the user prefers reduced motion, the update sti
 
 ## On navigation
 
-From `kenspeckle/kit`, call it with no update at all. It registers an `onNavigate` handler, so it belongs in a root layout's script — once, at init:
+From `kenspeckle/kit`, call `enableViewTransitions`. It registers an `onNavigate` handler, so it belongs in a root layout's script — once, at init:
 
 ```ts
-import { viewTransition } from 'kenspeckle/kit';
+import { enableViewTransitions } from 'kenspeckle/kit';
 
-viewTransition();
+enableViewTransitions();
 ```
 
 Every client-side navigation now runs inside a transition. Nothing else is required.
@@ -140,10 +140,10 @@ viewTransition(update, {
 
 A throw out of `onStart` or `onSettle` is handed to the page's global error handling via `reportError` and goes no further: the transition still runs, the attribute is still cleared, and a navigation still completes.
 
-The navigation form takes the same options except `retreat` — that is what the predicate is for — and its `onStart` receives the navigation:
+`enableViewTransitions` takes the same options except `retreat` — that is what the predicate is for — and its `onStart` receives the navigation:
 
 ```ts
-viewTransition({
+enableViewTransitions({
   onStart: (navigation) => hideCloak(navigation),
   onSettle: () => showCloak()
 });

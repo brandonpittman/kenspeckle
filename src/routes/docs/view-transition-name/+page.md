@@ -10,7 +10,7 @@ Name an element so it morphs across a navigation instead of crossfading with the
 import { viewTransitionName } from 'kenspeckle/kit';
 ```
 
-It needs `viewTransition()` registered in your root layout; the navigation is what drives it.
+It needs `enableViewTransitions()` called in your root layout; the navigation is what drives it.
 
 ## As an attachment
 
@@ -62,7 +62,7 @@ Use it on the incoming element, the plain form on the outgoing one. An element p
 
 ## Scope
 
-This is navigation-scoped: it participates in transitions started by `viewTransition()`, not in a direct `viewTransition(update)` call within a route. An element that should animate on a same-route step wants a plain CSS `view-transition-name` instead, since nothing has to arbitrate who claims it.
+This is navigation-scoped: it participates in transitions started by `enableViewTransitions()`, not in a direct `viewTransition(update)` call within a route. An element that should animate on a same-route step wants a plain CSS `view-transition-name` instead, since nothing has to arbitrate who claims it.
 
 ## Options
 

@@ -1,10 +1,5 @@
 import { onNavigate } from '$app/navigation';
-import {
-	runViewTransition,
-	viewTransition as directTransition,
-	type ViewTransitionOptions,
-	type ViewTransitionUpdate
-} from '../view-transition.js';
+import { runViewTransition, type ViewTransitionOptions } from '../view-transition.js';
 import { beginPhase, endTransition } from './view-transition-name.js';
 import type { Navigation } from './types.js';
 
@@ -40,7 +35,7 @@ export function isRetreat(navigation: Navigation): boolean {
 	return back || predicate(navigation);
 }
 
-/** @internal — the handler `viewTransition()` registers, exported so it is testable without a component. */
+/** @internal — the handler `enableViewTransitions()` registers, exported so it is testable without a component. */
 export function navigationTransition({
 	onStart,
 	onSettle,
@@ -51,7 +46,7 @@ export function navigationTransition({
 		// unchanged, so there is no arrival to cross-fade to, and holding the navigation suspends
 		// rendering — a call site that strips a query param and then calls window.print()
 		// synchronously would print a suspended page. A consumer who does want a shallow change
-		// animated has `viewTransition(update)`, which says so at the call site.
+		// animated has `viewTransition(update)` from `kenspeckle`, which says so at the call site.
 		if (navigation.shallow) return Promise.resolve();
 
 		return new Promise<void>((resolve) => {
@@ -83,15 +78,6 @@ export function navigationTransition({
 	};
 }
 
-export function viewTransition(options?: NavigationTransitionOptions): void;
-export function viewTransition(
-	update: ViewTransitionUpdate,
-	options?: ViewTransitionOptions
-): ViewTransition | undefined;
-export function viewTransition(
-	first?: NavigationTransitionOptions | ViewTransitionUpdate,
-	second?: ViewTransitionOptions
-): ViewTransition | undefined | void {
-	if (typeof first === 'function') return directTransition(first, second);
-	onNavigate(navigationTransition(first));
+export function enableViewTransitions(options?: NavigationTransitionOptions): void {
+	onNavigate(navigationTransition(options));
 }

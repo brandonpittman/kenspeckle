@@ -22,6 +22,6 @@ See the [roadmap](/docs/roadmap) for what's shipped and what's coming, and the [
 
 ## Functions
 
-- [viewTransition](/docs/view-transition) — view transitions, with a SvelteKit navigation tier
+- [viewTransition](/docs/view-transition) — a view transition around an update; `enableViewTransitions` for navigation
 - [debounce](/docs/debounce) — debounce any function, with a shared promise
 - [throttle](/docs/throttle) — throttle any function, leading and trailing

@@ -30,9 +30,9 @@ real migration.
 ```svelte
 <!-- src/routes/+layout.svelte -->
 <script lang="ts">
-	import { viewTransition } from 'kenspeckle/kit';
+	import { enableViewTransitions } from 'kenspeckle/kit';
 
-	viewTransition();
+	enableViewTransitions();
 </script>
 ```
 

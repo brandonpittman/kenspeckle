@@ -77,7 +77,7 @@ export const utilities: Utility[] = [
 		href: resolve('/docs/view-transition'),
 		label: 'viewTransition',
 		type: 'function',
-		blurb: 'view transitions, with a SvelteKit navigation tier'
+		blurb: 'a view transition around an update; enableViewTransitions for navigation'
 	},
 	{
 		slug: 'view-transition-name',

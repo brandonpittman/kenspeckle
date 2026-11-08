@@ -1,6 +1,6 @@
 ---
 name: view-transitions
-description: View transitions in Svelte and SvelteKit with kenspeckle — `viewTransition()` for a route navigation or a same-route step, `retreat()` for direction, `viewTransitionName()` for shared-element morphs. Covers registering navigations once from the root layout; direction as a predicate rather than a click-time flag, and why a Back popstate is a retreat for free; steps between two pieces of client state on one URL, which `onNavigate` never sees; the `data-view-transition` attribute contract (`forward` / `retreat` / `step-forward` / `step-retreat`) every animation keys off; named morphs through the `viewTransitionName` attachment, its `when` / `onArrival` claims, and why claims are navigation-only so a stepping element still needs static CSS; the duplicate-name abort that silently kills a whole transition; `<custom-ident>` naming rules and per-item names on lists; what the library already owns (the 600ms `skipTransition` deadline, `settled()` over `tick()`, `prefers-reduced-motion`, SSR, superseded transitions) so none of it gets reimplemented in an app; why a Playwright screenshot of a rendering-suspended page is a false green, and the `start` / `reducedMotion` injection points to unit-test against instead; and an ordered procedure for migrating a repo off the `sveltekit-view-transition` package. Trigger on animating between SvelteKit pages, sliding between steps on one route, shared-element or morph transitions, `onNavigate` + `document.startViewTransition`, `setupViewTransition`, `use:transition`, `view-transition-name`, `prefersReducedMotion` in a transition, or any mention of the `sveltekit-view-transition` package.
+description: View transitions in Svelte and SvelteKit with kenspeckle — `enableViewTransitions()` for route navigations, `viewTransition()` for a same-route step, `retreat()` for direction, `viewTransitionName()` for shared-element morphs. Covers registering navigations once from the root layout; direction as a predicate rather than a click-time flag, and why a Back popstate is a retreat for free; steps between two pieces of client state on one URL, which `onNavigate` never sees; the `data-view-transition` attribute contract (`forward` / `retreat` / `step-forward` / `step-retreat`) every animation keys off; named morphs through the `viewTransitionName` attachment, its `when` / `onArrival` claims, and why claims are navigation-only so a stepping element still needs static CSS; the duplicate-name abort that silently kills a whole transition; `<custom-ident>` naming rules and per-item names on lists; what the library already owns (the 600ms `skipTransition` deadline, `settled()` over `tick()`, `prefers-reduced-motion`, SSR, superseded transitions) so none of it gets reimplemented in an app; why a Playwright screenshot of a rendering-suspended page is a false green, and the `start` / `reducedMotion` injection points to unit-test against instead; and an ordered procedure for migrating a repo off the `sveltekit-view-transition` package. Trigger on animating between SvelteKit pages, sliding between steps on one route, shared-element or morph transitions, `onNavigate` + `document.startViewTransition`, `setupViewTransition`, `use:transition`, `view-transition-name`, `prefersReducedMotion` in a transition, or any mention of the `sveltekit-view-transition` package.
 ---
 
 # View transitions
@@ -32,11 +32,11 @@ attribute and manages one property. Every keyframe is CSS you write.
 
 ```svelte
 <script lang="ts">
-	import { viewTransition } from 'kenspeckle/kit';
+	import { enableViewTransitions } from 'kenspeckle/kit';
 
 	let { children } = $props();
 
-	viewTransition();
+	enableViewTransitions();
 </script>
 
 {@render children()}
@@ -78,8 +78,7 @@ in-app cases — a "back" button that calls `goto`.
 
 `onNavigate` never fires for a transition between two pieces of client state on
 one URL — a wizard, a questionnaire walking 1→6, a multi-stage form. Drive the
-primitive directly, from the main entry (`kenspeckle/kit` re-exports the same
-function, so either import works):
+primitive directly, from the main entry (`kenspeckle/kit` does not export it):
 
 ```svelte
 <script lang="ts">
@@ -96,8 +95,8 @@ Pass the state change, not the delta, and one helper serves both a linear
 
 The step form returns the live `ViewTransition` — `undefined` when the
 transition was skipped — so a custom WAAPI animation can hang off its `ready`.
-Its option and update types live on the main entry only: `/kit` re-exports the
-function, not `ViewTransitionOptions` / `ViewTransitionUpdate`.
+It and its option and update types (`ViewTransitionOptions` /
+`ViewTransitionUpdate`) live on the main entry only.
 
 ## The attribute contract
 
@@ -141,7 +140,7 @@ duplicate trap below.
 - Outside a template, call the attachment on the element to get its disposer:
   `const dispose = viewTransitionName('back-button')(element)`.
 
-**Claims are navigation-only.** The registration form drives the capture and
+**Claims are navigation-only.** `enableViewTransitions` drives the capture and
 arrival phases; `viewTransition(update)` on a same-route step names nothing.
 Morph a stepping element with static `view-transition-name` in CSS instead.
 
