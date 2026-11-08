@@ -1,8 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-// The unit suite drives a fake `start`; nothing else runs this package against a real
-// document.startViewTransition. Both naming forms are exercised here — imperative on /a, attachment
-// on /b — because the imperative one has no consumer in any app.
+/** The unit suite drives a fake `start`; nothing else runs this package against a real document.startViewTransition. */
 const named = (page: import('@playwright/test').Page) =>
 	page.locator('.hero').evaluate((el: HTMLElement) => el.style.viewTransitionName);
 

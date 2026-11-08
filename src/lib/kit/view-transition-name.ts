@@ -1,4 +1,3 @@
-import type { Attachment } from 'svelte/attachments';
 import type { Navigation } from './types.js';
 
 export interface ViewTransitionNameOptions {
@@ -48,38 +47,18 @@ export function endTransition() {
 	for (const claim of claims) release(claim);
 }
 
-function wire(
-	element: HTMLElement,
+export function viewTransitionName(
 	name: string,
 	options: ViewTransitionNameOptions = {}
-): () => void {
-	const claim: Claim = { element, name, options, named: false };
-	claims.add(claim);
-	// An element mounting mid-transition registers after its phase already swept.
-	if (current && wanted(claim, current.phase, current.navigation)) apply(claim);
-	return () => {
-		release(claim);
-		claims.delete(claim);
+): (element: HTMLElement) => () => void {
+	return (element) => {
+		const claim: Claim = { element, name, options, named: false };
+		claims.add(claim);
+		/** An element mounting mid-transition registers after its phase already swept. */
+		if (current && wanted(claim, current.phase, current.navigation)) apply(claim);
+		return () => {
+			release(claim);
+			claims.delete(claim);
+		};
 	};
-}
-
-export function viewTransitionName(
-	name: string,
-	options?: ViewTransitionNameOptions
-): Attachment<HTMLElement>;
-export function viewTransitionName(
-	element: HTMLElement,
-	name: string,
-	options?: ViewTransitionNameOptions
-): () => void;
-export function viewTransitionName(
-	first: string | HTMLElement,
-	second?: string | ViewTransitionNameOptions,
-	third?: ViewTransitionNameOptions
-): Attachment<HTMLElement> | (() => void) {
-	if (typeof Element !== 'undefined' && first instanceof Element) {
-		return wire(first as HTMLElement, second as string, third);
-	}
-	const options = second as ViewTransitionNameOptions | undefined;
-	return (element) => wire(element, first as string, options);
 }

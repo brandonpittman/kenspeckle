@@ -20,18 +20,16 @@ It needs `viewTransition()` registered in your root layout; the navigation is wh
 
 Attach the same name to an element on the destination screen and the two morph into each other.
 
-## Imperative form
+## Outside a template
 
-Pass an element first to wire it directly. It returns a cleanup function:
+An attachment is a function of the element, so call it on one. It returns a cleanup function:
 
 ```ts
-const cleanup = viewTransitionName(node, 'hero');
+const cleanup = viewTransitionName('hero')(node);
 
 // later
 cleanup();
 ```
-
-Element first → imperative helper. Name only → attachment. The presence of the element picks the mode.
 
 ## Claiming a name from a list
 

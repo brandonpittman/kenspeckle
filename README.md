@@ -65,7 +65,7 @@ pieces, so `$app/navigation` never enters the main entry.
 | [`copy()` / `copyText()`](src/routes/docs/copy/+page.md)                | attachment                             |
 | [`scrollEdges()`](src/routes/docs/scroll-edges/+page.md)                | attachment, edges to a callback        |
 | [`viewTransition()`](src/routes/docs/view-transition/+page.md)          | function; navigation form under `/kit` |
-| [`viewTransitionName()`](src/routes/docs/view-transition-name/+page.md) | attachment + helper, `/kit`            |
+| [`viewTransitionName()`](src/routes/docs/view-transition-name/+page.md) | attachment, `/kit`                     |
 | [`retreat()`](src/routes/docs/view-transition/+page.md)                 | function, returns a disposer, `/kit`   |
 | [`debounce()`](src/routes/docs/debounce/+page.md)                       | function wrapper                       |
 | [`throttle()`](src/routes/docs/throttle/+page.md)                       | function wrapper                       |
@@ -198,11 +198,11 @@ scoped rather than left in static CSS.
 ```
 
 `when` claims only for navigations it accepts; `onArrival` claims inside the update callback instead,
-for an element that mounts during the transition. The imperative form takes the element first and
-returns a disposer:
+for an element that mounts during the transition. Outside a template, call the attachment on the
+element to get its disposer:
 
 ```js
-const dispose = viewTransitionName(element, 'back-button');
+const dispose = viewTransitionName('back-button')(element);
 ```
 
 **Claims are navigation-only.** The registration form drives the capture and arrival phases;

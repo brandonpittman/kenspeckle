@@ -162,7 +162,7 @@ describe('navigationTransition — naming integration', () => {
 	it('names a claimed element for the transition and clears it after', async () => {
 		const node = document.createElement('div');
 		document.body.appendChild(node);
-		const cleanup = viewTransitionName(node, 'hero');
+		const cleanup = viewTransitionName('hero')(node);
 		const { start, finish } = fakeStart();
 		void navigationTransition({ start })(nav());
 		expect(node.style.viewTransitionName).toBe('hero');
@@ -174,7 +174,7 @@ describe('navigationTransition — naming integration', () => {
 	it('names an onArrival element only once the DOM has committed', async () => {
 		const node = document.createElement('div');
 		document.body.appendChild(node);
-		const cleanup = viewTransitionName(node, 'hero', { onArrival: true });
+		const cleanup = viewTransitionName('hero', { onArrival: true })(node);
 		let commit!: () => void;
 		const complete = new Promise<void>((resolve) => (commit = resolve));
 		const { start } = fakeStart();
@@ -188,7 +188,7 @@ describe('navigationTransition — naming integration', () => {
 	it('keeps the successor navigation names when a superseded transition finishes', async () => {
 		const node = document.createElement('div');
 		document.body.appendChild(node);
-		const cleanup = viewTransitionName(node, 'hero');
+		const cleanup = viewTransitionName('hero')(node);
 		const first = fakeStart();
 		const second = fakeStart();
 		void navigationTransition({ start: first.start })(nav());
@@ -204,7 +204,7 @@ describe('navigationTransition — naming integration', () => {
 		const reported = vi.spyOn(window, 'reportError').mockImplementation(() => {});
 		const node = document.createElement('div');
 		document.body.appendChild(node);
-		const cleanup = viewTransitionName(node, 'hero');
+		const cleanup = viewTransitionName('hero')(node);
 		const { start, finish } = fakeStart();
 		const boom = new Error('onStart');
 		await navigationTransition({
@@ -224,7 +224,7 @@ describe('navigationTransition — naming integration', () => {
 	it('leaves claims alone when reduced motion skips the transition', async () => {
 		const node = document.createElement('div');
 		document.body.appendChild(node);
-		const cleanup = viewTransitionName(node, 'hero', { onArrival: true });
+		const cleanup = viewTransitionName('hero', { onArrival: true })(node);
 		const { start } = fakeStart();
 		await navigationTransition({ start, reducedMotion: () => true })(nav());
 		await new Promise((r) => setTimeout(r));

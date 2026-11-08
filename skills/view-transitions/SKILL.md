@@ -138,8 +138,8 @@ duplicate trap below.
 - `onArrival` claims inside the update callback instead, for an element that
   mounts during the transition. A claim belongs to exactly one phase — capture or
   arrival, never both.
-- Imperative form takes the element first and returns a disposer:
-  `const dispose = viewTransitionName(element, 'back-button')`.
+- Outside a template, call the attachment on the element to get its disposer:
+  `const dispose = viewTransitionName('back-button')(element)`.
 
 **Claims are navigation-only.** The registration form drives the capture and
 arrival phases; `viewTransition(update)` on a same-route step names nothing.
