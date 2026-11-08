@@ -45,6 +45,13 @@ export const utilities: Utility[] = [
 		blurb: 'a value synced to localStorage or sessionStorage'
 	},
 	{
+		slug: 'countdown',
+		href: resolve('/docs/countdown'),
+		label: 'Countdown',
+		type: 'class',
+		blurb: 'milliseconds left until a deadline'
+	},
+	{
 		slug: 'document-visible',
 		href: resolve('/docs/document-visible'),
 		label: 'documentVisible',
