@@ -28,6 +28,7 @@ export const roadmap: RoadmapGroup[] = [
 				blurb: 'a value synced to localStorage or sessionStorage'
 			},
 			{ name: 'Countdown', type: 'class', blurb: 'milliseconds left until a deadline' },
+			{ name: 'Idle', type: 'class', blurb: 'whether the user has gone idle, across tabs' },
 			{ name: 'documentVisible', type: 'value', blurb: 'page visibility, a document singleton' },
 			{ name: 'copy', type: 'attachment', blurb: 'clipboard attachment' },
 			{
@@ -56,7 +57,6 @@ export const roadmap: RoadmapGroup[] = [
 		note: "Shaped like Svelte's own APIs: singletons for global browser state, classes with current for configured or following values, attachments for element behavior.",
 		items: [
 			{ name: 'StateHistory', type: 'class', blurb: 'undo/redo over a getter and setter' },
-			{ name: 'Idle', type: 'class', blurb: 'has the user gone idle, after a set time' },
 			{
 				name: 'AsyncPersistedState',
 				type: 'class',

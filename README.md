@@ -55,7 +55,7 @@ Peer dependencies: `svelte >= 5.40`, plus `@sveltejs/kit >= 2` for the `kenspeck
 
 ## What's shipped
 
-Eleven exports, two entry points, each documented under [the docs site](https://kenspeckle.brandonpittman.workers.dev/docs). `kenspeckle` is Svelte-only; `kenspeckle/kit` adds the SvelteKit
+Twelve exports, two entry points, each documented under [the docs site](https://kenspeckle.brandonpittman.workers.dev/docs). `kenspeckle` is Svelte-only; `kenspeckle/kit` adds the SvelteKit
 pieces, so `$app/navigation` never enters the main entry.
 
 | export                                                                                            | form                                   |
@@ -63,6 +63,7 @@ pieces, so `$app/navigation` never enters the main entry.
 | [`FiniteStateMachine`](https://kenspeckle.brandonpittman.workers.dev/docs/finite-state-machine)   | class, with typed reactive `context`   |
 | [`PersistedState`](https://kenspeckle.brandonpittman.workers.dev/docs/persisted-state)            | class, `.current`                      |
 | [`Countdown`](https://kenspeckle.brandonpittman.workers.dev/docs/countdown)                       | class, `.current`                      |
+| [`Idle`](https://kenspeckle.brandonpittman.workers.dev/docs/idle)                                 | class, `.current`                      |
 | [`documentVisible`](https://kenspeckle.brandonpittman.workers.dev/docs/document-visible)          | singleton, `.current`                  |
 | [`copy()` / `copyText()`](https://kenspeckle.brandonpittman.workers.dev/docs/copy)                | attachment                             |
 | [`scrollEdges()`](https://kenspeckle.brandonpittman.workers.dev/docs/scroll-edges)                | attachment, edges to a callback        |
@@ -85,7 +86,6 @@ shipped.
 | export                | form                                                                                              |
 | --------------------- | ------------------------------------------------------------------------------------------------- |
 | `StateHistory`        | class: `new StateHistory(get, set)`, `.undo()`, `.redo()`                                         |
-| `Idle`                | class: `new Idle(ms)`, `.current`                                                                 |
 | `AsyncPersistedState` | class over IndexedDB: `await` it, or read `.current`, `.loading`, `.error`, like a remote `query` |
 | `CurrentPosition`     | class: `new CurrentPosition(options)`, `.current`                                                 |
 | `pressedKeys`         | singleton, read like a set: `.has(key)`                                                           |
