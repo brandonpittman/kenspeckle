@@ -1,4 +1,3 @@
-import { flushSync } from 'svelte';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import { FiniteStateMachine } from './finite-state-machine.svelte.js';
 
@@ -304,136 +303,6 @@ describe('context', () => {
 	});
 });
 
-describe('debounce', () => {
-	type States = 'idle' | 'searching' | 'paused';
-	type Events = { search: [q: string]; pause: [] };
-
-	function create() {
-		const search = vi.fn(() => 'searching' as const);
-		const f = new FiniteStateMachine<States, Events>('idle', {
-			idle: { search, pause: 'paused' },
-			searching: { search, pause: 'paused' },
-			paused: {}
-		});
-		return { f, search };
-	}
-
-	it('coalesces same-event sends; last args win', async () => {
-		const { f, search } = create();
-		await Promise.any([f.debounce('search', 30, 'a'), f.debounce('search', 30, 'ab')]);
-		expect(search).toHaveBeenCalledExactlyOnceWith({
-			from: 'idle',
-			event: 'search',
-			args: ['ab'],
-			context: undefined
-		});
-		expect(f.current).toBe('searching');
-	});
-
-	it('later call resets the timer even with a different wait', async () => {
-		const { f, search } = create();
-		await Promise.any([f.debounce('search', 60, 'a'), f.debounce('search', 30, 'ab')]);
-		expect(search).toHaveBeenCalledTimes(1);
-	});
-
-	it('fires on the shorter wait of a later call', () => {
-		vi.useFakeTimers();
-		try {
-			const { f } = create();
-			f.debounce('search', 60, 'a');
-			f.debounce('search', 30, 'ab');
-			vi.advanceTimersByTime(29);
-			expect(f.current).toBe('idle');
-			vi.advanceTimersByTime(1);
-			expect(f.current).toBe('searching');
-		} finally {
-			vi.useRealTimers();
-		}
-	});
-
-	it('runs an $effect that debounces once', () => {
-		vi.useFakeTimers();
-		try {
-			const { f, search } = create();
-			let runs = 0;
-			const cleanup = $effect.root(() => {
-				$effect(() => {
-					runs++;
-					f.debounce('search', 30, 'a');
-				});
-			});
-			flushSync();
-			vi.advanceTimersByTime(30);
-			flushSync();
-			expect(runs).toBe(1);
-			expect(search).toHaveBeenCalledTimes(1);
-			cleanup();
-		} finally {
-			vi.useRealTimers();
-		}
-	});
-
-	it('debounces from a $derived that reruns', () => {
-		vi.useFakeTimers();
-		try {
-			const { f, search } = create();
-			let q = $state('a');
-			let read = '';
-			const cleanup = $effect.root(() => {
-				const derived = $derived((f.debounce('search', 30, q), q));
-				$effect(() => {
-					read = derived;
-				});
-			});
-			flushSync();
-			q = 'ab';
-			flushSync();
-			expect(read).toBe('ab');
-			vi.advanceTimersByTime(30);
-			expect(search).toHaveBeenCalledExactlyOnceWith({
-				from: 'idle',
-				event: 'search',
-				args: ['ab'],
-				context: undefined
-			});
-			cleanup();
-		} finally {
-			vi.useRealTimers();
-		}
-	});
-
-	it('keys timers per event — different events do not cancel each other', async () => {
-		const { f, search } = create();
-		await Promise.all([f.debounce('search', 30, 'a'), f.debounce('pause', 30)]);
-		expect(search).toHaveBeenCalledTimes(1);
-		expect(f.current).toBe('paused'); // search fired first, then pause
-	});
-
-	it('defaults wait to 250', async () => {
-		vi.useFakeTimers();
-		try {
-			const { f } = create();
-			const p = f.debounce('search', undefined, 'a');
-			vi.advanceTimersByTime(249);
-			expect(f.current).toBe('idle');
-			vi.advanceTimersByTime(1);
-			expect(f.current).toBe('searching');
-			await expect(p).resolves.toBe('searching');
-		} finally {
-			vi.useRealTimers();
-		}
-	});
-
-	it('superseded calls resolve with the final state when the last timer fires', async () => {
-		const { f, search } = create();
-		const first = f.debounce('search', 30, 'a');
-		const second = f.debounce('search', 30, 'ab');
-		await expect(first).resolves.toBe('searching');
-		await expect(second).resolves.toBe('searching');
-		expect(search).toHaveBeenCalledTimes(1);
-	});
-});
-
 describe('type-level', () => {
 	type States = 'idle' | 'busy';
 	type Events = { start: []; load: [id: string, force: boolean] };
@@ -473,8 +342,6 @@ describe('type-level', () => {
 		f.send('load', 42, 'yes');
 		// @ts-expect-error extra payload on a no-payload event
 		f.send('start', 1);
-		// @ts-expect-error debounce payloads are checked too
-		f.debounce('load', 100, 42, true);
 
 		new FiniteStateMachine<States, Events>('idle', {
 			idle: {

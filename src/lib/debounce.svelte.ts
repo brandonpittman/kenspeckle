@@ -13,47 +13,30 @@ type Scheduled<Args extends unknown[], Return> = {
 };
 
 /**
- * `wait` is a getter so `FiniteStateMachine.debounce` can take a different wait on each call.
  * `leading` runs a call at once when no window is open, and the window it opens is fixed: later
  * calls wait for it to end instead of restarting it.
  */
 export class Scheduler<Args extends unknown[], Return> {
 	#callback: (...args: Args) => Return;
-	#wait: () => number;
+	#wait: number;
 	#leading: boolean;
 	#timer: ReturnType<typeof setTimeout> | undefined;
 	/** Plain, so a call made inside an `$effect` doesn't make the effect depend on it. */
 	#scheduled: Scheduled<Args, Return> | undefined;
-	#reactive: boolean;
-	#tracked = $state(false);
-	#untracked = false;
+	#pending = $state(false);
 
-	/**
-	 * `reactive: false` keeps `pending` out of Svelte's graph, so a `$derived` or template expression
-	 * can call the scheduler: writing `$state` there throws `state_unsafe_mutation`.
-	 */
 	constructor(
 		callback: (...args: Args) => Return,
-		wait: () => number,
-		{ leading = false, reactive = true }: { leading?: boolean; reactive?: boolean } = {}
+		wait: number,
+		{ leading = false }: { leading?: boolean } = {}
 	) {
 		this.#callback = callback;
 		this.#wait = wait;
 		this.#leading = leading;
-		this.#reactive = reactive;
 	}
 
 	get pending(): boolean {
 		return this.#pending;
-	}
-
-	get #pending(): boolean {
-		return this.#reactive ? this.#tracked : this.#untracked;
-	}
-
-	set #pending(value: boolean) {
-		if (this.#reactive) this.#tracked = value;
-		else this.#untracked = value;
 	}
 
 	call(...args: Args): Promise<Awaited<Return>> {
@@ -85,7 +68,7 @@ export class Scheduler<Args extends unknown[], Return> {
 
 	#start(): void {
 		clearTimeout(this.#timer);
-		this.#timer = setTimeout(() => this.#elapse(), this.#wait());
+		this.#timer = setTimeout(() => this.#elapse(), this.#wait);
 	}
 
 	#elapse(): void {
@@ -111,7 +94,7 @@ export function debounce<Args extends unknown[], Return>(
 	callback: (...args: Args) => Return,
 	wait = DEFAULT_WAIT
 ): DebouncedFunction<Args, Return> {
-	const scheduler = new Scheduler(callback, () => wait);
+	const scheduler = new Scheduler(callback, wait);
 	return Object.defineProperties((...args: Args) => scheduler.call(...args), {
 		pending: { get: () => scheduler.pending },
 		flush: { value: () => scheduler.flush() },

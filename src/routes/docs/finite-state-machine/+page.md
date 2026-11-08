@@ -148,18 +148,31 @@ Keep domain verbs out of the machine — wrap it in an app-facing class or facto
 
 ## Debounce
 
-`debounce` schedules a send, keyed **per event**: re-debouncing the same event resets its timer; different events don't interfere.
+The machine has no debounce of its own. Wrap `send` in the exported [`debounce`](/docs/debounce):
 
 ```ts
-// fires send('search', query) after 300ms of quiet
-machine.debounce('search', 300, query);
-// wait defaults to 250
-machine.debounce('search');
+import { debounce } from 'kenspeckle';
+
+const search = debounce((q: string) => machine.send('search', q), 300);
 ```
 
-Every coalesced call's promise resolves with the resulting state when the trailing send fires — superseded calls don't hang.
+Calling `search(query)` on every keystroke sends once, with the last query, after 300ms of quiet. Each call's promise resolves with the state the trailing send returns, so a superseded call never hangs. `search.pending` is reactive, so a `$derived` or the template can show that a send is waiting.
 
-`send` and `debounce` are pre-bound; pass them as event handlers directly.
+When a pending send must not land in a later state, cancel it on the way out:
+
+```ts
+const machine = new FiniteStateMachine<States, Events>('typing', {
+  typing: {
+    search: 'searching',
+    submit: 'submitted',
+    _exit: () => search.cancel()
+  },
+  searching: { search: 'searching', submit: 'submitted' },
+  submitted: {}
+});
+```
+
+`send` is pre-bound; pass it as an event handler directly.
 
 ## Dev warnings
 

@@ -1,5 +1,4 @@
 import { DEV } from 'esm-env';
-import { DEFAULT_WAIT, Scheduler } from './debounce.svelte.js';
 
 export type EventMap = Record<string, unknown[]>;
 
@@ -62,11 +61,6 @@ export type Transition<StatesT extends string, EventsT extends EventMap, Context
 	'*'?: StateHandler<StatesT, EventsT, ContextT, StatesT>;
 };
 
-type Debounced<Args extends unknown[], StatesT> = {
-	wait: number;
-	scheduler: Scheduler<Args, StatesT>;
-};
-
 export class FiniteStateMachine<
 	StatesT extends string,
 	EventsT extends EventMap,
@@ -112,27 +106,6 @@ export class FiniteStateMachine<
 				: (action as StatesT);
 		if (target != null) this.#transition(target, event, args);
 		return this.#current;
-	};
-
-	#debounced: {
-		[K in keyof EventsT]?: Debounced<EventsT[K], StatesT>;
-	} = {};
-
-	debounce = <K extends keyof EventsT>(
-		event: K,
-		wait: number = DEFAULT_WAIT,
-		...args: EventsT[K]
-	): Promise<StatesT> => {
-		const debounced: Debounced<EventsT[K], StatesT> = (this.#debounced[event] ??= {
-			wait,
-			scheduler: new Scheduler(
-				(...args: EventsT[K]) => this.send(event, ...args),
-				() => debounced.wait,
-				{ reactive: false }
-			)
-		});
-		debounced.wait = wait;
-		return debounced.scheduler.call(...args);
 	};
 
 	#transition(to: StatesT, event: keyof EventsT, args: unknown[]) {

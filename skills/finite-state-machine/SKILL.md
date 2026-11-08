@@ -1,6 +1,6 @@
 ---
 name: finite-state-machine
-description: Typed finite state machines in Svelte with kenspeckle's `FiniteStateMachine` class — states as a string union, events as a payload map of argument tuples, handlers that are a target state or a function returning one, `_enter` / `_exit` lifecycle, the `'*'` fallback, typed deeply reactive `context`, per-event `debounce`, and sharing a machine through Svelte's `createContext`. Covers why returning a state always transitions (returning the current state re-enters it, firing `_exit` and `_enter` again) and `undefined` is the guard; the re-entry hazard of a `'*'` catch-all and the declared no-op that fixes it; synchronous sends from inside lifecycle functions and why a transition finished inside `_exit` aborts the outer one; the reserved `_enter` / `_exit` names; the dev-only unhandled-event warning and declaring a no-op to keep it meaningful; keeping domain verbs out of the machine behind a wrapper; and SSR. Trigger on a wizard, a multi-step flow, a questionnaire, a status that moves between named phases, a `$state` string compared in many `if`s, hand-rolled `status = 'loading' | 'error'` bookkeeping, `new FiniteStateMachine`, `machine.send`, `machine.current`, or any request for a state machine, statechart, or XState-like helper in a Svelte app.
+description: Typed finite state machines in Svelte with kenspeckle's `FiniteStateMachine` class — states as a string union, events as a payload map of argument tuples, handlers that are a target state or a function returning one, `_enter` / `_exit` lifecycle, the `'*'` fallback, typed deeply reactive `context`, debouncing `send` with kenspeckle's `debounce`, and sharing a machine through Svelte's `createContext`. Covers why returning a state always transitions (returning the current state re-enters it, firing `_exit` and `_enter` again) and `undefined` is the guard; the re-entry hazard of a `'*'` catch-all and the declared no-op that fixes it; synchronous sends from inside lifecycle functions and why a transition finished inside `_exit` aborts the outer one; the reserved `_enter` / `_exit` names; the dev-only unhandled-event warning and declaring a no-op to keep it meaningful; keeping domain verbs out of the machine behind a wrapper; and SSR. Trigger on a wizard, a multi-step flow, a questionnaire, a status that moves between named phases, a `$state` string compared in many `if`s, hand-rolled `status = 'loading' | 'error'` bookkeeping, `new FiniteStateMachine`, `machine.send`, `machine.current`, or any request for a state machine, statechart, or XState-like helper in a Svelte app.
 ---
 
 # Finite state machine
@@ -132,15 +132,21 @@ Keep domain verbs out of the machine. When consumers need an API richer than
 
 ## Debounce
 
+The machine has no debounce of its own. Compose the exported `debounce` with
+`send`:
+
 ```ts
-machine.debounce('search', 300, query);
+import { debounce } from 'kenspeckle';
+
+const search = debounce((q: string) => machine.send('search', q), 300);
 ```
 
-Keyed per event: re-debouncing one event resets its timer, different events do
-not interfere. The wait defaults to 250ms. Every coalesced call's promise
-resolves with the resulting state when the trailing send fires, so a superseded
-call never hangs. `send` and `debounce` are pre-bound, so they pass straight to
-event handlers.
+Rapid calls coalesce into one send with the last argument. Every coalesced
+call's promise resolves with the state the trailing send returns, so a
+superseded call never hangs. `search.pending` is reactive state, readable in a
+`$derived` or the template. When a pending send must not land in a later state,
+call `search.cancel()` in the `_exit` of the state it belongs to. `send` is
+pre-bound, so it passes straight to an event handler.
 
 ## Dev warning
 
