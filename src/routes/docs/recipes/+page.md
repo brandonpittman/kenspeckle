@@ -69,7 +69,21 @@ A modal `<dialog>` opened with `showModal()` closes on Escape but not on a click
 </dialog>
 ```
 
-For anything that isn't an overlay, listen on the window from an inline attachment. `on` comes from `svelte/events`:
+For anything that isn't an overlay, listen on the window:
+
+```svelte
+<svelte:window
+  onclick={(event) => {
+    if (!event.composedPath().includes(menu)) open = false;
+  }}
+/>
+
+<div bind:this={menu}>…</div>
+```
+
+`composedPath()` is the path the click took when it was dispatched, so it still includes the element when an earlier handler removed the clicked node, and when the element sits inside a shadow root that retargets `event.target` away from it. `menu.contains(event.target)` reads outside in both cases.
+
+`<svelte:window>` sits at the top level of a component, so its listener lasts as long as the component does. When the element renders inside `{#if}` or `{#each}`, tie the listener to the element instead, with an inline attachment. `on` comes from `svelte/events` and returns the listener's removal, so the attachment cleans up when the element goes:
 
 ```svelte
 <div
@@ -81,8 +95,6 @@ For anything that isn't an overlay, listen on the window from an inline attachme
   …
 </div>
 ```
-
-`composedPath()` is the path the click took when it was dispatched, so it still includes the element when an earlier handler removed the clicked node, and when the element sits inside a shadow root that retargets `event.target` away from it. `node.contains(event.target)` reads outside in both cases. `on` returns the listener's removal, so the attachment cleans up after itself.
 
 ## Know when an element is on screen
 

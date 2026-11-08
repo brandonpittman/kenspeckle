@@ -98,7 +98,7 @@ Dropped, deliberately, because Svelte, Kit or the platform already handles it:
 - `Debounced` / `Throttled`: `debounce()` / `throttle()` writing into a `$state`, with any effect that follows a source kept in the component that owns it.
 - `elementSize`, `elementRect`, `resized`: the dimension bindings (`bind:clientWidth`, `bind:contentRect`, `bind:borderBoxSize`) already measure with a `ResizeObserver`.
 - `autosize`: CSS `field-sizing: content`, Baseline since June 2026.
-- `clickOutside`: the `popover` attribute's light dismiss for menus and popups, a click whose target is the dialog itself for a modal `<dialog>`, and an inline attachment calling `on(window, 'click', …)` for the rest.
+- `clickOutside`: the `popover` attribute's light dismiss for menus and popups, a click whose target is the dialog itself for a modal `<dialog>`, and `<svelte:window onclick>` checking `composedPath()` for the rest.
 - `lockScroll`: CSS `html:has([data-scroll-lock]) { overflow: hidden; scrollbar-gutter: stable }`, which nests without counting and locks before hydration.
 - `intersected`, `inViewport`: an inline attachment that creates an `IntersectionObserver` and returns its `disconnect`.
 - `mutated`: the same inline attachment around a `MutationObserver`.
