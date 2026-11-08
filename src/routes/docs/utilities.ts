@@ -31,6 +31,13 @@ export const utilities: Utility[] = [
 		blurb: 'fully typed FSM with reactive context'
 	},
 	{
+		slug: 'document-visible',
+		href: resolve('/docs/document-visible'),
+		label: 'documentVisible',
+		type: 'value',
+		blurb: 'page visibility, a document singleton'
+	},
+	{
 		slug: 'copy',
 		href: resolve('/docs/copy'),
 		label: 'copy',

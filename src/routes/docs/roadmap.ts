@@ -22,6 +22,7 @@ export const roadmap: RoadmapGroup[] = [
 		note: 'Available now.',
 		items: [
 			{ name: 'FiniteStateMachine', type: 'class', blurb: 'typed FSM with reactive context' },
+			{ name: 'documentVisible', type: 'value', blurb: 'page visibility, a document singleton' },
 			{ name: 'copy', type: 'attachment', blurb: 'clipboard attachment + imperative helper' },
 			{
 				name: 'viewTransition',
