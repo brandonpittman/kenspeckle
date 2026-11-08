@@ -12,17 +12,6 @@ type Scheduled<Args extends unknown[], Return> = {
 	deferred: PromiseWithResolvers<Awaited<Return>>;
 };
 
-/** `Promise.withResolvers` would raise the runtime floor to Safari 17.4 and Node 22. */
-function withResolvers<T>(): PromiseWithResolvers<T> {
-	let resolve!: (value: T | PromiseLike<T>) => void;
-	let reject!: (reason?: unknown) => void;
-	const promise = new Promise<T>((res, rej) => {
-		resolve = res;
-		reject = rej;
-	});
-	return { promise, resolve, reject };
-}
-
 /**
  * `wait` is a getter so `FiniteStateMachine.debounce` can take a different wait on each call.
  * `leading` runs a call at once when no window is open, and the window it opens is fixed: later
@@ -69,12 +58,12 @@ export class Scheduler<Args extends unknown[], Return> {
 
 	call(...args: Args): Promise<Awaited<Return>> {
 		if (this.#leading && this.#timer === undefined) {
-			const deferred = withResolvers<Awaited<Return>>();
+			const deferred = Promise.withResolvers<Awaited<Return>>();
 			this.#start();
 			this.#run({ args, deferred });
 			return deferred.promise;
 		}
-		const deferred = this.#scheduled?.deferred ?? withResolvers<Awaited<Return>>();
+		const deferred = this.#scheduled?.deferred ?? Promise.withResolvers<Awaited<Return>>();
 		this.#scheduled = { args, deferred };
 		this.#pending = true;
 		if (!this.#leading) this.#start();
