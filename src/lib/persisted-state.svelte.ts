@@ -8,35 +8,6 @@ export interface PersistedStateOptions {
 	storage?: 'local' | 'session';
 }
 
-const probe = Symbol();
-
-/**
- * Freezing a `$state` proxy throws only after its target is already non-extensible, which breaks the
- * caller's state. The proxy refuses a non-enumerable property before touching its target, so this
- * probe tells one apart without changing anything.
- */
-function isStateProxy(value: object): boolean {
-	try {
-		const descriptor = { value: undefined, enumerable: false, configurable: true, writable: true };
-		if (Reflect.defineProperty(value, probe, descriptor)) Reflect.deleteProperty(value, probe);
-		return false;
-	} catch {
-		return true;
-	}
-}
-
-function freeze<T>(value: T): T {
-	if (!DEV || value === null || typeof value !== 'object') return value;
-	const prototype = Object.getPrototypeOf(value);
-	if (
-		(Array.isArray(value) || prototype === Object.prototype || prototype === null) &&
-		!isStateProxy(value)
-	) {
-		Object.freeze(value);
-	}
-	return value;
-}
-
 export class PersistedState<T> {
 	#key: string;
 	#initial: T;
@@ -67,7 +38,7 @@ export class PersistedState<T> {
 
 	constructor(key: string, initial: T, options: PersistedStateOptions = {}) {
 		this.#key = key;
-		this.#initial = freeze(initial);
+		this.#initial = initial;
 		this.#area = `${options.storage ?? 'local'}Storage`;
 		this.#value = initial;
 	}
@@ -106,7 +77,7 @@ export class PersistedState<T> {
 
 		this.#seen = raw;
 		try {
-			this.#value = raw === null ? this.#initial : freeze(parse(raw));
+			this.#value = raw === null ? this.#initial : parse(raw);
 		} catch {
 			this.#value = this.#initial;
 		}
@@ -115,7 +86,7 @@ export class PersistedState<T> {
 
 	set current(value: T) {
 		const raw = stringify(value);
-		this.#value = freeze(value);
+		this.#value = value;
 		/** Untracked, so an effect that assigns `current` does not come to depend on its own write and rerun forever. */
 		this.#version = untrack(() => this.#version) + 1;
 		if (!BROWSER) return;

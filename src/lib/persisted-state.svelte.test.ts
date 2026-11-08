@@ -120,35 +120,6 @@ describe('PersistedState', () => {
 		});
 	});
 
-	describe('Freezing in DEV', () => {
-		it('should throw on a push to an assigned array', () => {
-			const state = new PersistedState<number[]>(key, []);
-			const value = [1];
-
-			state.current = value;
-
-			expect(() => value.push(2)).toThrow(TypeError);
-		});
-
-		it('should throw on a push to a parsed array', () => {
-			localStorage.setItem(key, stringify([1]));
-			const state = new PersistedState<number[]>(key, []);
-
-			const value = state.current;
-
-			expect(() => value.push(2)).toThrow(TypeError);
-		});
-
-		it('should not freeze a Date', () => {
-			const state = new PersistedState(key, new Date(0));
-			const value = new Date('2026-01-02T03:04:05Z');
-
-			state.current = value;
-
-			expect(Object.isFrozen(value)).toBe(false);
-		});
-	});
-
 	describe('Storage area', () => {
 		it("should touch only sessionStorage when storage is 'session'", () => {
 			localStorage.setItem(key, stringify(5));
@@ -265,14 +236,6 @@ describe('PersistedState boundaries', () => {
 		expect(stored()).toEqual({ theme: 'light' });
 	});
 
-	it('should throw in DEV on a push to initial when nothing is stored', () => {
-		const state = new PersistedState<number[]>(key, []);
-
-		const value = state.current;
-
-		expect(() => value.push(1)).toThrow(TypeError);
-	});
-
 	it('should update a $derived after a write that setItem refuses', () => {
 		vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
 			throw new DOMException('The quota has been exceeded.', 'QuotaExceededError');
@@ -309,40 +272,6 @@ describe('PersistedState boundaries', () => {
 		});
 
 		expect(state.current).toBe(value);
-	});
-});
-
-describe('PersistedState freezing beyond arrays', () => {
-	it('should throw in DEV on a property set on an assigned plain object', () => {
-		const state = new PersistedState(key, { count: 0 });
-		const value = { count: 1 };
-
-		state.current = value;
-
-		expect(() => {
-			value.count = 2;
-		}).toThrow(TypeError);
-	});
-
-	it('should throw in DEV on a property set on a parsed plain object', () => {
-		localStorage.setItem(key, stringify({ count: 1 }));
-		const state = new PersistedState(key, { count: 0 });
-
-		const value = state.current;
-
-		expect(() => {
-			value.count = 2;
-		}).toThrow(TypeError);
-	});
-
-	it('should freeze a null-prototype object in DEV', () => {
-		const state = new PersistedState<unknown>(key, null);
-		const value = Object.create(null) as Record<string, number>;
-		value.count = 1;
-
-		state.current = value;
-
-		expect(Object.isFrozen(value)).toBe(true);
 	});
 });
 

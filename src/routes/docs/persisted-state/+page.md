@@ -34,13 +34,13 @@ Values go through [devalue](https://github.com/sveltejs/devalue), so a `Date`, `
 
 ## Assign, don't mutate
 
-`current` is not deeply reactive, the same as `page.data` or a `Spring`'s `current`. An assignment is what persists, and the assigned value keeps its identity. In development an assigned or stored array or plain object, and `initial`, is frozen one level deep, so a top-level mutation that would never reach storage throws instead of failing silently. A nested object or array is not frozen, and mutating one does not persist either. Assign a new value:
+`current` is not deeply reactive, the same as `page.data` or a `Spring`'s `current`. An assignment is what persists, and the assigned value keeps its identity. Mutating it in place, at any depth, changes the in-memory value but never reaches storage or other readers. Assign a new value:
 
 ```ts
 todos.current = [...todos.current, todo];
 ```
 
-A `Date` or `Map` is not frozen, but mutating one in place does not persist either. Neither is a `$state` object or array you assign. To edit a stored value as `$state`, copy it first, since a frozen value cannot be edited through `$state` in development:
+The same holds for a `Date`, `Map` or `Set`. To edit a stored value as `$state`, copy it first, so the edits stay in the form until you assign them:
 
 ```ts
 let form = $state({ ...settings.current });
