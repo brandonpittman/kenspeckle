@@ -23,18 +23,28 @@ function withResolvers<T>(): PromiseWithResolvers<T> {
 	return { promise, resolve, reject };
 }
 
-/** `wait` is a getter so `FiniteStateMachine.debounce` can take a different wait on each call. */
+/**
+ * `wait` is a getter so `FiniteStateMachine.debounce` can take a different wait on each call.
+ * `leading` runs a call at once when no window is open, and the window it opens is fixed: later
+ * calls wait for it to end instead of restarting it.
+ */
 export class Scheduler<Args extends unknown[], Return> {
 	#callback: (...args: Args) => Return;
 	#wait: () => number;
+	#leading: boolean;
 	#timer: ReturnType<typeof setTimeout> | undefined;
 	/** Plain, so a call made inside an `$effect` doesn't make the effect depend on it. */
 	#scheduled: Scheduled<Args, Return> | undefined;
 	#pending = $state(false);
 
-	constructor(callback: (...args: Args) => Return, wait: () => number) {
+	constructor(
+		callback: (...args: Args) => Return,
+		wait: () => number,
+		{ leading = false }: { leading?: boolean } = {}
+	) {
 		this.#callback = callback;
 		this.#wait = wait;
+		this.#leading = leading;
 	}
 
 	get pending(): boolean {
@@ -42,26 +52,45 @@ export class Scheduler<Args extends unknown[], Return> {
 	}
 
 	call(...args: Args): Promise<Awaited<Return>> {
+		if (this.#leading && this.#timer === undefined) {
+			const deferred = withResolvers<Awaited<Return>>();
+			this.#start();
+			this.#run({ args, deferred });
+			return deferred.promise;
+		}
 		const deferred = this.#scheduled?.deferred ?? withResolvers<Awaited<Return>>();
 		this.#scheduled = { args, deferred };
 		this.#pending = true;
-		clearTimeout(this.#timer);
-		this.#timer = setTimeout(() => this.flush(), this.#wait());
+		if (!this.#leading) this.#start();
 		return deferred.promise;
 	}
 
 	flush(): void {
-		const scheduled = this.#scheduled;
-		if (scheduled === undefined) return;
-		this.cancel();
-		this.#run(scheduled);
+		clearTimeout(this.#timer);
+		this.#elapse();
 	}
 
 	/** The promise is left unsettled: rejecting would be unhandled in every fire-and-forget caller. */
 	cancel(): void {
 		clearTimeout(this.#timer);
+		this.#timer = undefined;
 		this.#scheduled = undefined;
 		this.#pending = false;
+	}
+
+	#start(): void {
+		clearTimeout(this.#timer);
+		this.#timer = setTimeout(() => this.#elapse(), this.#wait());
+	}
+
+	#elapse(): void {
+		this.#timer = undefined;
+		const scheduled = this.#scheduled;
+		if (scheduled === undefined) return;
+		this.#scheduled = undefined;
+		this.#pending = false;
+		if (this.#leading) this.#start();
+		this.#run(scheduled);
 	}
 
 	#run({ args, deferred }: Scheduled<Args, Return>): void {

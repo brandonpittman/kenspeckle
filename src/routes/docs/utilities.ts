@@ -57,6 +57,13 @@ export const utilities: Utility[] = [
 		label: 'debounce',
 		type: 'function',
 		blurb: 'debounce any function, with a shared promise'
+	},
+	{
+		slug: 'throttle',
+		href: resolve('/docs/throttle'),
+		label: 'throttle',
+		type: 'function',
+		blurb: 'throttle any function, leading and trailing'
 	}
 ];
 
