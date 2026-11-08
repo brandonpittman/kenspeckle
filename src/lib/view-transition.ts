@@ -12,7 +12,6 @@ export interface ViewTransitionOptions {
 	retreat?: boolean;
 	/** Past this a crossfade reads as a hang: the update callback suspends rendering until it settles. */
 	deadline?: number;
-	onSettle?: () => void;
 	reducedMotion?: () => boolean;
 	/** Injected in tests; keeps the `bind` internal and init SSR-safe. */
 	start?: StartViewTransition;
@@ -23,6 +22,8 @@ export interface RunOptions extends Omit<ViewTransitionOptions, 'retreat'> {
 	state?: string;
 	/** Navigation needs a hook before capture to claim names; a direct caller can run code before calling. */
 	onStart?: () => void;
+	/** Navigation has no returned transition to chain on; a direct caller has `finished`. */
+	onSettle?: () => void;
 }
 
 const ignore = () => {};
@@ -42,11 +43,10 @@ let active: ViewTransition | undefined;
 
 export function viewTransition(
 	update: ViewTransitionUpdate,
-	{ retreat, deadline, onSettle, reducedMotion, start }: ViewTransitionOptions = {}
+	{ retreat, deadline, reducedMotion, start }: ViewTransitionOptions = {}
 ): ViewTransition | undefined {
 	return runViewTransition(update, {
 		deadline,
-		onSettle,
 		reducedMotion,
 		start,
 		state: retreat ? 'step-retreat' : 'step-forward'

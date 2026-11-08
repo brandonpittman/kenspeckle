@@ -5,6 +5,7 @@ import type { Navigation } from './types.js';
 
 export interface NavigationTransitionOptions extends Omit<ViewTransitionOptions, 'retreat'> {
 	onStart?: (navigation: Navigation) => void;
+	onSettle?: () => void;
 }
 
 const forward = () => false;

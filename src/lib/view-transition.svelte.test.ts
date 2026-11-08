@@ -96,11 +96,21 @@ describe('viewTransition — the attribute', () => {
 	it('clears the attribute and calls onSettle once finished settles', async () => {
 		const { start, finish } = fakeStart();
 		const onSettle = vi.fn();
-		viewTransition(() => {}, { start, onSettle });
+		runViewTransition(() => {}, { start, onSettle });
 		expect(state()).toBe('step-forward');
 		finish();
 		await vi.waitFor(() => expect(onSettle).toHaveBeenCalledTimes(1));
 		expect(state()).toBeUndefined();
+	});
+
+	it('takes no onSettle on the direct form', async () => {
+		const { start, finish } = fakeStart();
+		const onSettle = vi.fn();
+		// @ts-expect-error onSettle exists only on the navigation form
+		viewTransition(() => {}, { start, onSettle });
+		finish();
+		await vi.waitFor(() => expect(state()).toBeUndefined());
+		expect(onSettle).not.toHaveBeenCalled();
 	});
 
 	it('runs onStart before the snapshot is taken', () => {
@@ -126,8 +136,12 @@ describe('viewTransition — supersession', () => {
 		const second = fakeStart();
 		const onSettleFirst = vi.fn();
 		const onSettleSecond = vi.fn();
-		viewTransition(() => {}, { start: first.start, onSettle: onSettleFirst });
-		viewTransition(() => {}, { start: second.start, onSettle: onSettleSecond, retreat: true });
+		runViewTransition(() => {}, { start: first.start, onSettle: onSettleFirst });
+		runViewTransition(() => {}, {
+			start: second.start,
+			onSettle: onSettleSecond,
+			state: 'step-retreat'
+		});
 		first.finish();
 		await new Promise((r) => setTimeout(r));
 		expect(state()).toBe('step-retreat');
@@ -140,7 +154,7 @@ describe('viewTransition — supersession', () => {
 		const second = fakeStart();
 		const onSettle = vi.fn();
 		viewTransition(() => {}, { start: first.start });
-		viewTransition(() => {}, { start: second.start, onSettle });
+		runViewTransition(() => {}, { start: second.start, onSettle });
 		first.finish();
 		second.finish();
 		await vi.waitFor(() => expect(onSettle).toHaveBeenCalledTimes(1));
@@ -210,7 +224,7 @@ describe('viewTransition — promise rejections', () => {
 	it('still clears and settles when the update callback throws', async () => {
 		const { start, finish } = fakeStart(Promise.reject(new Error('boom')));
 		const onSettle = vi.fn();
-		viewTransition(() => {}, { start, onSettle });
+		runViewTransition(() => {}, { start, onSettle });
 		finish();
 		await vi.waitFor(() => expect(onSettle).toHaveBeenCalledTimes(1));
 		expect(state()).toBeUndefined();
@@ -240,7 +254,7 @@ describe('viewTransition — promise rejections', () => {
 		const reported = vi.spyOn(window, 'reportError').mockImplementation(() => {});
 		const { start, finish } = fakeStart();
 		const boom = new Error('onSettle');
-		viewTransition(() => {}, {
+		runViewTransition(() => {}, {
 			start,
 			onSettle: () => {
 				throw boom;

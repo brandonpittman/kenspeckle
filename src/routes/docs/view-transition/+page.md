@@ -71,7 +71,7 @@ By default the browser names the whole document `root` and crossfades it. There 
 }
 ```
 
-2 and 3 look identical when the unnamed remainder of the page is the same across screens. Prefer 3 for two reasons: it avoids a full-viewport snapshot pair on every navigation, and it takes the root out of the timing. The UA default is `0.25s`, so while root animates it governs the transition's length — which means `finished`, and therefore the attribute removal and `onSettle`, fire later than the visible motion ends.
+2 and 3 look identical when the unnamed remainder of the page is the same across screens. Prefer 3 for two reasons: it avoids a full-viewport snapshot pair on every navigation, and it takes the root out of the timing. The UA default is `0.25s`, so while root animates it governs the transition's length — which means `finished`, and therefore the attribute removal, fire later than the visible motion ends.
 
 ## Options
 
@@ -81,13 +81,9 @@ viewTransition(update, {
   retreat: false,
   // ms before the transition is skipped; past this a crossfade reads as a hang
   deadline: 600,
-  // runs once the transition settles, resolved or rejected — not when a later transition supersedes it
-  onSettle: () => {},
   // return true to skip the transition entirely
   reducedMotion: () => prefersReducedMotion.current
 });
 ```
 
-A direct call has no `onStart`: code that must run before the old snapshot is captured runs before the call.
-
-A throw out of `onSettle` is handed to the page's global error handling via `reportError` and goes no further: the attribute is still cleared.
+A direct call has no `onStart` or `onSettle`: code that must run before the old snapshot is captured runs before the call, and code that waits for the end chains on the returned transition's `finished`.
