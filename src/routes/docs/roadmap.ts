@@ -33,7 +33,8 @@ export const roadmap: RoadmapGroup[] = [
 				type: 'attachment',
 				blurb: 'name an element for the transition it takes part in'
 			},
-			{ name: 'retreat', type: 'function', blurb: 'which navigations animate in reverse' }
+			{ name: 'retreat', type: 'function', blurb: 'which navigations animate in reverse' },
+			{ name: 'debounce', type: 'function', blurb: 'debounce any function, with a shared promise' }
 		]
 	},
 	{
@@ -67,7 +68,6 @@ export const roadmap: RoadmapGroup[] = [
 			{ name: 'shortcut', type: 'attachment', blurb: 'keyboard shortcuts on an element or window' },
 			{ name: 'lockScroll', type: 'attachment', blurb: 'lock scroll, stacked releases' },
 			{ name: 'dragScroll', type: 'attachment', blurb: 'drag to scroll' },
-			{ name: 'debounce', type: 'function', blurb: 'debounce any function' },
 			{ name: 'throttle', type: 'function', blurb: 'throttle any function' },
 			{ name: 'listen', type: 'function', blurb: 'typed addEventListener with cleanup' },
 			{ name: 'interval', type: 'function', blurb: 'setInterval tied to the lifecycle' },

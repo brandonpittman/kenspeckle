@@ -1,5 +1,7 @@
 export { copy, copyText } from './copy.js';
 export type { CopyOptions, CopyText } from './copy.js';
+export { debounce } from './debounce.svelte.js';
+export type { DebouncedFunction } from './debounce.svelte.js';
 export { FiniteStateMachine } from './finite-state-machine.svelte.js';
 export type {
 	Action,

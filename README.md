@@ -57,7 +57,7 @@ Peer dependencies: `svelte >= 5.40`, plus `@sveltejs/kit >= 2` for the `kenspeck
 
 ## What's shipped
 
-Five exports, two entry points, each documented under [`src/routes/docs/`](src/routes/docs/). `kenspeckle` is Svelte-only; `kenspeckle/kit` adds the SvelteKit
+Six exports, two entry points, each documented under [`src/routes/docs/`](src/routes/docs/). `kenspeckle` is Svelte-only; `kenspeckle/kit` adds the SvelteKit
 pieces, so `$app/navigation` never enters the main entry.
 
 | export                                                                  | form                                   | lineage                    |
@@ -67,6 +67,7 @@ pieces, so `$app/navigation` never enters the main entry.
 | [`viewTransition()`](src/routes/docs/view-transition/+page.md)          | function; navigation form under `/kit` | new                        |
 | [`viewTransitionName()`](src/routes/docs/view-transition-name/+page.md) | attachment + helper, `/kit`            | new                        |
 | [`retreat()`](src/routes/docs/view-transition/+page.md)                 | function, returns a disposer, `/kit`   | new                        |
+| [`debounce()`](src/routes/docs/debounce/+page.md)                       | function wrapper                       | runed `useDebounce`        |
 
 `FiniteStateMachine` gains a typed, `$state`-backed `context` object visible to lifecycle hooks and
 guards — the sidecar-data mechanism every real FSM grows, built in.
@@ -98,7 +99,7 @@ shipped.
 | `lockScroll`                                                 | attachment ≡ helper, stacked lock counting | new                                                      |
 | `dragScroll()`                                               | attachment                                 | svelte-put `dragscroll`                                  |
 | `debounced()` / `throttled()`                                | value factory                              | runed `Debounced` / `Throttled`                          |
-| `debounce()` / `throttle()`                                  | function wrapper                           | runed `useDebounce` / `useThrottle`                      |
+| `throttle()`                                                 | function wrapper                           | runed `useThrottle`                                      |
 | `previous()`                                                 | value factory                              | runed `Previous`                                         |
 | `activeElement()`                                            | value factory                              | runed `ActiveElement`                                    |
 | `pressedKeys()`                                              | value factory                              | runed `PressedKeys`                                      |

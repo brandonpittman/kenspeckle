@@ -54,7 +54,7 @@ Each attachment closes over its own item, so only the one being navigated to cla
 
 ## Elements that arrive during the transition
 
-The default moment for naming is before the old frame is captured, which only reaches elements already on the outgoing page. The destination half of a morph does not exist yet at that point — it mounts *during* the transition, after the DOM commits and before the new frame is captured. That window is the only one it can join, and `onArrival` is how you ask for it:
+The default moment for naming is before the old frame is captured, which only reaches elements already on the outgoing page. The destination half of a morph does not exist yet at that point — it mounts _during_ the transition, after the DOM commits and before the new frame is captured. That window is the only one it can join, and `onArrival` is how you ask for it:
 
 ```svelte
 <img src={photo.url} alt="" {@attach viewTransitionName('hero', { onArrival: true })} />
