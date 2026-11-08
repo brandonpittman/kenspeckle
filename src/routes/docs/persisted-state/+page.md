@@ -10,19 +10,22 @@ A value kept in `localStorage` or `sessionStorage`, read and written through `cu
 import { PersistedState } from 'kenspeckle';
 
 const theme = new PersistedState('theme', 'light');
-const draft = new PersistedState('draft', '', { storage: 'session' });
+const draft = new PersistedState('draft', '', {
+  storage: 'session'
+});
 ```
 
 `storage` is `'local'` (the default) or `'session'`.
 
 ## Reading and writing
 
-Reading `current` returns what is stored under the key, or `initial` when nothing is. Assigning it writes to storage straight away:
+Reading `current` returns what is stored under the key, or `initial` when nothing is. Assigning it, directly or through a binding, writes to storage straight away:
 
 ```svelte
-<button onclick={() => (theme.current = theme.current === 'light' ? 'dark' : 'light')}>
-  {theme.current}
-</button>
+<select bind:value={theme.current}>
+  <option value="light">Light</option>
+  <option value="dark">Dark</option>
+</select>
 ```
 
 Nothing is written until the first assignment, so changing `initial` in a later release still reaches every user who never changed the value. There is no `remove()`: assign `initial` to reset.
