@@ -368,11 +368,6 @@ a:hover {
 	color: var(--color-rust);
 }
 
-/* a lone section number numbers nothing */
-.prose:has(> h2:only-of-type):not(:has(* h2)) h2::before {
-	content: none;
-}
-
 .prose h3 {
 	--flow-space: var(--space-l);
 	font-size: var(--step-1);

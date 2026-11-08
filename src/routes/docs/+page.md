@@ -4,24 +4,22 @@ _kenspeckle_ (Scots): easily recognized, familiar at sight. Svelte 5 utilities s
 
 See the [roadmap](/docs/roadmap) for what's shipped and what's coming, and the [recipes](/docs/recipes) for what Svelte and the platform already cover.
 
-## Utilities
-
-### Classes
+## Classes
 
 - [FiniteStateMachine](/docs/finite-state-machine) — fully typed FSM with reactive context
 - [PersistedState](/docs/persisted-state) — a value synced to localStorage or sessionStorage
 
-### Values
+## Values
 
 - [documentVisible](/docs/document-visible) — page visibility, a document singleton
 
-### Attachments
+## Attachments
 
 - [copy](/docs/copy) — clipboard attachment
 - [scrollEdges](/docs/scroll-edges) — which scroll edges an element has reached
 - [viewTransitionName](/docs/view-transition-name) — name an element for the transition it takes part in
 
-### Functions
+## Functions
 
 - [viewTransition](/docs/view-transition) — view transitions, with a SvelteKit navigation tier
 - [debounce](/docs/debounce) — debounce any function, with a shared promise
