@@ -64,9 +64,9 @@ export const roadmap: RoadmapGroup[] = [
 			},
 			{ name: 'mutations', type: 'attachment', blurb: 'MutationObserver records to a callback' },
 			{
-				name: 'scrollState',
+				name: 'scrollEdges',
 				type: 'attachment',
-				blurb: "an element's scroll position and direction"
+				blurb: 'which scroll edges an element has reached'
 			},
 			{ name: 'autosize', type: 'attachment', blurb: 'grow a textarea to its content' },
 			{ name: 'shortcut', type: 'attachment', blurb: 'keyboard shortcuts on an element' },

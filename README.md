@@ -91,7 +91,7 @@ shipped.
 | `focusWithin()`   | attachment, reports to a callback                         | runed `IsFocusWithin`                                    |
 | `intersection()`  | attachment + helper, entries to a callback                | runed `useIntersectionObserver` · svelte-put `intersect` |
 | `mutations()`     | attachment + helper, records to a callback                | runed `useMutationObserver`                              |
-| `scrollState()`   | attachment, element only, reports to a callback           | runed `ScrollState`                                      |
+| `scrollEdges()`   | attachment, edges reached to a callback                   | runed `ScrollState`                                      |
 | `autosize()`      | attachment                                                | runed `TextareaAutosize`                                 |
 | `shortcut()`      | attachment + helper                                       | svelte-put `shortcut`                                    |
 | `lockScroll`      | attachment ≡ helper, stacked lock counting                | new                                                      |
@@ -103,7 +103,7 @@ Dropped, deliberately, because Svelte or Kit already does it:
 - runed's `Debounced` / `Throttled`: `debounce()` / `throttle()` writing into a `$state`, with any effect that follows a source kept in the component that owns it.
 - `elementSize`, `elementRect`, `resized`: the dimension bindings (`bind:clientWidth`, `bind:contentRect`, `bind:borderBoxSize`) already measure with a `ResizeObserver`.
 - `inViewport`: `intersection()` with `entry.isIntersecting`.
-- `scrollState`'s window form: `<svelte:window bind:scrollY>` and `scrollY.current`.
+- `scrollState`, except its edges: `onscroll` gives an element's position, a comparison with the last value gives direction, and `<svelte:window bind:scrollY>` covers the window.
 - `mounted`: `onMount` setting a `$state`.
 - `listen`: `on()` from `svelte/events`.
 - `interval`, `animationFrames`: an `$effect` that starts the timer or loop and returns its cleanup.
