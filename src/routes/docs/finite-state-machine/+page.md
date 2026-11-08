@@ -132,6 +132,7 @@ machine.context = { ... };
 
 Handlers and lifecycle functions receive the live context in their meta and mutate it directly:
 
+<!-- prettier-ignore -->
 ```ts
 searching: {
   result: ({ context, args: [query] }) => {
