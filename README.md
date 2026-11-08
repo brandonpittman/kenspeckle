@@ -3,22 +3,19 @@
 	<img src="docs/assets/banner-light.svg" alt="kenspeckle, adjective, Scots, from Old Norse kennispeki: 1. easily recognised; conspicuous; familiar at sight. 2. (of Svelte utilities) knowable from the name alone.">
 </picture>
 
-Svelte utilities you recognize at sight. One naming convention, no `use` prefix, attachments first-class.
+Svelte utilities you recognize at sight: each one is shaped the way Svelte shapes its own APIs, so it reads like something Svelte might have shipped.
 
-## The sentence test
+## Shaped like Svelte
 
-Every export earns its shape by being said aloud: _"I want a new \___."_
+Every export takes the shape Svelte already uses for the same kind of thing.
 
-- "a new **finite state machine**" — speakable, and you drive it with methods → `new FiniteStateMachine()`
-- "a new **element size**" — not a thing you ask for → `elementSize()`
-- "a new **is idle**" — nonsense → `idle()`
-
-Two rules fall out:
-
-1. **Class** only when "new X" is speakable _and_ you drive it with methods. There are exactly two: `FiniteStateMachine` and `StateHistory`.
-2. **Everything else is a camelCase function.** No `use` prefix — that's a React Hooks rule, and Svelte has no such rule. No `is` prefix either — predicates are bare words read as implicit questions: `mounted()`, `idle()`, `documentVisible()`. The question lives in the library, the answer in your variable: `const isMounted = mounted()`.
-
-That's why the name. Kenspeckle things are known at sight; so is every export here. The word is the spec.
+- **Global browser state is a singleton with `current`**, like `innerWidth` in `svelte/reactivity/window`: `documentVisible.current`, `activeElement.current`. On the server it is `undefined`, as Svelte's are.
+- **A configured value is a class with `current`**, like `new MediaQuery(query)`: `new Idle(60_000)`, `new PersistedState('theme', 'light')`.
+- **A value that follows another is a class with `.of(fn)`**, like `Spring.of(() => number)`, called in an effect root such as component init: `Previous.of(() => count)`.
+- **A thing you drive with methods is a class**: `new FiniteStateMachine()`, `new StateHistory()`.
+- **Element behavior is an attachment.** An element value flows into your own `$state` through a callback, the way a function binding does (`bind:clientWidth={null, setWidth}`), never through a box the library owns.
+- **Everything else is a plain function**, with no `use` prefix, which is a React Hooks rule Svelte doesn't have.
+- **Nothing Svelte or Kit already does.** A binding, `on()`, `onDestroy`, `<svelte:document>` or an `$effect` with a returned cleanup beats a wrapper around it.
 
 ## Attachments, curried
 
@@ -33,19 +30,17 @@ Element-bound utilities are one name in two forms. Options only → returns an [
 <div {@attach clickOutside(() => close())}>…</div>
 ```
 
-Value-producing attachments are readable boxes — the factory's return _is_ the attachment, carrying reactive getters:
+An attachment that observes the element hands what it sees to a callback, so the value lives in your state:
 
 ```svelte
 <script>
-	import { elementSize } from 'kenspeckle';
+	import { intersected } from 'kenspeckle';
 
-	const size = elementSize(); // no target yet
+	let seen = $state(false);
 </script>
 
-<div {@attach size}>…</div><p>{size.width} × {size.height}</p>
+<div {@attach intersected((entry) => (seen = entry.isIntersecting))}>…</div>
 ```
-
-The same export works imperatively with a getter: `elementSize(() => node)`. Argument presence picks the mode.
 
 ## Install
 
@@ -53,7 +48,7 @@ The same export works imperatively with a getter: `elementSize(() => node)`. Arg
 npm install kenspeckle
 ```
 
-Peer dependencies: `svelte >= 5.40`, plus `@sveltejs/kit >= 2` for the `kenspeckle/kit` subpath (optional). SSR-safe — value factories return inert defaults on the server.
+Peer dependencies: `svelte >= 5.40`, plus `@sveltejs/kit >= 2` for the `kenspeckle/kit` subpath (optional). SSR-safe — singletons read `undefined` on the server, as Svelte's window values do.
 
 ## What's shipped
 
@@ -80,41 +75,41 @@ View transitions are what the package is for so far; they get their own section 
 The rest of the curation. These names are the design, not an API you can call — nothing below has
 shipped.
 
-| export                                                       | form                                       | lineage                                                  |
-| ------------------------------------------------------------ | ------------------------------------------ | -------------------------------------------------------- |
-| `StateHistory`                                               | class                                      | runed `StateHistory`                                     |
-| `mounted()`                                                  | value factory                              | runed `IsMounted`                                        |
-| `idle()`                                                     | value factory                              | runed `IsIdle`                                           |
-| `documentVisible()`                                          | value factory                              | runed `IsDocumentVisible`                                |
-| `focusWithin()`                                              | attachment, readable box                   | runed `IsFocusWithin`                                    |
-| `inViewport()`                                               | attachment, readable box                   | runed `IsInViewport`                                     |
-| `elementSize()`                                              | attachment, readable box                   | runed `ElementSize`                                      |
-| `elementRect()`                                              | attachment, readable box                   | runed `ElementRect`                                      |
-| `scrollState()`                                              | attachment, readable box; window form      | runed `ScrollState`                                      |
-| `autosize()`                                                 | attachment                                 | runed `TextareaAutosize`                                 |
-| `clickOutside()`                                             | attachment + helper                        | runed `onClickOutside` · svelte-put `clickoutside`       |
-| `intersected()`                                              | attachment + helper                        | runed `useIntersectionObserver` · svelte-put `intersect` |
-| `resized()`                                                  | attachment + helper                        | runed `useResizeObserver` · svelte-put `resize`          |
-| `mutated()`                                                  | attachment + helper                        | runed `useMutationObserver`                              |
-| `shortcut()`                                                 | attachment + helper                        | svelte-put `shortcut`                                    |
-| `lockScroll`                                                 | attachment ≡ helper, stacked lock counting | new                                                      |
-| `dragScroll()`                                               | attachment                                 | svelte-put `dragscroll`                                  |
-| `previous()`                                                 | value factory                              | runed `Previous`                                         |
-| `activeElement()`                                            | value factory                              | runed `ActiveElement`                                    |
-| `pressedKeys()`                                              | value factory                              | runed `PressedKeys`                                      |
-| `persisted()`                                                | value factory                              | runed `PersistedState`                                   |
-| `animationFrames()`                                          | value factory                              | runed `AnimationFrames`                                  |
-| `geolocation()`                                              | value factory                              | runed `useGeolocation`                                   |
-| `listen()`                                                   | wiring                                     | runed `useEventListener`                                 |
-| `interval()`                                                 | wiring                                     | runed `useInterval`                                      |
-| `searchParams()` + helpers                                   | value factory                              | runed `useSearchParams`                                  |
-| `watch` / `watchOnce` / `extract` / `onCleanup` / `boolAttr` | unchanged                                  | runed                                                    |
+| export            | form                                                      | lineage                                                  |
+| ----------------- | --------------------------------------------------------- | -------------------------------------------------------- |
+| `StateHistory`    | class: `new StateHistory(get, set)`, `.undo()`, `.redo()` | runed `StateHistory`                                     |
+| `Idle`            | class: `new Idle(ms)`, `.current`                         | runed `IsIdle`                                           |
+| `PersistedState`  | class: `new PersistedState(key, initial)`, `.current`     | runed `PersistedState`                                   |
+| `CurrentPosition` | class: `new CurrentPosition(options)`, `.current`         | runed `useGeolocation`                                   |
+| `Previous`        | class: `Previous.of(() => x)`, `.current`                 | runed `Previous`                                         |
+| `activeElement`   | singleton, `.current`                                     | runed `ActiveElement`                                    |
+| `pressedKeys`     | singleton, read like a set: `.has(key)`                   | runed `PressedKeys`                                      |
+| `clickOutside()`  | attachment + helper                                       | runed `onClickOutside` · svelte-put `clickoutside`       |
+| `focusWithin()`   | attachment, reports to a callback                         | runed `IsFocusWithin`                                    |
+| `intersected()`   | attachment + helper, entries to a callback                | runed `useIntersectionObserver` · svelte-put `intersect` |
+| `mutated()`       | attachment + helper, records to a callback                | runed `useMutationObserver`                              |
+| `scrollState()`   | attachment, element only, reports to a callback           | runed `ScrollState`                                      |
+| `autosize()`      | attachment                                                | runed `TextareaAutosize`                                 |
+| `shortcut()`      | attachment + helper                                       | svelte-put `shortcut`                                    |
+| `lockScroll`      | attachment ≡ helper, stacked lock counting                | new                                                      |
+| `dragScroll()`    | attachment                                                | svelte-put `dragscroll`                                  |
 
-Dropped, deliberately: runed's `Context` — Svelte ≥ 5.40's `createContext` returns a typed
-`[get, set]` pair and covers it. runed's `Debounced` / `Throttled` — `debounce()` / `throttle()`
-writing into a `$state` cover them, and the effect that follows a source stays in the component
-that owns it. runed's `resource` waits in the backlog — SvelteKit remote functions
-cover the server-data case; it returns only if a real client-only async need shows up.
+Dropped, deliberately, because Svelte or Kit already does it:
+
+- runed's `Context`: Svelte ≥ 5.40's `createContext` returns a typed `[get, set]` pair.
+- runed's `Debounced` / `Throttled`: `debounce()` / `throttle()` writing into a `$state`, with any effect that follows a source kept in the component that owns it.
+- `elementSize`, `elementRect`, `resized`: the dimension bindings (`bind:clientWidth`, `bind:contentRect`, `bind:borderBoxSize`) already measure with a `ResizeObserver`.
+- `inViewport`: `intersected()` with `entry.isIntersecting`.
+- `scrollState`'s window form: `<svelte:window bind:scrollY>` and `scrollY.current`.
+- `mounted`: `onMount` setting a `$state`.
+- `listen`: `on()` from `svelte/events`.
+- `interval`, `animationFrames`: an `$effect` that starts the timer or loop and returns its cleanup.
+- `onCleanup`: `onDestroy`, or an effect's returned cleanup.
+- `watch` / `watchOnce`: an effect responds to state being a certain way, not to it changing; handle the change where it happens.
+- `extract`: nothing here takes a value-or-getter.
+- `boolAttr`: Svelte omits nullish attributes, so `data-x={flag || undefined}`.
+
+Waiting in the backlog: runed's `resource`, since SvelteKit remote functions cover the server-data case, and `searchParams`, since Kit's `page.url.searchParams` and `goto` cover reads and writes until a typed layer earns its place.
 
 ## View transitions
 

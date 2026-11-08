@@ -1,6 +1,6 @@
 # kenspeckle docs
 
-_kenspeckle_ (Scots): easily recognized, familiar at sight. Svelte 5 utilities under one naming convention — no `use` prefix, no forced classes, attachments as a first-class layer.
+_kenspeckle_ (Scots): easily recognized, familiar at sight. Svelte 5 utilities shaped the way Svelte shapes its own APIs — singletons and classes with `current`, attachments for element behavior, no `use` prefix.
 
 See the [roadmap](/docs/roadmap) for what's shipped and what's coming.
 

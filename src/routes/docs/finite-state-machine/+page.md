@@ -4,7 +4,7 @@
 
 <PageHeading slug="finite-state-machine" />
 
-A strongly-typed finite state machine with reactive state and context. One of exactly two classes in kenspeckle — it passes the sentence test: "I want a _new finite state machine_."
+A strongly-typed finite state machine with reactive state and context. It is a class because you drive it with methods, the way Svelte makes `SvelteMap` a class.
 
 ```ts
 import { FiniteStateMachine } from 'kenspeckle';

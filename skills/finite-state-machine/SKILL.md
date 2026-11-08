@@ -5,9 +5,8 @@ description: Typed finite state machines in Svelte with kenspeckle's `FiniteStat
 
 # Finite state machine
 
-`npm i kenspeckle`. Peer dep: `svelte >= 5.40` (`createContext`). One of exactly
-two classes in the library, and it passes the sentence test: "I want a _new
-finite state machine_."
+`npm i kenspeckle`. Peer dep: `svelte >= 5.40` (`createContext`). A class because
+you drive it with methods, the way Svelte makes `SvelteMap` a class.
 
 ```ts
 import { FiniteStateMachine } from 'kenspeckle';

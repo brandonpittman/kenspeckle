@@ -41,38 +41,36 @@ export const roadmap: RoadmapGroup[] = [
 	{
 		status: 'planned',
 		title: 'Planned',
-		note: 'The curated v0 set — runed utilities reshaped under one convention, plus svelte-put actions reborn as attachments.',
+		note: "Shaped like Svelte's own APIs: singletons for global browser state, classes with current for configured or following values, attachments for element behavior.",
 		items: [
-			{ name: 'StateHistory', type: 'class', blurb: 'undo/redo stack over reactive state' },
-			{ name: 'mounted', type: 'value', blurb: 'has the component mounted yet' },
-			{ name: 'idle', type: 'value', blurb: 'has the user gone idle' },
-			{ name: 'documentVisible', type: 'value', blurb: 'page visibility state' },
-			{ name: 'previous', type: 'value', blurb: 'the previous value of a source' },
-			{ name: 'activeElement', type: 'value', blurb: "the document's focused element" },
-			{ name: 'pressedKeys', type: 'value', blurb: 'currently held keys' },
-			{ name: 'persisted', type: 'value', blurb: 'state synced to storage' },
-			{ name: 'animationFrames', type: 'value', blurb: 'a per-frame callback loop' },
-			{ name: 'geolocation', type: 'value', blurb: 'reactive geolocation' },
-			{ name: 'searchParams', type: 'value', blurb: 'typed, reactive URL search params' },
+			{ name: 'StateHistory', type: 'class', blurb: 'undo/redo over a getter and setter' },
+			{ name: 'Idle', type: 'class', blurb: 'has the user gone idle, after a set time' },
+			{ name: 'PersistedState', type: 'class', blurb: 'a value synced to storage' },
+			{ name: 'CurrentPosition', type: 'class', blurb: 'reactive geolocation' },
+			{ name: 'Previous', type: 'class', blurb: 'the previous value of a getter, via Previous.of' },
+			{
+				name: 'activeElement',
+				type: 'value',
+				blurb: "the document's focused element, a singleton"
+			},
+			{ name: 'pressedKeys', type: 'value', blurb: 'currently held keys, read like a set' },
 			{ name: 'clickOutside', type: 'attachment', blurb: 'fire when a pointer lands outside' },
-			{ name: 'inViewport', type: 'attachment', blurb: 'is the element on screen' },
-			{ name: 'elementSize', type: 'attachment', blurb: 'reactive element size' },
-			{ name: 'elementRect', type: 'attachment', blurb: 'reactive bounding rect' },
-			{ name: 'scrollState', type: 'attachment', blurb: 'scroll position and direction' },
-			{ name: 'focusWithin', type: 'attachment', blurb: 'does focus live inside' },
+			{ name: 'focusWithin', type: 'attachment', blurb: 'report whether focus lives inside' },
+			{
+				name: 'intersected',
+				type: 'attachment',
+				blurb: 'IntersectionObserver entries to a callback'
+			},
+			{ name: 'mutated', type: 'attachment', blurb: 'MutationObserver records to a callback' },
+			{
+				name: 'scrollState',
+				type: 'attachment',
+				blurb: "an element's scroll position and direction"
+			},
 			{ name: 'autosize', type: 'attachment', blurb: 'grow a textarea to its content' },
-			{ name: 'intersected', type: 'attachment', blurb: 'IntersectionObserver, curried' },
-			{ name: 'resized', type: 'attachment', blurb: 'ResizeObserver, curried' },
-			{ name: 'mutated', type: 'attachment', blurb: 'MutationObserver, curried' },
-			{ name: 'shortcut', type: 'attachment', blurb: 'keyboard shortcuts on an element or window' },
+			{ name: 'shortcut', type: 'attachment', blurb: 'keyboard shortcuts on an element' },
 			{ name: 'lockScroll', type: 'attachment', blurb: 'lock scroll, stacked releases' },
-			{ name: 'dragScroll', type: 'attachment', blurb: 'drag to scroll' },
-			{ name: 'listen', type: 'function', blurb: 'typed addEventListener with cleanup' },
-			{ name: 'interval', type: 'function', blurb: 'setInterval tied to the lifecycle' },
-			{ name: 'watch', type: 'function', blurb: 'run an effect when sources change' },
-			{ name: 'extract', type: 'function', blurb: 'read a maybe-reactive value' },
-			{ name: 'onCleanup', type: 'function', blurb: 'register teardown' },
-			{ name: 'boolAttr', type: 'function', blurb: 'boolean attribute helper' }
+			{ name: 'dragScroll', type: 'attachment', blurb: 'drag to scroll' }
 		]
 	},
 	{
@@ -85,6 +83,11 @@ export const roadmap: RoadmapGroup[] = [
 			{ name: 'inlineSvg', type: 'attachment', blurb: 'inline an external SVG' },
 			{ name: 'toc', type: 'attachment', blurb: 'table-of-contents extraction' },
 			{ name: 'qr', type: 'function', blurb: 'QR code generation' },
+			{
+				name: 'searchParams',
+				type: 'value',
+				blurb: "typed search params — Kit's page.url and goto cover it for now"
+			},
 			{
 				name: 'resource',
 				type: 'value',
