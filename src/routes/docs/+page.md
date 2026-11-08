@@ -2,7 +2,7 @@
 
 _kenspeckle_ (Scots): easily recognized, familiar at sight. Svelte 5 utilities shaped the way Svelte shapes its own APIs — singletons and classes with `current`, attachments for element behavior, no `use` prefix.
 
-See the [roadmap](/docs/roadmap) for what's shipped and what's coming, and the [recipes](/docs/recipes) for what Svelte and the platform already cover.
+See the [roadmap](/docs/roadmap) for what's shipped and what's coming, and the [recipes](/docs/recipes) for what Svelte and the platform already cover. View transitions span two entry points, so they have a [guide](/docs/view-transitions) of their own.
 
 ## Classes
 
@@ -17,6 +17,7 @@ See the [roadmap](/docs/roadmap) for what's shipped and what's coming, and the [
 
 ## Functions
 
-- [viewTransition](/docs/view-transition) — a view transition around an update; `enableViewTransitions` for navigation
+- [viewTransition](/docs/view-transition) — a view transition around a DOM update
+- [enableViewTransitions](/docs/enable-view-transitions) — a view transition on every SvelteKit navigation
 - [debounce](/docs/debounce) — debounce any function, with a shared promise
 - [throttle](/docs/throttle) — throttle any function, leading and trailing

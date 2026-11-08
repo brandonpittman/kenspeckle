@@ -96,6 +96,12 @@
 			</div>
 
 			<a
+				href={resolve('/docs/view-transitions')}
+				aria-current={page.url.pathname === resolve('/docs/view-transitions') ? 'page' : undefined}
+			>
+				View transitions guide
+			</a>
+			<a
 				href={resolve('/docs/recipes')}
 				aria-current={page.url.pathname === resolve('/docs/recipes') ? 'page' : undefined}
 			>

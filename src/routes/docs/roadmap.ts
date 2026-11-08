@@ -36,7 +36,12 @@ export const roadmap: RoadmapGroup[] = [
 			{
 				name: 'viewTransition',
 				type: 'function',
-				blurb: 'a view transition around an update; enableViewTransitions for navigation'
+				blurb: 'a view transition around a DOM update'
+			},
+			{
+				name: 'enableViewTransitions',
+				type: 'function',
+				blurb: 'a view transition on every SvelteKit navigation'
 			},
 			{
 				name: 'viewTransitionName',

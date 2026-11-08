@@ -10,11 +10,7 @@ Run a DOM update inside a CSS view transition. `viewTransition` handles the part
 import { viewTransition } from 'kenspeckle';
 ```
 
-SvelteKit apps add navigation from the `/kit` entry point:
-
-```ts
-import { enableViewTransitions, retreat, viewTransitionName } from 'kenspeckle/kit';
-```
+Navigations use [`enableViewTransitions`](/docs/enable-view-transitions) from `kenspeckle/kit`. The [view transitions guide](/docs/view-transitions) shows how the pieces fit together.
 
 ## Around a DOM update
 
@@ -38,50 +34,6 @@ viewTransition(async () => {
 ```
 
 If the browser lacks the API, or the user prefers reduced motion, the update still runs — it just runs without a transition. That is a bail, not a fallback: a view transition suspends rendering for the whole update, so animating nothing is not the same as not transitioning.
-
-## On navigation
-
-From `kenspeckle/kit`, call `enableViewTransitions`. It registers an `onNavigate` handler, so it belongs in a root layout's script — once, at init:
-
-```ts
-import { enableViewTransitions } from 'kenspeckle/kit';
-
-enableViewTransitions();
-```
-
-Every client-side navigation now runs inside a transition. Nothing else is required.
-
-## Direction
-
-`retreat` registers a predicate that decides which navigations animate in reverse. It is consulted per navigation, at transition time:
-
-```ts
-import { retreat } from 'kenspeckle/kit';
-
-retreat((navigation) => navigation.to?.url.pathname === previousStep);
-```
-
-A backward `popstate` — the browser back button — is always a retreat, whatever the predicate returns. Forward is an ordinary forward navigation, which the predicate can still claim.
-
-It returns a disposer that unregisters the predicate, so a predicate registered by a component can live and die with it — return it straight from an `$effect` and Svelte runs it as the cleanup:
-
-```ts
-$effect(() => retreat((navigation) => navigation.to?.url.pathname === previousStep));
-```
-
-Without that, the predicate outlives the page that registered it and keeps closing over dead state for the rest of the session. The disposer is identity-guarded: it only unregisters its own predicate, so a late cleanup cannot clobber a newer registration.
-
-Register a predicate, never set a flag at click time. SvelteKit skips `beforeNavigate` for a navigation begun while another is still in flight, so a flag set by one click can be left behind and reverse a later, unrelated navigation. There is no boolean that closes this.
-
-One trap when the path you compare against is configured rather than observed: Kit strips the trailing slash from `navigation.to`, so `'/profile/gender/'` never equals it and the predicate matches nothing. Normalize both sides — Kit exports `normalizeUrl` for exactly this:
-
-```ts
-import { normalizeUrl } from '@sveltejs/kit';
-
-const path = (value: string) => normalizeUrl(value).url.pathname;
-
-retreat((navigation) => path(navigation.to?.url.pathname ?? '') === path(previousStep));
-```
 
 ## The attribute
 
@@ -138,13 +90,4 @@ viewTransition(update, {
 
 A direct call has no `onStart`: code that must run before the old snapshot is captured runs before the call.
 
-`enableViewTransitions` takes the same options except `retreat` — that is what the predicate is for — plus an `onStart` that runs synchronously before the old snapshot is captured and receives the navigation:
-
-```ts
-enableViewTransitions({
-  onStart: (navigation) => hideCloak(navigation),
-  onSettle: () => showCloak()
-});
-```
-
-A throw out of `onStart` or `onSettle` is handed to the page's global error handling via `reportError` and goes no further: the transition still runs, the attribute is still cleared, and a navigation still completes.
+A throw out of `onSettle` is handed to the page's global error handling via `reportError` and goes no further: the attribute is still cleared.

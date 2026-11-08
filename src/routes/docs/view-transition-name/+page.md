@@ -10,7 +10,7 @@ Name an element so it morphs across a navigation instead of crossfading with the
 import { viewTransitionName } from 'kenspeckle/kit';
 ```
 
-It needs `enableViewTransitions()` called in your root layout; the navigation is what drives it.
+It needs [`enableViewTransitions()`](/docs/enable-view-transitions) called in your root layout; the navigation is what drives it. The [view transitions guide](/docs/view-transitions) shows the whole setup.
 
 ## As an attachment
 

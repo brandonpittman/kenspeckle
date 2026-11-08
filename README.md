@@ -58,18 +58,18 @@ Peer dependencies: `svelte >= 5.40`, plus `@sveltejs/kit >= 2` for the `kenspeck
 Ten exports, two entry points, each documented under [the docs site](https://kenspeckle.brandonpittman.workers.dev/docs). `kenspeckle` is Svelte-only; `kenspeckle/kit` adds the SvelteKit
 pieces, so `$app/navigation` never enters the main entry.
 
-| export                                                                                            | form                                 |
-| ------------------------------------------------------------------------------------------------- | ------------------------------------ |
-| [`FiniteStateMachine`](https://kenspeckle.brandonpittman.workers.dev/docs/finite-state-machine)   | class, with typed reactive `context` |
-| [`PersistedState`](https://kenspeckle.brandonpittman.workers.dev/docs/persisted-state)            | class, `.current`                    |
-| [`Countdown`](https://kenspeckle.brandonpittman.workers.dev/docs/countdown)                       | class, `.current`                    |
-| [`scrollEdges()`](https://kenspeckle.brandonpittman.workers.dev/docs/scroll-edges)                | attachment, edges to a callback      |
-| [`viewTransition()`](https://kenspeckle.brandonpittman.workers.dev/docs/view-transition)          | function                             |
-| [`enableViewTransitions()`](https://kenspeckle.brandonpittman.workers.dev/docs/view-transition)   | function, `/kit`                     |
-| [`viewTransitionName()`](https://kenspeckle.brandonpittman.workers.dev/docs/view-transition-name) | attachment, `/kit`                   |
-| [`retreat()`](https://kenspeckle.brandonpittman.workers.dev/docs/view-transition)                 | function, returns a disposer, `/kit` |
-| [`debounce()`](https://kenspeckle.brandonpittman.workers.dev/docs/debounce)                       | function wrapper                     |
-| [`throttle()`](https://kenspeckle.brandonpittman.workers.dev/docs/throttle)                       | function wrapper                     |
+| export                                                                                                  | form                                 |
+| ------------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| [`FiniteStateMachine`](https://kenspeckle.brandonpittman.workers.dev/docs/finite-state-machine)         | class, with typed reactive `context` |
+| [`PersistedState`](https://kenspeckle.brandonpittman.workers.dev/docs/persisted-state)                  | class, `.current`                    |
+| [`Countdown`](https://kenspeckle.brandonpittman.workers.dev/docs/countdown)                             | class, `.current`                    |
+| [`scrollEdges()`](https://kenspeckle.brandonpittman.workers.dev/docs/scroll-edges)                      | attachment, edges to a callback      |
+| [`viewTransition()`](https://kenspeckle.brandonpittman.workers.dev/docs/view-transition)                | function                             |
+| [`enableViewTransitions()`](https://kenspeckle.brandonpittman.workers.dev/docs/enable-view-transitions) | function, `/kit`                     |
+| [`viewTransitionName()`](https://kenspeckle.brandonpittman.workers.dev/docs/view-transition-name)       | attachment, `/kit`                   |
+| [`retreat()`](https://kenspeckle.brandonpittman.workers.dev/docs/enable-view-transitions)               | function, returns a disposer, `/kit` |
+| [`debounce()`](https://kenspeckle.brandonpittman.workers.dev/docs/debounce)                             | function wrapper                     |
+| [`throttle()`](https://kenspeckle.brandonpittman.workers.dev/docs/throttle)                             | function wrapper                     |
 
 `FiniteStateMachine` has a typed, `$state`-backed `context` object visible to lifecycle hooks and
 guards — the sidecar-data mechanism every real FSM grows, built in.
