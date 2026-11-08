@@ -153,7 +153,7 @@ Keep domain verbs out of the machine — wrap it in an app-facing class or facto
 ```ts
 // fires send('search', query) after 300ms of quiet
 machine.debounce('search', 300, query);
-// wait defaults to 500
+// wait defaults to 250
 machine.debounce('search');
 ```
 

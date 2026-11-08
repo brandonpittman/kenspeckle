@@ -138,7 +138,7 @@ machine.debounce('search', 300, query);
 ```
 
 Keyed per event: re-debouncing one event resets its timer, different events do
-not interfere. The wait defaults to 500ms. Every coalesced call's promise
+not interfere. The wait defaults to 250ms. Every coalesced call's promise
 resolves with the resulting state when the trailing send fires, so a superseded
 call never hangs. `send` and `debounce` are pre-bound, so they pass straight to
 event handlers.
