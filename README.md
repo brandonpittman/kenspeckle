@@ -7,7 +7,7 @@ Svelte utilities you recognize at sight: each one is shaped the way Svelte shape
 
 ## Shaped like Svelte
 
-A utility makes the cut only if Svelte doesn't already handle it. Handled means a Svelte or Kit API covers it (a binding, `on()`, `onDestroy`, `<svelte:document>`, an `$effect` with a returned cleanup), the platform does (`field-sizing`, `:focus-within`), or a few lines of Svelte do, in which case it becomes a [recipe](src/routes/docs/recipes/+page.md) instead of an export.
+A utility makes the cut only if Svelte doesn't already handle it. Handled means a Svelte or Kit API covers it (a binding, `on()`, `onDestroy`, `<svelte:document>`, an `$effect` with a returned cleanup), the platform does (`field-sizing`, `:focus-within`), or a few lines of Svelte do, in which case it becomes a [recipe](https://kenspeckle.brandonpittman.workers.dev/docs/recipes) instead of an export.
 
 What makes the cut takes the shape Svelte already uses for the same kind of thing. Ask these in order; the first yes decides:
 
@@ -55,21 +55,21 @@ Peer dependencies: `svelte >= 5.40`, plus `@sveltejs/kit >= 2` for the `kenspeck
 
 ## What's shipped
 
-Ten exports, two entry points, each documented under [`src/routes/docs/`](src/routes/docs/). `kenspeckle` is Svelte-only; `kenspeckle/kit` adds the SvelteKit
+Ten exports, two entry points, each documented under [the docs site](https://kenspeckle.brandonpittman.workers.dev/docs). `kenspeckle` is Svelte-only; `kenspeckle/kit` adds the SvelteKit
 pieces, so `$app/navigation` never enters the main entry.
 
-| export                                                                  | form                                   |
-| ----------------------------------------------------------------------- | -------------------------------------- |
-| [`FiniteStateMachine`](src/routes/docs/finite-state-machine/+page.md)   | class, with typed reactive `context`   |
-| [`PersistedState`](src/routes/docs/persisted-state/+page.md)            | class, `.current`                      |
-| [`documentVisible`](src/routes/docs/document-visible/+page.md)          | singleton, `.current`                  |
-| [`copy()` / `copyText()`](src/routes/docs/copy/+page.md)                | attachment                             |
-| [`scrollEdges()`](src/routes/docs/scroll-edges/+page.md)                | attachment, edges to a callback        |
-| [`viewTransition()`](src/routes/docs/view-transition/+page.md)          | function; navigation form under `/kit` |
-| [`viewTransitionName()`](src/routes/docs/view-transition-name/+page.md) | attachment, `/kit`                     |
-| [`retreat()`](src/routes/docs/view-transition/+page.md)                 | function, returns a disposer, `/kit`   |
-| [`debounce()`](src/routes/docs/debounce/+page.md)                       | function wrapper                       |
-| [`throttle()`](src/routes/docs/throttle/+page.md)                       | function wrapper                       |
+| export                                                                                            | form                                   |
+| ------------------------------------------------------------------------------------------------- | -------------------------------------- |
+| [`FiniteStateMachine`](https://kenspeckle.brandonpittman.workers.dev/docs/finite-state-machine)   | class, with typed reactive `context`   |
+| [`PersistedState`](https://kenspeckle.brandonpittman.workers.dev/docs/persisted-state)            | class, `.current`                      |
+| [`documentVisible`](https://kenspeckle.brandonpittman.workers.dev/docs/document-visible)          | singleton, `.current`                  |
+| [`copy()` / `copyText()`](https://kenspeckle.brandonpittman.workers.dev/docs/copy)                | attachment                             |
+| [`scrollEdges()`](https://kenspeckle.brandonpittman.workers.dev/docs/scroll-edges)                | attachment, edges to a callback        |
+| [`viewTransition()`](https://kenspeckle.brandonpittman.workers.dev/docs/view-transition)          | function; navigation form under `/kit` |
+| [`viewTransitionName()`](https://kenspeckle.brandonpittman.workers.dev/docs/view-transition-name) | attachment, `/kit`                     |
+| [`retreat()`](https://kenspeckle.brandonpittman.workers.dev/docs/view-transition)                 | function, returns a disposer, `/kit`   |
+| [`debounce()`](https://kenspeckle.brandonpittman.workers.dev/docs/debounce)                       | function wrapper                       |
+| [`throttle()`](https://kenspeckle.brandonpittman.workers.dev/docs/throttle)                       | function wrapper                       |
 
 `FiniteStateMachine` has a typed, `$state`-backed `context` object visible to lifecycle hooks and
 guards — the sidecar-data mechanism every real FSM grows, built in.
@@ -113,7 +113,7 @@ Dropped, deliberately, because Svelte, Kit or the platform already handles it:
 - `extract`: nothing here takes a value-or-getter.
 - `boolAttr`: Svelte omits nullish attributes, so `data-x={flag || undefined}`.
 
-The [recipes](src/routes/docs/recipes/+page.md) page spells out the replacements for `autosize`, `intersected`, `mutated`, `focusWithin` and `Previous`.
+The [recipes](https://kenspeckle.brandonpittman.workers.dev/docs/recipes) page spells out the replacements for `autosize`, `intersected`, `mutated`, `focusWithin` and `Previous`.
 
 Waiting in the backlog: `resource`, since SvelteKit remote functions cover the server-data case, and `searchParams`, since Kit's `page.url.searchParams` and `goto` cover reads and writes until a typed layer earns its place.
 
