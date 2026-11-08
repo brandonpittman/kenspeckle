@@ -96,6 +96,7 @@
 		"utilities"
 	],
 	"dependencies": {
+		"devalue": "^5.8.1 || ^6",
 		"esm-env": "^1.2.2"
 	}
 }
