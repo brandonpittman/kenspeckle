@@ -12,7 +12,7 @@ you drive it with methods, the way Svelte makes `SvelteMap` a class.
 import { FiniteStateMachine } from 'kenspeckle';
 ```
 
-Verified against kenspeckle 0.1.x. If the installed version disagrees with
+Verified against kenspeckle 0.3.x. If the installed version disagrees with
 anything here, trust its `.d.ts`.
 
 ## When to reach for it

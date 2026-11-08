@@ -9,7 +9,7 @@ description: View transitions in Svelte and SvelteKit with kenspeckle — `enabl
 the `kenspeckle/kit` subpath, which exists so `$app/navigation` never enters the
 main entry.
 
-Verified against kenspeckle 0.1.x. If the installed version disagrees with
+Verified against kenspeckle 0.3.x. If the installed version disagrees with
 anything here, trust its `.d.ts`.
 
 ## Don't hand-roll it
