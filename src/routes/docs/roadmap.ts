@@ -46,7 +46,11 @@ export const roadmap: RoadmapGroup[] = [
 		items: [
 			{ name: 'StateHistory', type: 'class', blurb: 'undo/redo over a getter and setter' },
 			{ name: 'Idle', type: 'class', blurb: 'has the user gone idle, after a set time' },
-			{ name: 'PersistedState', type: 'class', blurb: 'a value synced to localStorage' },
+			{
+				name: 'PersistedState',
+				type: 'class',
+				blurb: 'a value synced to localStorage or sessionStorage'
+			},
 			{
 				name: 'AsyncPersistedState',
 				type: 'class',
