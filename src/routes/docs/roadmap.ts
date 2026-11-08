@@ -46,7 +46,12 @@ export const roadmap: RoadmapGroup[] = [
 		items: [
 			{ name: 'StateHistory', type: 'class', blurb: 'undo/redo over a getter and setter' },
 			{ name: 'Idle', type: 'class', blurb: 'has the user gone idle, after a set time' },
-			{ name: 'PersistedState', type: 'class', blurb: 'a value synced to storage' },
+			{ name: 'PersistedState', type: 'class', blurb: 'a value synced to localStorage' },
+			{
+				name: 'AsyncPersistedState',
+				type: 'class',
+				blurb: 'a value in IndexedDB, awaitable like a remote query'
+			},
 			{ name: 'CurrentPosition', type: 'class', blurb: 'reactive geolocation' },
 			{ name: 'pressedKeys', type: 'value', blurb: 'currently held keys, read like a set' },
 			{ name: 'clickOutside', type: 'attachment', blurb: 'fire when a pointer lands outside' },

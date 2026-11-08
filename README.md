@@ -79,18 +79,19 @@ View transitions are what the package is for so far; they get their own section 
 The rest of the plan. These names are the design, not an API you can call — nothing below has
 shipped.
 
-| export            | form                                                      |
-| ----------------- | --------------------------------------------------------- |
-| `StateHistory`    | class: `new StateHistory(get, set)`, `.undo()`, `.redo()` |
-| `Idle`            | class: `new Idle(ms)`, `.current`                         |
-| `PersistedState`  | class: `new PersistedState(key, initial)`, `.current`     |
-| `CurrentPosition` | class: `new CurrentPosition(options)`, `.current`         |
-| `pressedKeys`     | singleton, read like a set: `.has(key)`                   |
-| `clickOutside()`  | attachment + helper                                       |
-| `scrollEdges()`   | attachment, edges reached to a callback                   |
-| `shortcut()`      | attachment + helper                                       |
-| `lockScroll`      | attachment ≡ helper, stacked lock counting                |
-| `dragScroll()`    | attachment                                                |
+| export                | form                                                                                              |
+| --------------------- | ------------------------------------------------------------------------------------------------- |
+| `StateHistory`        | class: `new StateHistory(get, set)`, `.undo()`, `.redo()`                                         |
+| `Idle`                | class: `new Idle(ms)`, `.current`                                                                 |
+| `PersistedState`      | class: `new PersistedState(key, initial)`, `.current`                                             |
+| `AsyncPersistedState` | class over IndexedDB: `await` it, or read `.current`, `.loading`, `.error`, like a remote `query` |
+| `CurrentPosition`     | class: `new CurrentPosition(options)`, `.current`                                                 |
+| `pressedKeys`         | singleton, read like a set: `.has(key)`                                                           |
+| `clickOutside()`      | attachment + helper                                                                               |
+| `scrollEdges()`       | attachment, edges reached to a callback                                                           |
+| `shortcut()`          | attachment + helper                                                                               |
+| `lockScroll`          | attachment ≡ helper, stacked lock counting                                                        |
+| `dragScroll()`        | attachment                                                                                        |
 
 Dropped, deliberately, because Svelte, Kit or the platform already handles it:
 
