@@ -4,8 +4,13 @@
 	import { page } from '$app/state';
 	import { SvelteSet } from 'svelte/reactivity';
 	import { copy } from '$lib/copy.js';
-	import { tagLabels, utilities, utilityTypes, type UtilityType } from './utilities.js';
-	import TypeTag from './TypeTag.svelte';
+	import {
+		groupLabels,
+		tagLabels,
+		utilities,
+		utilityTypes,
+		type UtilityType
+	} from './utilities.js';
 	import './docs.css';
 
 	let { children } = $props();
@@ -16,7 +21,12 @@
 	let prose = $state<HTMLElement>();
 	const active = new SvelteSet<UtilityType>(utilityTypes);
 
-	const shown = $derived(utilities.filter((u) => active.has(u.type)));
+	const groups = $derived(
+		utilityTypes
+			.filter((type) => active.has(type))
+			.map((type) => ({ type, items: utilities.filter((u) => u.type === type) }))
+			.filter((group) => group.items.length)
+	);
 
 	function toggle(type: UtilityType) {
 		if (active.has(type)) active.delete(type);
@@ -96,20 +106,28 @@
 				{/each}
 			</div>
 
-			{#if shown.length}
-				<ul>
-					{#each shown as util (util.slug)}
-						<li>
-							<a
-								href={util.href}
-								aria-current={page.url.pathname === util.href ? 'page' : undefined}
-							>
-								{util.label}
-								<TypeTag type={util.type} />
-							</a>
-						</li>
+			{#if groups.length}
+				<div class="[ nav-groups ] [ flow ]">
+					{#each groups as group (group.type)}
+						<div>
+							<span class="nav-group-label" id="nav-group-{group.type}" data-type={group.type}>
+								{groupLabels[group.type]}
+							</span>
+							<ul aria-labelledby="nav-group-{group.type}">
+								{#each group.items as util (util.slug)}
+									<li>
+										<a
+											href={util.href}
+											aria-current={page.url.pathname === util.href ? 'page' : undefined}
+										>
+											{util.label}
+										</a>
+									</li>
+								{/each}
+							</ul>
+						</div>
 					{/each}
-				</ul>
+				</div>
 			{:else}
 				<p class="nav-empty">No utilities match.</p>
 			{/if}

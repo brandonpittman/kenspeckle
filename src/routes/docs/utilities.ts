@@ -20,6 +20,13 @@ export const tagLabels: Record<TagType, string> = {
 	function: 'function'
 };
 
+export const groupLabels: Record<UtilityType, string> = {
+	class: 'Classes',
+	value: 'Values',
+	attachment: 'Attachments',
+	function: 'Functions'
+};
+
 export const utilityTypes: UtilityType[] = ['class', 'value', 'attachment', 'function'];
 
 export const utilities: Utility[] = [
