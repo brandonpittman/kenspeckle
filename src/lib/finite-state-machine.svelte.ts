@@ -74,7 +74,7 @@ export class FiniteStateMachine<
 > {
 	#current: StatesT = $state()!;
 	#context: ContextT = $state()!;
-	readonly states: Transition<StatesT, EventsT, ContextT>;
+	readonly #states: Transition<StatesT, EventsT, ContextT>;
 
 	constructor(
 		initial: StatesT,
@@ -82,7 +82,7 @@ export class FiniteStateMachine<
 		...options: undefined extends ContextT ? [] : [{ context: ContextT }]
 	) {
 		this.#current = initial;
-		this.states = states;
+		this.#states = states;
 		this.#context = options[0]?.context as ContextT;
 		this.#lifecycle('_enter', initial, {
 			from: null,
@@ -94,7 +94,7 @@ export class FiniteStateMachine<
 	}
 
 	send = <K extends keyof EventsT>(event: K, ...args: EventsT[K]): StatesT => {
-		const action = this.states[this.#current]?.[event] ?? this.states['*']?.[event];
+		const action = this.#states[this.#current]?.[event] ?? this.#states['*']?.[event];
 		if (action === undefined) {
 			if (DEV) {
 				console.warn(`kenspeckle: unhandled event '${String(event)}' in state '${this.#current}'`);
@@ -144,7 +144,7 @@ export class FiniteStateMachine<
 	}
 
 	#lifecycle(kind: '_enter' | '_exit', state: StatesT, meta: unknown) {
-		const fn = this.states[state]?.[kind] ?? this.states['*']?.[kind];
+		const fn = this.#states[state]?.[kind] ?? this.#states['*']?.[kind];
 		(fn as ((meta: unknown) => void) | undefined)?.(meta);
 	}
 

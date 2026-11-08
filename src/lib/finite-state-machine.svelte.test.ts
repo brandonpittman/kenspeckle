@@ -61,11 +61,6 @@ describe('core: toggle machine', () => {
 		expect(exit.off.mock.invocationCallOrder[0]).toBeLessThan(enter.on.mock.invocationCallOrder[0]);
 		expect(exit.on).not.toHaveBeenCalled();
 	});
-
-	it('exposes the states definition', () => {
-		const { f } = create();
-		expect(f.states.off.toggle).toBe('on');
-	});
 });
 
 describe('function handlers', () => {
