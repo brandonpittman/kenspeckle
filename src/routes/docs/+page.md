@@ -10,10 +10,6 @@ See the [roadmap](/docs/roadmap) for what's shipped and what's coming, and the [
 - [Countdown](/docs/countdown) — milliseconds left until a deadline
 - [PersistedState](/docs/persisted-state) — a value synced to localStorage or sessionStorage
 
-## Values
-
-- [documentVisible](/docs/document-visible) — page visibility, a document singleton
-
 ## Attachments
 
 - [copy](/docs/copy) — clipboard attachment

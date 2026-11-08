@@ -11,7 +11,7 @@ A utility makes the cut only if Svelte doesn't already handle it. Handled means 
 
 What makes the cut takes the shape Svelte already uses for the same kind of thing. Ask these in order; the first yes decides:
 
-1. **Is it global browser state?** A singleton with `current`, like `innerWidth` in `svelte/reactivity/window`: `documentVisible.current`. It reads the live value, and on the server it is `undefined`, as Svelte's are. Where a `<svelte:document>` or `<svelte:window>` binding already exists, the singleton earns its place only if modules need to read it outside a component: a polling store that pauses in a hidden tab does, and focus logic, which lives with its element, doesn't.
+1. **Is it global browser state?** A singleton with `current`, like `innerWidth` in `svelte/reactivity/window`. It reads the live value, and on the server it is `undefined`, as Svelte's are. Where a `<svelte:document>` or `<svelte:window>` binding already exists, the singleton earns its place only if modules need to read it outside a component.
 2. **Is it a value configured at construction?** A class with `current`, like `new MediaQuery(query)`: `new Idle(60_000)`, `new PersistedState('theme', 'light')`.
 3. **Is it a value that follows another over time?** A class with `.of(fn)`, like `Spring.of(() => number)`, called in an effect root such as component init. It earns the class only if `current` holds something you couldn't produce where the value is written, the way a tween's in-between frames are. A debounced value and a previous value both fail this: each is a value already written, so `debounce()` or a saved copy at the write site covers it.
 4. **Do you drive it with methods?** A class: `new FiniteStateMachine()`, `new StateHistory()`.
@@ -55,7 +55,7 @@ Peer dependencies: `svelte >= 5.40`, plus `@sveltejs/kit >= 2` for the `kenspeck
 
 ## What's shipped
 
-Twelve exports, two entry points, each documented under [the docs site](https://kenspeckle.brandonpittman.workers.dev/docs). `kenspeckle` is Svelte-only; `kenspeckle/kit` adds the SvelteKit
+Eleven exports, two entry points, each documented under [the docs site](https://kenspeckle.brandonpittman.workers.dev/docs). `kenspeckle` is Svelte-only; `kenspeckle/kit` adds the SvelteKit
 pieces, so `$app/navigation` never enters the main entry.
 
 | export                                                                                            | form                                 |
@@ -63,7 +63,6 @@ pieces, so `$app/navigation` never enters the main entry.
 | [`FiniteStateMachine`](https://kenspeckle.brandonpittman.workers.dev/docs/finite-state-machine)   | class, with typed reactive `context` |
 | [`PersistedState`](https://kenspeckle.brandonpittman.workers.dev/docs/persisted-state)            | class, `.current`                    |
 | [`Countdown`](https://kenspeckle.brandonpittman.workers.dev/docs/countdown)                       | class, `.current`                    |
-| [`documentVisible`](https://kenspeckle.brandonpittman.workers.dev/docs/document-visible)          | singleton, `.current`                |
 | [`copy()` / `copyText()`](https://kenspeckle.brandonpittman.workers.dev/docs/copy)                | attachment                           |
 | [`scrollEdges()`](https://kenspeckle.brandonpittman.workers.dev/docs/scroll-edges)                | attachment, edges to a callback      |
 | [`viewTransition()`](https://kenspeckle.brandonpittman.workers.dev/docs/view-transition)          | function                             |
@@ -106,6 +105,7 @@ Dropped, deliberately, because Svelte, Kit or the platform already handles it:
 - `focusWithin`: CSS `:focus-within` for styling, and `onfocusin` / `onfocusout` with `relatedTarget` for a value.
 - `scrollState`, except its edges: `onscroll` gives an element's position, a comparison with the last value gives direction, and `<svelte:window bind:scrollY>` covers the window.
 - `activeElement`: `<svelte:document bind:activeElement />`, since focus logic lives in the component that holds the element.
+- `documentVisible`: `<svelte:document bind:visibilityState />`.
 - `Previous`: save the old value where you write the new one (`previous = count; count = next`); for a prop you don't write, an `$effect.pre` does it.
 - `mounted`: `onMount` setting a `$state`.
 - `listen`: `on()` from `svelte/events`.
@@ -115,7 +115,7 @@ Dropped, deliberately, because Svelte, Kit or the platform already handles it:
 - `extract`: nothing here takes a value-or-getter.
 - `boolAttr`: Svelte omits nullish attributes, so `data-x={flag || undefined}`.
 
-The [recipes](https://kenspeckle.brandonpittman.workers.dev/docs/recipes) page spells out the replacements for `autosize`, `intersected`, `mutated`, `focusWithin` and `Previous`.
+The [recipes](https://kenspeckle.brandonpittman.workers.dev/docs/recipes) page spells out the replacements for `autosize`, `intersected`, `mutated`, `focusWithin`, `documentVisible` and `Previous`.
 
 Waiting in the backlog: `resource`, since SvelteKit remote functions cover the server-data case, and `searchParams`, since Kit's `page.url.searchParams` and `goto` cover reads and writes until a typed layer earns its place.
 

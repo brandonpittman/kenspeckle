@@ -162,6 +162,26 @@ For a value, listen for focus moving in and out. `focusout` fires before focus l
 
 When focus leaves the window or moves into an iframe, `relatedTarget` is `null`, so `inside` becomes `false`.
 
+## Know whether the page is visible
+
+Bind the document's `visibilityState`, declared in the component script as `let visibilityState = $state<DocumentVisibilityState>()`:
+
+```svelte
+<svelte:document bind:visibilityState />
+```
+
+It is `'visible'` or `'hidden'` in the browser, and `undefined` during server rendering. A poll that pauses while the tab is hidden, in the same script:
+
+```ts
+$effect(() => {
+  if (visibilityState === 'hidden') return;
+  const id = setInterval(refresh, 5000);
+  return () => clearInterval(id);
+});
+```
+
+A module or class that needs the value outside the component takes a getter, `() => visibilityState`, from the component that binds it.
+
 ## Keep the previous value
 
 Where you write the value, save the old one first:

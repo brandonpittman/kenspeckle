@@ -52,13 +52,6 @@ export const utilities: Utility[] = [
 		blurb: 'milliseconds left until a deadline'
 	},
 	{
-		slug: 'document-visible',
-		href: resolve('/docs/document-visible'),
-		label: 'documentVisible',
-		type: 'value',
-		blurb: 'page visibility, a document singleton'
-	},
-	{
 		slug: 'copy',
 		href: resolve('/docs/copy'),
 		label: 'copy',
