@@ -10,7 +10,7 @@ Svelte utilities you recognize at sight: each one is shaped the way Svelte shape
 Every export takes the shape Svelte already uses for the same kind of thing. Ask these in order; the first yes decides:
 
 1. **Does Svelte or Kit already do it?** Then nothing ships. A binding, `on()`, `onDestroy`, `<svelte:document>` or an `$effect` with a returned cleanup beats a wrapper around it.
-2. **Is it global browser state?** A singleton with `current`, like `innerWidth` in `svelte/reactivity/window`: `documentVisible.current`, `activeElement.current`. It reads the live value, and on the server it is `undefined`, as Svelte's are.
+2. **Is it global browser state?** A singleton with `current`, like `innerWidth` in `svelte/reactivity/window`: `documentVisible.current`. It reads the live value, and on the server it is `undefined`, as Svelte's are. Where a `<svelte:document>` or `<svelte:window>` binding already exists, the singleton earns its place only if modules need to read it outside a component: a polling store that pauses in a hidden tab does, and focus logic, which lives with its element, doesn't.
 3. **Is it a value configured at construction?** A class with `current`, like `new MediaQuery(query)`: `new Idle(60_000)`, `new PersistedState('theme', 'light')`.
 4. **Is it a value that follows another over time?** A class with `.of(fn)`, like `Spring.of(() => number)`, called in an effect root such as component init: `Previous.of(() => count)`. It earns the class only if `current` holds something you couldn't produce where the value is written, the way a tween's in-between frames are. A debounced value fails this: it is a value already written, just later, so `debounce()` at the write site covers it.
 5. **Do you drive it with methods?** A class: `new FiniteStateMachine()`, `new StateHistory()`.
@@ -85,7 +85,6 @@ shipped.
 | `PersistedState`  | class: `new PersistedState(key, initial)`, `.current`     | runed `PersistedState`                             |
 | `CurrentPosition` | class: `new CurrentPosition(options)`, `.current`         | runed `useGeolocation`                             |
 | `Previous`        | class: `Previous.of(() => x)`, `.current`                 | runed `Previous`                                   |
-| `activeElement`   | singleton, `.current`                                     | runed `ActiveElement`                              |
 | `pressedKeys`     | singleton, read like a set: `.has(key)`                   | runed `PressedKeys`                                |
 | `clickOutside()`  | attachment + helper                                       | runed `onClickOutside` · svelte-put `clickoutside` |
 | `scrollEdges()`   | attachment, edges reached to a callback                   | runed `ScrollState`                                |
@@ -103,6 +102,7 @@ Dropped, deliberately, because Svelte or Kit already does it:
 - `mutated`: the same inline attachment around a `MutationObserver`.
 - `focusWithin`: CSS `:focus-within` for styling, and `onfocusin` / `onfocusout` with `relatedTarget` for a value.
 - `scrollState`, except its edges: `onscroll` gives an element's position, a comparison with the last value gives direction, and `<svelte:window bind:scrollY>` covers the window.
+- `activeElement`: `<svelte:document bind:activeElement />`, since focus logic lives in the component that holds the element.
 - `mounted`: `onMount` setting a `$state`.
 - `listen`: `on()` from `svelte/events`.
 - `interval`, `animationFrames`: an `$effect` that starts the timer or loop and returns its cleanup.
