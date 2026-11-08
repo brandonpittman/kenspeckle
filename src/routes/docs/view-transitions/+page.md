@@ -35,7 +35,7 @@ html[data-view-transition='forward']::view-transition-old(root) {
 }
 ```
 
-## 1. Navigations
+## Navigations
 
 In the root layout's script, register once:
 
@@ -47,7 +47,7 @@ enableViewTransitions();
 
 Every client-side navigation now runs inside a transition.
 
-## 2. Direction
+## Direction
 
 A Back popstate is a retreat without asking. For anything else that should animate backward, register a predicate from the component that knows, and return its disposer from an `$effect`:
 
@@ -59,7 +59,7 @@ $effect(() => retreat((navigation) => navigation.to?.route.id === '/'));
 
 It's a predicate rather than a flag because Kit skips `beforeNavigate` for a navigation begun while another is in flight, so a flag set at click time can be left behind and reverse a later navigation.
 
-## 3. Named elements
+## Named elements
 
 `viewTransitionName` names an element for the transition it takes part in, then releases the name. Two elements holding one name silently abort the whole transition, which is why the name is claimed per transition rather than left in static CSS:
 
@@ -69,7 +69,7 @@ It's a predicate rather than a flag because Kit skips `beforeNavigate` for a nav
 
 Claims belong to navigations only. A same-route step names nothing, so an element that should morph on a step gets a static `view-transition-name` in CSS instead.
 
-## 4. Steps within a route
+## Steps within a route
 
 `onNavigate` never fires for a wizard advancing its own state on one URL, so call `viewTransition` where the state changes. In the component script:
 
