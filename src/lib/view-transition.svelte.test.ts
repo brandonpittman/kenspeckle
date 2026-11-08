@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { viewTransition } from './view-transition.js';
+import { runViewTransition, viewTransition } from './view-transition.js';
 
 // prefersReducedMotion is a MediaQuery built at svelte/motion module scope and its constructor calls
 // matchMedia eagerly, so stubbing window.matchMedia here would not reach it.
@@ -115,7 +115,7 @@ describe('viewTransition — the attribute', () => {
 				skipTransition: () => {}
 			} as unknown as ViewTransition;
 		};
-		viewTransition(() => {}, { start, onStart: () => seen.push('onStart') });
+		runViewTransition(() => {}, { start, onStart: () => seen.push('onStart') });
 		expect(seen).toEqual(['onStart', 'start']);
 	});
 });
@@ -221,7 +221,7 @@ describe('viewTransition — promise rejections', () => {
 		const { start, finish } = fakeStart();
 		const boom = new Error('onStart');
 		expect(() =>
-			viewTransition(() => {}, {
+			runViewTransition(() => {}, {
 				start,
 				onStart: () => {
 					throw boom;

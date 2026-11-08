@@ -3,10 +3,7 @@ import { runViewTransition, type ViewTransitionOptions } from '../view-transitio
 import { beginPhase, endTransition } from './view-transition-name.js';
 import type { Navigation } from './types.js';
 
-export interface NavigationTransitionOptions extends Omit<
-	ViewTransitionOptions,
-	'retreat' | 'onStart'
-> {
+export interface NavigationTransitionOptions extends Omit<ViewTransitionOptions, 'retreat'> {
 	onStart?: (navigation: Navigation) => void;
 }
 

@@ -12,7 +12,6 @@ export interface ViewTransitionOptions {
 	retreat?: boolean;
 	/** Past this a crossfade reads as a hang: the update callback suspends rendering until it settles. */
 	deadline?: number;
-	onStart?: () => void;
 	onSettle?: () => void;
 	reducedMotion?: () => boolean;
 	/** Injected in tests; keeps the `bind` internal and init SSR-safe. */
@@ -20,8 +19,10 @@ export interface ViewTransitionOptions {
 }
 
 /** @internal — `/kit` supplies its own attribute vocabulary. Not re-exported from the barrel. */
-export interface RunOptions extends ViewTransitionOptions {
+export interface RunOptions extends Omit<ViewTransitionOptions, 'retreat'> {
 	state?: string;
+	/** Navigation needs a hook before capture to claim names; a direct caller can run code before calling. */
+	onStart?: () => void;
 }
 
 const ignore = () => {};
@@ -41,11 +42,14 @@ let active: ViewTransition | undefined;
 
 export function viewTransition(
 	update: ViewTransitionUpdate,
-	options: ViewTransitionOptions = {}
+	{ retreat, deadline, onSettle, reducedMotion, start }: ViewTransitionOptions = {}
 ): ViewTransition | undefined {
 	return runViewTransition(update, {
-		...options,
-		state: options.retreat ? 'step-retreat' : 'step-forward'
+		deadline,
+		onSettle,
+		reducedMotion,
+		start,
+		state: retreat ? 'step-retreat' : 'step-forward'
 	});
 }
 

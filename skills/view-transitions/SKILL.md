@@ -98,6 +98,10 @@ transition was skipped — so a custom WAAPI animation can hang off its `ready`.
 It and its option and update types (`ViewTransitionOptions` /
 `ViewTransitionUpdate`) live on the main entry only.
 
+Its options are `retreat`, `deadline`, `onSettle()` and the `reducedMotion` and
+`start` injection points. There is no `onStart`: code that must run before the
+old snapshot is captured runs before the call.
+
 ## The attribute contract
 
 One attribute on `<html>`, absent when idle:

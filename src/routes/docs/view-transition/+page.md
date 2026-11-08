@@ -129,8 +129,6 @@ viewTransition(update, {
   retreat: false,
   // ms before the transition is skipped; past this a crossfade reads as a hang
   deadline: 600,
-  // runs synchronously before the old snapshot is captured
-  onStart: () => {},
   // runs once the transition settles, resolved or rejected — not when a later transition supersedes it
   onSettle: () => {},
   // return true to skip the transition entirely
@@ -138,9 +136,9 @@ viewTransition(update, {
 });
 ```
 
-A throw out of `onStart` or `onSettle` is handed to the page's global error handling via `reportError` and goes no further: the transition still runs, the attribute is still cleared, and a navigation still completes.
+A direct call has no `onStart`: code that must run before the old snapshot is captured runs before the call.
 
-`enableViewTransitions` takes the same options except `retreat` — that is what the predicate is for — and its `onStart` receives the navigation:
+`enableViewTransitions` takes the same options except `retreat` — that is what the predicate is for — plus an `onStart` that runs synchronously before the old snapshot is captured and receives the navigation:
 
 ```ts
 enableViewTransitions({
@@ -148,3 +146,5 @@ enableViewTransitions({
   onSettle: () => showCloak()
 });
 ```
+
+A throw out of `onStart` or `onSettle` is handed to the page's global error handling via `reportError` and goes no further: the transition still runs, the attribute is still cleared, and a navigation still completes.
