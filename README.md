@@ -58,44 +58,44 @@ Peer dependencies: `svelte >= 5.40`, plus `@sveltejs/kit >= 2` for the `kenspeck
 Eight exports, two entry points, each documented under [`src/routes/docs/`](src/routes/docs/). `kenspeckle` is Svelte-only; `kenspeckle/kit` adds the SvelteKit
 pieces, so `$app/navigation` never enters the main entry.
 
-| export                                                                  | form                                   | lineage                    |
-| ----------------------------------------------------------------------- | -------------------------------------- | -------------------------- |
-| [`FiniteStateMachine`](src/routes/docs/finite-state-machine/+page.md)   | class, with typed reactive `context`   | runed `FiniteStateMachine` |
-| [`documentVisible`](src/routes/docs/document-visible/+page.md)          | singleton, `.current`                  | runed `IsDocumentVisible`  |
-| [`copy()` / `copyText()`](src/routes/docs/copy/+page.md)                | attachment + helper                    | svelte-put `copy`          |
-| [`viewTransition()`](src/routes/docs/view-transition/+page.md)          | function; navigation form under `/kit` | new                        |
-| [`viewTransitionName()`](src/routes/docs/view-transition-name/+page.md) | attachment + helper, `/kit`            | new                        |
-| [`retreat()`](src/routes/docs/view-transition/+page.md)                 | function, returns a disposer, `/kit`   | new                        |
-| [`debounce()`](src/routes/docs/debounce/+page.md)                       | function wrapper                       | runed `useDebounce`        |
-| [`throttle()`](src/routes/docs/throttle/+page.md)                       | function wrapper                       | runed `useThrottle`        |
+| export                                                                  | form                                   |
+| ----------------------------------------------------------------------- | -------------------------------------- |
+| [`FiniteStateMachine`](src/routes/docs/finite-state-machine/+page.md)   | class, with typed reactive `context`   |
+| [`documentVisible`](src/routes/docs/document-visible/+page.md)          | singleton, `.current`                  |
+| [`copy()` / `copyText()`](src/routes/docs/copy/+page.md)                | attachment + helper                    |
+| [`viewTransition()`](src/routes/docs/view-transition/+page.md)          | function; navigation form under `/kit` |
+| [`viewTransitionName()`](src/routes/docs/view-transition-name/+page.md) | attachment + helper, `/kit`            |
+| [`retreat()`](src/routes/docs/view-transition/+page.md)                 | function, returns a disposer, `/kit`   |
+| [`debounce()`](src/routes/docs/debounce/+page.md)                       | function wrapper                       |
+| [`throttle()`](src/routes/docs/throttle/+page.md)                       | function wrapper                       |
 
-`FiniteStateMachine` gains a typed, `$state`-backed `context` object visible to lifecycle hooks and
+`FiniteStateMachine` has a typed, `$state`-backed `context` object visible to lifecycle hooks and
 guards — the sidecar-data mechanism every real FSM grows, built in.
 
 View transitions are what the package is for so far; they get their own section below.
 
 ## Planned
 
-The rest of the curation. These names are the design, not an API you can call — nothing below has
+The rest of the plan. These names are the design, not an API you can call — nothing below has
 shipped.
 
-| export            | form                                                      | lineage                                            |
-| ----------------- | --------------------------------------------------------- | -------------------------------------------------- |
-| `StateHistory`    | class: `new StateHistory(get, set)`, `.undo()`, `.redo()` | runed `StateHistory`                               |
-| `Idle`            | class: `new Idle(ms)`, `.current`                         | runed `IsIdle`                                     |
-| `PersistedState`  | class: `new PersistedState(key, initial)`, `.current`     | runed `PersistedState`                             |
-| `CurrentPosition` | class: `new CurrentPosition(options)`, `.current`         | runed `useGeolocation`                             |
-| `pressedKeys`     | singleton, read like a set: `.has(key)`                   | runed `PressedKeys`                                |
-| `clickOutside()`  | attachment + helper                                       | runed `onClickOutside` · svelte-put `clickoutside` |
-| `scrollEdges()`   | attachment, edges reached to a callback                   | runed `ScrollState`                                |
-| `shortcut()`      | attachment + helper                                       | svelte-put `shortcut`                              |
-| `lockScroll`      | attachment ≡ helper, stacked lock counting                | new                                                |
-| `dragScroll()`    | attachment                                                | svelte-put `dragscroll`                            |
+| export            | form                                                      |
+| ----------------- | --------------------------------------------------------- |
+| `StateHistory`    | class: `new StateHistory(get, set)`, `.undo()`, `.redo()` |
+| `Idle`            | class: `new Idle(ms)`, `.current`                         |
+| `PersistedState`  | class: `new PersistedState(key, initial)`, `.current`     |
+| `CurrentPosition` | class: `new CurrentPosition(options)`, `.current`         |
+| `pressedKeys`     | singleton, read like a set: `.has(key)`                   |
+| `clickOutside()`  | attachment + helper                                       |
+| `scrollEdges()`   | attachment, edges reached to a callback                   |
+| `shortcut()`      | attachment + helper                                       |
+| `lockScroll`      | attachment ≡ helper, stacked lock counting                |
+| `dragScroll()`    | attachment                                                |
 
 Dropped, deliberately, because Svelte, Kit or the platform already handles it:
 
-- runed's `Context`: Svelte ≥ 5.40's `createContext` returns a typed `[get, set]` pair.
-- runed's `Debounced` / `Throttled`: `debounce()` / `throttle()` writing into a `$state`, with any effect that follows a source kept in the component that owns it.
+- `Context`: Svelte ≥ 5.40's `createContext` returns a typed `[get, set]` pair.
+- `Debounced` / `Throttled`: `debounce()` / `throttle()` writing into a `$state`, with any effect that follows a source kept in the component that owns it.
 - `elementSize`, `elementRect`, `resized`: the dimension bindings (`bind:clientWidth`, `bind:contentRect`, `bind:borderBoxSize`) already measure with a `ResizeObserver`.
 - `autosize`: CSS `field-sizing: content`, Baseline since June 2026.
 - `intersected`, `inViewport`: an inline attachment that creates an `IntersectionObserver` and returns its `disconnect`.
@@ -114,7 +114,7 @@ Dropped, deliberately, because Svelte, Kit or the platform already handles it:
 
 The [recipes](src/routes/docs/recipes/+page.md) page spells out the replacements for `autosize`, `intersected`, `mutated`, `focusWithin` and `Previous`.
 
-Waiting in the backlog: runed's `resource`, since SvelteKit remote functions cover the server-data case, and `searchParams`, since Kit's `page.url.searchParams` and `goto` cover reads and writes until a typed layer earns its place.
+Waiting in the backlog: `resource`, since SvelteKit remote functions cover the server-data case, and `searchParams`, since Kit's `page.url.searchParams` and `goto` cover reads and writes until a typed layer earns its place.
 
 ## View transitions
 
@@ -223,9 +223,3 @@ It bundles no MCP server; for the Svelte MCP, install the official `svelte`
 plugin from [`sveltejs/ai-tools`](https://github.com/sveltejs/ai-tools).
 
 The skill and the code ship in the same change, same rule as the docs pages.
-
-## Provenance
-
-kenspeckle is a curation, not a fork. [runed](https://runed.dev) has genuinely useful utilities under three naming regimes at once — PascalCase classes, bare functions, and React-style `use` hooks, with pairs like `Debounced` / `useDebounce` coexisting. [svelte-put](https://svelte-put.vnphanquang.com) has good actions from the Svelte 4 era, before attachments existed. kenspeckle reshapes both pools under one convention and adds what neither ships: attachments as a first-class layer.
-
-Portions adapted from runed (MIT) and svelte-put (MIT). kenspeckle is MIT.

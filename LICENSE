@@ -19,3 +19,16 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+Third-party notices
+
+Portions of this software are adapted from the following projects, each
+distributed under the MIT License above with its own copyright notice.
+
+runed
+Copyright (c) 2024 Hunter Johnston <https://github.com/huntabyte>
+
+svelte-put
+Copyright (c) 2023-2024 Quang Phan
