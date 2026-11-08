@@ -5,12 +5,24 @@ import {
 	viewTransitionName,
 	type ViewTransitionNameOptions
 } from './view-transition-name.js';
-import type { Navigation } from './types.js';
+import type { NavigationTarget, OnNavigate } from '@sveltejs/kit';
 
-const nav = (to = 'https://x.test/b'): Navigation => ({
+type RouteId = NonNullable<NavigationTarget['route']['id']>;
+
+const target = (id: RouteId): NavigationTarget => ({
+	params: {},
+	route: { id },
+	url: new URL(id, 'https://x.test'),
+	scroll: null
+});
+
+const nav = (to: RouteId = '/demo/transition/b'): OnNavigate => ({
+	type: 'link',
+	event: new PointerEvent('click'),
+	willUnload: false,
 	complete: Promise.resolve(),
-	from: { url: new URL('https://x.test/a') },
-	to: { url: new URL(to) }
+	from: target('/demo/transition/a'),
+	to: target(to)
 });
 
 const cleanups: Array<() => void> = [];
@@ -67,8 +79,20 @@ describe('viewTransitionName', () => {
 
 	it('gates on the navigation `when` receives', () => {
 		const node = el();
-		attach(node, 'hero', { when: (n: Navigation) => n.to?.url.pathname === '/wanted' });
-		beginPhase(nav('https://x.test/wanted'), 'capture');
+		attach(node, 'hero', { when: (n) => n.to?.url.pathname === '/demo/transition/b' });
+		beginPhase(nav('/demo/transition/b'), 'capture');
+		expect(named(node)).toBe('hero');
+	});
+
+	it('should claim the name when `when` matches the destination route id', () => {
+		const node = el();
+		attach(node, 'hero', {
+			when: (n) => n.to?.route.id === '/demo/transition/b'
+		});
+		beginPhase(nav('/demo/transition/a'), 'capture');
+		expect(named(node)).toBe('');
+		endTransition();
+		beginPhase(nav('/demo/transition/b'), 'capture');
 		expect(named(node)).toBe('hero');
 	});
 

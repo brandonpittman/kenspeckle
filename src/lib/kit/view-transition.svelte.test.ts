@@ -1,14 +1,42 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { isRetreat, navigationTransition, retreat } from './view-transition.js';
 import { endTransition, viewTransitionName } from './view-transition-name.js';
-import type { Navigation } from './types.js';
+import type { NavigationTarget, OnNavigate } from '@sveltejs/kit';
 
-const nav = (overrides: Partial<Navigation> = {}): Navigation => ({
-	complete: Promise.resolve(),
-	from: { url: new URL('https://x.test/a') },
-	to: { url: new URL('https://x.test/b') },
-	...overrides
+type RouteId = NonNullable<NavigationTarget['route']['id']>;
+
+const target = (id: RouteId): NavigationTarget => ({
+	params: {},
+	route: { id },
+	url: new URL(id, 'https://x.test'),
+	scroll: null
 });
+
+const nav = (complete = Promise.resolve()): OnNavigate => ({
+	type: 'link',
+	event: new PointerEvent('click'),
+	willUnload: false,
+	complete,
+	from: target('/demo/transition/a'),
+	to: target('/demo/transition/b')
+});
+
+const popstate = (delta: number): OnNavigate => ({
+	type: 'popstate',
+	event: new PopStateEvent('popstate'),
+	delta,
+	willUnload: false,
+	complete: Promise.resolve(),
+	from: target('/demo/transition/b'),
+	to: target('/demo/transition/a')
+});
+
+/** Early Kit 2 hands over a popstate with no delta at all. */
+function popstateWithoutDelta(): OnNavigate {
+	const navigation = popstate(-1);
+	Reflect.deleteProperty(navigation, 'delta');
+	return navigation;
+}
 
 afterEach(() => {
 	retreat(() => false);
@@ -22,28 +50,28 @@ describe('retreat', () => {
 	});
 
 	it('consults the registered predicate', () => {
-		retreat((n) => n.to?.url.pathname === '/b');
+		retreat((n) => n.to?.url.pathname === '/demo/transition/b');
 		expect(isRetreat(nav())).toBe(true);
 	});
 
-	it('treats a popstate as a retreat whatever the predicate says', () => {
+	it('treats a popstate without a delta as a retreat whatever the predicate says', () => {
 		retreat(() => false);
-		expect(isRetreat(nav({ type: 'popstate' }))).toBe(true);
+		expect(isRetreat(popstateWithoutDelta())).toBe(true);
 	});
 
 	it('treats a backward popstate as a retreat', () => {
 		retreat(() => false);
-		expect(isRetreat(nav({ type: 'popstate', delta: -1 }))).toBe(true);
+		expect(isRetreat(popstate(-1))).toBe(true);
 	});
 
 	it('treats a forward popstate as a forward navigation', () => {
 		retreat(() => false);
-		expect(isRetreat(nav({ type: 'popstate', delta: 1 }))).toBe(false);
+		expect(isRetreat(popstate(1))).toBe(false);
 	});
 
 	it('still consults the predicate on a forward popstate', () => {
 		retreat(() => true);
-		expect(isRetreat(nav({ type: 'popstate', delta: 1 }))).toBe(true);
+		expect(isRetreat(popstate(1))).toBe(true);
 	});
 
 	it('replaces the predicate rather than stacking them', () => {
@@ -106,7 +134,7 @@ describe('navigationTransition — the attribute', () => {
 
 	it('writes retreat on a popstate', () => {
 		const { start } = fakeStart();
-		void navigationTransition({ start })(nav({ type: 'popstate' }));
+		void navigationTransition({ start })(popstate(-1));
 		expect(state()).toBe('retreat');
 	});
 
@@ -132,7 +160,7 @@ describe('navigationTransition — the ordering guarantee', () => {
 	it('resolves before navigation.complete settles', async () => {
 		const { start } = fakeStart();
 		// Never settles: if the handler awaited it, Kit and the browser would wait on each other forever.
-		const navigation = nav({ complete: new Promise<void>(() => {}) });
+		const navigation = nav(new Promise<void>(() => {}));
 		await navigationTransition({ start })(navigation);
 		expect(state()).toBe('forward');
 		delete root().dataset.viewTransition;
@@ -147,7 +175,8 @@ describe('navigationTransition — the ordering guarantee', () => {
 
 	it('resolves a shallow navigation without starting a transition', async () => {
 		const { start } = fakeStart();
-		await navigationTransition({ start })(nav({ shallow: true }));
+		const shallow = { ...nav(), shallow: true };
+		await navigationTransition({ start })(shallow);
 		expect(start).not.toHaveBeenCalled();
 		expect(state()).toBeUndefined();
 	});
@@ -178,10 +207,29 @@ describe('navigationTransition — naming integration', () => {
 		let commit!: () => void;
 		const complete = new Promise<void>((resolve) => (commit = resolve));
 		const { start } = fakeStart();
-		void navigationTransition({ start })(nav({ complete }));
+		void navigationTransition({ start })(nav(complete));
 		expect(node.style.viewTransitionName).toBe('');
 		commit();
 		await vi.waitFor(() => expect(node.style.viewTransitionName).toBe('hero'));
+		cleanup();
+	});
+
+	it('names an element only when `when` matches the destination route id and params', async () => {
+		const node = document.createElement('div');
+		document.body.appendChild(node);
+		const cleanup = viewTransitionName('hero', {
+			when: (n) => n.to?.route.id === '/demo/transition/b' && n.to.params !== null
+		})(node);
+		const unresolved = { ...nav(), to: { ...target('/demo/transition/b'), params: null } };
+		const first = fakeStart();
+		void navigationTransition({ start: first.start })(unresolved);
+		expect(node.style.viewTransitionName).toBe('');
+		first.finish();
+		const second = fakeStart();
+		void navigationTransition({ start: second.start })(nav());
+		expect(node.style.viewTransitionName).toBe('hero');
+		second.finish();
+		await vi.waitFor(() => expect(node.style.viewTransitionName).toBe(''));
 		cleanup();
 	});
 

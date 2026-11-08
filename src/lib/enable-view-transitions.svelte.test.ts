@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import * as kit from './kit/index.js';
-import type { Navigation, NavigationTransitionOptions } from './kit/index.js';
+import type { OnNavigate } from '@sveltejs/kit';
+import type { NavigationTransitionOptions } from './kit/index.js';
 import { endTransition } from './kit/view-transition-name.js';
 
 const { onNavigate } = vi.hoisted(() => ({ onNavigate: vi.fn() }));
@@ -43,11 +44,17 @@ describe('enableViewTransitions', () => {
 
 	it('should still pass the navigation to onStart in the navigation form', () => {
 		const onStart = vi.fn();
-		const navigation: Navigation = { complete: Promise.resolve() };
+		const navigation: OnNavigate = {
+			type: 'goto',
+			willUnload: false,
+			complete: Promise.resolve(),
+			from: null,
+			to: null
+		};
 
 		enableViewTransitions?.({ start: fakeStart(), onStart });
 		const handler = onNavigate.mock.calls[0]?.[0] as
-			((navigation: Navigation) => Promise<void>) | undefined;
+			((navigation: OnNavigate) => Promise<void>) | undefined;
 		void handler?.(navigation);
 
 		expect(onStart).toHaveBeenCalledWith(navigation);

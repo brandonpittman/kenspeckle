@@ -1,8 +1,8 @@
-import type { Navigation } from './types.js';
+import type { OnNavigate } from '@sveltejs/kit';
 
 export interface ViewTransitionNameOptions {
 	/** Only claim the name for navigations this returns true for. */
-	when?: (navigation: Navigation) => boolean;
+	when?: (navigation: OnNavigate) => boolean;
 	/** Claim inside the update callback instead, for an element that mounts during the transition. */
 	onArrival?: boolean;
 }
@@ -17,9 +17,9 @@ interface Claim {
 }
 
 const claims = new Set<Claim>();
-let current: { navigation: Navigation; phase: Phase } | null = null;
+let current: { navigation: OnNavigate; phase: Phase } | null = null;
 
-function wanted(claim: Claim, phase: Phase, navigation: Navigation): boolean {
+function wanted(claim: Claim, phase: Phase, navigation: OnNavigate): boolean {
 	if ((claim.options.onArrival ? 'arrival' : 'capture') !== phase) return false;
 	return claim.options.when?.(navigation) ?? true;
 }
@@ -36,7 +36,7 @@ function release(claim: Claim) {
 }
 
 /** @internal — driven by the navigation registration. */
-export function beginPhase(navigation: Navigation, phase: Phase) {
+export function beginPhase(navigation: OnNavigate, phase: Phase) {
 	current = { navigation, phase };
 	for (const claim of claims) if (wanted(claim, phase, navigation)) apply(claim);
 }

@@ -69,10 +69,9 @@ A **Back popstate is a retreat without asking** (`delta < 0`, or an absent delta
 assumed Back). A Forward popstate is not. The predicate only has to claim the
 in-app cases — a "back" button that calls `goto`.
 
-**The argument is kenspeckle's own structural `Navigation`**, not Kit's:
-`complete`, `type`, `delta`, and `from` / `to` as `{ url: URL }`. There is no
-`route` and no `params` on it, so match on `navigation.to?.url.pathname`; a
-`navigation.to?.route.id` comparison does not type-check.
+**The argument is Kit's own `OnNavigate`**, the same object `onNavigate`
+hands its callbacks, so `navigation.to?.route.id`, `navigation.to?.params` and
+`navigation.to?.url` all type-check.
 
 ## Steps within a route
 

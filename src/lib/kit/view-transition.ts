@@ -1,16 +1,16 @@
 import { onNavigate } from '$app/navigation';
 import { runViewTransition, type ViewTransitionOptions } from '../view-transition.js';
 import { beginPhase, endTransition } from './view-transition-name.js';
-import type { Navigation } from './types.js';
+import type { OnNavigate } from '@sveltejs/kit';
 
 export interface NavigationTransitionOptions extends Omit<ViewTransitionOptions, 'retreat'> {
-	onStart?: (navigation: Navigation) => void;
+	onStart?: (navigation: OnNavigate) => void;
 	onSettle?: () => void;
 }
 
 const forward = () => false;
 
-let predicate: (navigation: Navigation) => boolean = forward;
+let predicate: (navigation: OnNavigate) => boolean = forward;
 
 /**
  * A predicate, never a flag: Kit skips `beforeNavigate` for a navigation begun while another is in
@@ -18,7 +18,7 @@ let predicate: (navigation: Navigation) => boolean = forward;
  *
  * Returns a disposer shaped for `$effect` cleanup.
  */
-export function retreat(next: (navigation: Navigation) => boolean): () => void {
+export function retreat(next: (navigation: OnNavigate) => boolean): () => void {
 	predicate = next;
 	return () => {
 		// Identity-guarded: a stale disposer must not unregister whoever replaced it.
@@ -27,7 +27,7 @@ export function retreat(next: (navigation: Navigation) => boolean): () => void {
 }
 
 /** @internal */
-export function isRetreat(navigation: Navigation): boolean {
+export function isRetreat(navigation: OnNavigate): boolean {
 	// Kit sets delta only on a popstate: negative is Back, positive Forward. Absent, assume Back.
 	const back = navigation.type === 'popstate' && (navigation.delta ?? -1) < 0;
 	return back || predicate(navigation);
@@ -39,13 +39,13 @@ export function navigationTransition({
 	onSettle,
 	...rest
 }: NavigationTransitionOptions = {}) {
-	return (navigation: Navigation): Promise<void> => {
+	return (navigation: OnNavigate): Promise<void> => {
 		// SvelteKit 3 fires onNavigate for a shallow navigation; Kit 2 never did. The route is
 		// unchanged, so there is no arrival to cross-fade to, and holding the navigation suspends
 		// rendering — a call site that strips a query param and then calls window.print()
 		// synchronously would print a suspended page. A consumer who does want a shallow change
 		// animated has `viewTransition(update)` from `kenspeckle`, which says so at the call site.
-		if (navigation.shallow) return Promise.resolve();
+		if ('shallow' in navigation && navigation.shallow) return Promise.resolve();
 
 		return new Promise<void>((resolve) => {
 			let transitioning = false;
