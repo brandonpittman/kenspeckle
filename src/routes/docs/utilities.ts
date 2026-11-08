@@ -50,6 +50,13 @@ export const utilities: Utility[] = [
 		label: 'viewTransitionName',
 		type: 'attachment',
 		blurb: 'name an element for the transition it takes part in'
+	},
+	{
+		slug: 'debounce',
+		href: resolve('/docs/debounce'),
+		label: 'debounce',
+		type: 'function',
+		blurb: 'debounce any function, with a shared promise'
 	}
 ];
 

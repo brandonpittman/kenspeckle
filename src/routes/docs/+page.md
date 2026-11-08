@@ -18,3 +18,4 @@ See the [roadmap](/docs/roadmap) for what's shipped and what's coming.
 ### Functions
 
 - [viewTransition](/docs/view-transition) — view transitions, with a SvelteKit navigation tier
+- [debounce](/docs/debounce) — debounce any function, with a shared promise
