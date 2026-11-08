@@ -1,6 +1,9 @@
 import { expect, test } from '@playwright/test';
 
 /** The unit suite drives a fake `start`; nothing else runs this package against a real document.startViewTransition. */
+const awaitHydration = (page: import('@playwright/test').Page) =>
+	expect(page.locator(':root')).toHaveAttribute('hydrated');
+
 const named = (page: import('@playwright/test').Page) =>
 	page.locator('.hero').evaluate((el: HTMLElement) => el.style.viewTransitionName);
 
@@ -8,7 +11,7 @@ test('names an element only while a navigation transition runs', async ({ page }
 	// The library bails out entirely under reduced motion, so pin the query.
 	await page.emulateMedia({ reducedMotion: 'no-preference' });
 	await page.goto('/demo/transition/a');
-	await expect(page.locator('.hero')).toBeVisible();
+	await awaitHydration(page);
 
 	expect(await named(page)).toBe('');
 
@@ -27,6 +30,7 @@ test('names an element only while a navigation transition runs', async ({ page }
 test('reverses direction on a browser back', async ({ page }) => {
 	await page.emulateMedia({ reducedMotion: 'no-preference' });
 	await page.goto('/demo/transition/a');
+	await awaitHydration(page);
 	await page.getByRole('link', { name: 'to b' }).click();
 	await expect(page.locator('h1')).toHaveText('B');
 
