@@ -16,6 +16,35 @@ textarea {
 
 The textarea grows in height as you type and scrolls once it reaches `max-block-size`. Its `rows` and `cols` attributes stop having any effect, so the minimum height goes in `min-block-size` instead. Older browsers keep the fixed size, which still works.
 
+## Lock page scroll behind an overlay
+
+CSS does this without JavaScript, through `:has()`, Baseline since December 2023:
+
+```css
+html:has([data-scroll-lock]) {
+  overflow: hidden;
+  scrollbar-gutter: stable;
+}
+```
+
+Put `data-scroll-lock` on whatever covers the page while it is open:
+
+```svelte
+{#if open}
+  <aside class="drawer" data-scroll-lock>…</aside>
+{/if}
+
+<dialog bind:this={dialog} data-scroll-lock={open || undefined}>…</dialog>
+```
+
+A closed `<dialog>` stays in the DOM, so it needs the condition; an overlay inside `{#if}` doesn't. For a modal dialog opened with `showModal()`, `html:has(dialog:modal)` needs no attribute at all.
+
+The page stays locked while any overlay matches and unlocks when the last one goes, so nested overlays need no counting. The lock is in the server-rendered HTML too, so the page can't scroll before hydration.
+
+Write the rule on `html`, not `body`. The browser applies the root element's `overflow` and `scrollbar-gutter` to the viewport, but `scrollbar-gutter` set on `body` never reaches it.
+
+`scrollbar-gutter: stable` keeps the space a classic scrollbar took after `overflow: hidden` removes it, so the page doesn't shift sideways. It has been Baseline only since December 2024; older browsers lock the page but let it shift. Overlay scrollbars, the macOS and mobile default, take no space, so nothing shifts there anyway. On a page too short to scroll, with classic scrollbars, the lock adds a gutter that wasn't there, and the content under the overlay moves by one scrollbar's width. If that shows in your layout, set `scrollbar-gutter: stable` on `html` for the whole site instead, which reserves the space even when nothing scrolls.
+
 ## Know when an element is on screen
 
 An inline attachment creates the observer and returns its cleanup:

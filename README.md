@@ -15,7 +15,7 @@ What makes the cut takes the shape Svelte already uses for the same kind of thin
 2. **Is it a value configured at construction?** A class with `current`, like `new MediaQuery(query)`: `new Idle(60_000)`, `new PersistedState('theme', 'light')`.
 3. **Is it a value that follows another over time?** A class with `.of(fn)`, like `Spring.of(() => number)`, called in an effect root such as component init. It earns the class only if `current` holds something you couldn't produce where the value is written, the way a tween's in-between frames are. A debounced value and a previous value both fail this: each is a value already written, so `debounce()` or a saved copy at the write site covers it.
 4. **Do you drive it with methods?** A class: `new FiniteStateMachine()`, `new StateHistory()`.
-5. **Is it behavior on an element?** An attachment, named for what it does, as `copy` and `fade` are (`dragScroll`, `lockScroll`), or for the event it answers (`clickOutside`). An element value flows into your own `$state` through a callback, the way a function binding does (`bind:clientWidth={null, setWidth}`), never through a box the library owns, and it is named for that value, as a binding is (`scrollEdges`).
+5. **Is it behavior on an element?** An attachment, named for what it does, as `copy` and `fade` are (`dragScroll`), or for the event it answers (`clickOutside`). An element value flows into your own `$state` through a callback, the way a function binding does (`bind:clientWidth={null, setWidth}`), never through a box the library owns, and it is named for that value, as a binding is (`scrollEdges`).
 6. **Otherwise**, a plain function, with no `use` prefix, which is a React Hooks rule Svelte doesn't have.
 
 Each shape names the Svelte API it mirrors. An export that can't name one isn't shaped yet.
@@ -91,7 +91,6 @@ shipped.
 | `pressedKeys`         | singleton, read like a set: `.has(key)`                                                           |
 | `clickOutside()`      | attachment                                                                                        |
 | `shortcut()`          | attachment                                                                                        |
-| `lockScroll`          | attachment ≡ helper, stacked lock counting                                                        |
 | `dragScroll()`        | attachment                                                                                        |
 
 Dropped, deliberately, because Svelte, Kit or the platform already handles it:
@@ -100,6 +99,7 @@ Dropped, deliberately, because Svelte, Kit or the platform already handles it:
 - `Debounced` / `Throttled`: `debounce()` / `throttle()` writing into a `$state`, with any effect that follows a source kept in the component that owns it.
 - `elementSize`, `elementRect`, `resized`: the dimension bindings (`bind:clientWidth`, `bind:contentRect`, `bind:borderBoxSize`) already measure with a `ResizeObserver`.
 - `autosize`: CSS `field-sizing: content`, Baseline since June 2026.
+- `lockScroll`: CSS `html:has([data-scroll-lock]) { overflow: hidden; scrollbar-gutter: stable }`, which nests without counting and locks before hydration.
 - `intersected`, `inViewport`: an inline attachment that creates an `IntersectionObserver` and returns its `disconnect`.
 - `mutated`: the same inline attachment around a `MutationObserver`.
 - `focusWithin`: CSS `:focus-within` for styling, and `onfocusin` / `onfocusout` with `relatedTarget` for a value.

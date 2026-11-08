@@ -66,7 +66,6 @@ export const roadmap: RoadmapGroup[] = [
 			{ name: 'pressedKeys', type: 'value', blurb: 'currently held keys, read like a set' },
 			{ name: 'clickOutside', type: 'attachment', blurb: 'fire when a pointer lands outside' },
 			{ name: 'shortcut', type: 'attachment', blurb: 'keyboard shortcuts on an element' },
-			{ name: 'lockScroll', type: 'attachment', blurb: 'lock scroll, stacked releases' },
 			{ name: 'dragScroll', type: 'attachment', blurb: 'drag to scroll' }
 		]
 	},
