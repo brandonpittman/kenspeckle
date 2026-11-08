@@ -308,4 +308,35 @@ describe('debounce', () => {
 			cleanup();
 		});
 	});
+
+	describe('Debounced value', () => {
+		it('should settle a $state on the latest source after quiet, one effect run per change', async () => {
+			let search = $state('');
+			let query = $state('');
+			const setQuery = debounce((v: string) => (query = v), 100);
+			let runs = 0;
+			const cleanup = $effect.root(() => {
+				$effect(() => {
+					runs++;
+					setQuery(search);
+				});
+			});
+			flushSync();
+
+			search = 'a';
+			flushSync();
+			search = 'ab';
+			flushSync();
+			await vi.advanceTimersByTimeAsync(99);
+			expect(query).toBe('');
+
+			await vi.advanceTimersByTimeAsync(1);
+			expect(query).toBe('ab');
+
+			await vi.advanceTimersByTimeAsync(500);
+			flushSync();
+			expect(runs).toBe(3);
+			cleanup();
+		});
+	});
 });

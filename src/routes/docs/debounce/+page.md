@@ -62,6 +62,30 @@ search.cancel();
 
 `cancel()` clears the timer. The shared promise is left unsettled rather than rejected, so a fire-and-forget call in an event handler never raises an unhandled rejection. The next call starts a new promise.
 
+## A debounced value
+
+There is no `debounced()`. Debounce the write into a `$state` instead:
+
+```ts
+let query = $state('');
+const setQuery = debounce((value: string) => (query = value), 300);
+```
+
+```svelte
+<input aria-label="Search" oninput={(event) => setQuery(event.currentTarget.value)} />
+<p role="status">{setQuery.pending ? 'Waiting…' : `Results for ${query}`}</p>
+```
+
+To follow a prop or a `$derived` instead of an input, call it from an `$effect`:
+
+```ts
+$effect(() => {
+  setQuery(search);
+});
+```
+
+A `debounced()` value would need that same effect inside it, and then it could only be created during component init. Written here, the effect belongs to the component that owns `search` and is disposed with it. Read `setQuery.pending` in markup, never in that effect: an effect that reads it reruns each time the timer settles, and schedules itself again.
+
 ## Teardown
 
 The wrapper holds no effect and no subscription, so it works anywhere: a module, a class, a component. Nothing tears it down for you. A component that must not run a scheduled call after it unmounts cancels in its own cleanup:

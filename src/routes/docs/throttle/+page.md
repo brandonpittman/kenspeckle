@@ -49,6 +49,22 @@ track.cancel();
 
 There is no `flush()`: the leading call already runs at once.
 
+## A throttled value
+
+There is no `throttled()`. Throttle the write into a `$state` instead:
+
+```ts
+let position = $state({ x: 0, y: 0 });
+const setPosition = throttle((x: number, y: number) => (position = { x, y }), 100);
+```
+
+```svelte
+<svelte:window onpointermove={(event) => setPosition(event.clientX, event.clientY)} />
+<p role="status">{position.x}, {position.y}</p>
+```
+
+To follow a prop or a `$derived`, call it from an `$effect`, and read `setPosition.pending` in markup, never in that effect, as on the [debounce](/docs/debounce) page.
+
 ## Teardown
 
 The wrapper holds no effect and no subscription, so it works anywhere: a module, a class, a component. A component that must not run a stored call after it unmounts cancels in its own cleanup:
