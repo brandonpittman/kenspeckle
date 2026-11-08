@@ -36,11 +36,11 @@ describe('copyText', () => {
 	});
 });
 
-describe('copy — imperative form', () => {
-	it('copies fixed text on click and returns a working cleanup', async () => {
+describe('copy', () => {
+	it('returns an attachment that copies fixed text on click and returns a working cleanup', async () => {
 		const el = button();
 		const onCopy = vi.fn();
-		const cleanup = copy(el, { text: 'copied!', onCopy });
+		const cleanup = copy({ text: 'copied!', onCopy })(el);
 		el.click();
 		await vi.waitFor(() => expect(writeText).toHaveBeenCalledWith('copied!'));
 		expect(onCopy).toHaveBeenCalledWith('copied!');
@@ -52,27 +52,17 @@ describe('copy — imperative form', () => {
 	});
 });
 
-describe('copy — attachment form', () => {
-	it('returns an attachment that wires the same behavior', async () => {
-		const el = button();
-		const cleanup = copy({ text: 'from attach' })(el);
-		el.click();
-		await vi.waitFor(() => expect(writeText).toHaveBeenCalledWith('from attach'));
-		cleanup?.();
-	});
-});
-
 describe('copy — text resolution', () => {
 	it('resolves a text function with the node', async () => {
 		const el = button('node text');
-		copy(el, { text: (node) => node.textContent!.toUpperCase() });
+		copy({ text: (node) => node.textContent!.toUpperCase() })(el);
 		el.click();
 		await vi.waitFor(() => expect(writeText).toHaveBeenCalledWith('NODE TEXT'));
 	});
 
 	it("defaults to the node's textContent", async () => {
 		const el = button('default source');
-		copy(el, {});
+		copy({})(el);
 		el.click();
 		await vi.waitFor(() => expect(writeText).toHaveBeenCalledWith('default source'));
 	});
@@ -81,7 +71,7 @@ describe('copy — text resolution', () => {
 describe('copy — options', () => {
 	it('listens on a custom event', async () => {
 		const el = button();
-		copy(el, { text: 'x', event: 'dblclick' });
+		copy({ text: 'x', event: 'dblclick' })(el);
 		el.click();
 		await new Promise((r) => setTimeout(r));
 		expect(writeText).not.toHaveBeenCalled();
@@ -91,7 +81,7 @@ describe('copy — options', () => {
 
 	it('does nothing when disabled', async () => {
 		const el = button();
-		copy(el, { text: 'x', enabled: false });
+		copy({ text: 'x', enabled: false })(el);
 		el.click();
 		await new Promise((r) => setTimeout(r));
 		expect(writeText).not.toHaveBeenCalled();

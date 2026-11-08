@@ -22,7 +22,7 @@ function box(content = { height: 300, width: 300 }): HTMLDivElement {
 function attach(el: HTMLElement, options?: { offset?: number }) {
 	const callback = vi.fn<(edges: ScrollEdges) => void>();
 	const cleanup = scrollEdges(callback, options)(el);
-	if (cleanup) cleanups.push(cleanup);
+	cleanups.push(cleanup);
 	return { callback, cleanup };
 }
 
@@ -510,7 +510,7 @@ describe('scrollEdges', () => {
 			tall.style.height = '5000px';
 			document.body.appendChild(tall);
 			const callback = vi.fn<(edges: ScrollEdges) => void>();
-			cleanups.push(scrollEdges(document.documentElement, callback), () => window.scrollTo(0, 0));
+			cleanups.push(scrollEdges(callback)(document.documentElement), () => window.scrollTo(0, 0));
 			await vi.waitFor(() =>
 				expect(callback).toHaveBeenLastCalledWith(
 					expect.objectContaining({ blockStart: true, blockEnd: false })
@@ -624,40 +624,6 @@ describe('scrollEdges', () => {
 		});
 	});
 
-	describe('Helper form', () => {
-		it('should return a cleanup and report edges like the attachment form', async () => {
-			const el = box();
-			const callback = vi.fn<(edges: ScrollEdges) => void>();
-			const cleanup = scrollEdges(el, callback);
-			cleanups.push(cleanup);
-			await vi.waitFor(() => expect(callback).toHaveBeenCalledWith(topLeft));
-
-			await scrollTo(el, { top: el.scrollHeight });
-			await vi.waitFor(() =>
-				expect(callback).toHaveBeenLastCalledWith({ ...topLeft, blockStart: false, blockEnd: true })
-			);
-
-			cleanup();
-			callback.mockClear();
-			await scrollTo(el, { top: 0 });
-			expect(callback).not.toHaveBeenCalled();
-		});
-
-		it('should apply the offset option', async () => {
-			const el = box();
-			const callback = vi.fn<(edges: ScrollEdges) => void>();
-			cleanups.push(scrollEdges(el, callback, { offset: 50 }));
-
-			await scrollTo(el, { top: el.scrollHeight - el.clientHeight - 40 });
-
-			await vi.waitFor(() =>
-				expect(callback).toHaveBeenLastCalledWith(
-					expect.objectContaining({ blockStart: false, blockEnd: true })
-				)
-			);
-		});
-	});
-
 	describe('Resizes from outside the scroller', () => {
 		function bodyProperty(name: string, value: string) {
 			document.body.style.setProperty(name, value);
@@ -745,7 +711,7 @@ describe('scrollEdges', () => {
 			document.body.appendChild(tall);
 			const root = document.documentElement;
 			const callback = vi.fn<(edges: ScrollEdges) => void>();
-			cleanups.push(scrollEdges(root, callback));
+			cleanups.push(scrollEdges(callback)(root));
 			await vi.waitFor(() =>
 				expect(callback).toHaveBeenLastCalledWith(
 					expect.objectContaining({ blockStart: true, blockEnd: false })

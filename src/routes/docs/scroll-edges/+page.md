@@ -4,7 +4,7 @@
 
 <PageHeading slug="scroll-edges" />
 
-Report which scroll edges an element has reached. `scrollEdges` is curried like `copy`: call it with a callback to get an **attachment**, or with an element first to wire it **imperatively**. Either way the edges go to your callback, so the value lives in your own state.
+Report which scroll edges an element has reached. `scrollEdges(callback)` returns an **attachment**. The edges go to your callback, so the value lives in your own state.
 
 ```ts
 import { scrollEdges, type ScrollEdges } from 'kenspeckle';
@@ -20,15 +20,15 @@ With `let atBottom = $state(false)` in your component script:
 
 The callback fires once on attach, then only when one of the four edges changes. Scrolling through the middle calls nothing. The attachment only runs in the browser, so it is SSR-safe by construction.
 
-## Imperative form
+## Outside a template
 
-Pass an element first. It returns a cleanup function:
+An attachment is a function of the element, so call it on one. It returns a cleanup function:
 
 ```ts
-const cleanup = scrollEdges(node, (edges) => {
+const cleanup = scrollEdges((edges) => {
   shadowTop = !edges.blockStart;
   shadowBottom = !edges.blockEnd;
-});
+})(node);
 
 // later
 cleanup();
@@ -94,7 +94,7 @@ function onscroll(event: Event & { currentTarget: HTMLElement }) {
 }
 ```
 
-For the window, `<svelte:window bind:scrollY />` covers both. For the page's own edges, pass `document.documentElement` to the imperative form; it listens for the viewport's scroll on the document and for the window's `resize`, so a window that grows to fit the whole page reports `blockEnd` without a scroll.
+For the window, `<svelte:window bind:scrollY />` covers both. For the page's own edges, call the attachment on `document.documentElement`, as in `scrollEdges(callback)(document.documentElement)`. It listens for the viewport's scroll on the document and for the window's `resize`, so a window that grows to fit the whole page reports `blockEnd` without a scroll.
 
 ## Vertical writing modes
 

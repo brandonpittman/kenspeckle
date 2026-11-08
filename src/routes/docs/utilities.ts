@@ -42,7 +42,7 @@ export const utilities: Utility[] = [
 		href: resolve('/docs/copy'),
 		label: 'copy',
 		type: 'attachment',
-		blurb: 'clipboard attachment + imperative helper'
+		blurb: 'clipboard attachment'
 	},
 	{
 		slug: 'scroll-edges',

@@ -4,7 +4,7 @@
 
 <PageHeading slug="copy" />
 
-Copy text to the clipboard on an event. `copy` is curried: call it with options to get an **attachment**, or with an element first to wire it **imperatively** — one name, typed both ways. Its companion `copyText` is the bare clipboard primitive.
+Copy text to the clipboard on an event. `copy(options)` returns an **attachment**. Its companion `copyText` is the bare clipboard primitive.
 
 ```ts
 import { copy, copyText } from 'kenspeckle';
@@ -31,18 +31,16 @@ With a `copied` flag declared as `let copied = $state(false)` in your component 
 
 The attachment only runs in the browser, so it is SSR-safe by construction.
 
-## Imperative form
+## Outside a template
 
-Pass an element as the first argument to wire it directly — same import, same options. It returns a cleanup function:
+An attachment is a function of the element, so call it on one. It returns a cleanup function:
 
 ```ts
-const cleanup = copy(node, { text: 'copied!' });
+const cleanup = copy({ text: 'copied!' })(node);
 
 // later
 cleanup();
 ```
-
-Element first → imperative helper. Options only → attachment. The presence of the element picks the mode.
 
 ## What gets copied
 
@@ -50,16 +48,16 @@ Element first → imperative helper. Options only → attachment. The presence o
 
 ```ts
 // a fixed string
-copy(node, { text: 'literal' });
+copy({ text: 'literal' })(node);
 
 // resolved from the node
-copy(node, { text: (el) => el.dataset.value ?? '' });
+copy({ text: (el) => el.dataset.value ?? '' })(node);
 
 // an async source
-copy(node, { text: async () => (await fetch('/token')).text() });
+copy({ text: async () => (await fetch('/token')).text() })(node);
 
 // default: the element's own text
-copy(node, {});
+copy({})(node);
 ```
 
 ## Options

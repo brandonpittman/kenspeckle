@@ -44,7 +44,7 @@
 			button.textContent = 'Copy';
 			button.setAttribute('aria-label', 'Copy code');
 			pre.appendChild(button);
-			copy(button, {
+			copy({
 				text: source,
 				onCopy: () => {
 					button.textContent = 'Copied';
@@ -54,7 +54,7 @@
 						delete button.dataset.copied;
 					}, 1600);
 				}
-			});
+			})(button);
 		}
 	}
 

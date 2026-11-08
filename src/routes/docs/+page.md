@@ -16,7 +16,7 @@ See the [roadmap](/docs/roadmap) for what's shipped and what's coming, and the [
 
 ### Attachments
 
-- [copy](/docs/copy) — clipboard attachment + imperative helper
+- [copy](/docs/copy) — clipboard attachment
 - [scrollEdges](/docs/scroll-edges) — which scroll edges an element has reached
 - [viewTransitionName](/docs/view-transition-name) — name an element for the transition it takes part in
 

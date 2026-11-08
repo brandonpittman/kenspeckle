@@ -23,7 +23,7 @@ export const roadmap: RoadmapGroup[] = [
 		items: [
 			{ name: 'FiniteStateMachine', type: 'class', blurb: 'typed FSM with reactive context' },
 			{ name: 'documentVisible', type: 'value', blurb: 'page visibility, a document singleton' },
-			{ name: 'copy', type: 'attachment', blurb: 'clipboard attachment + imperative helper' },
+			{ name: 'copy', type: 'attachment', blurb: 'clipboard attachment' },
 			{
 				name: 'scrollEdges',
 				type: 'attachment',

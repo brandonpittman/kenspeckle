@@ -20,14 +20,14 @@ What makes the cut takes the shape Svelte already uses for the same kind of thin
 
 Each shape names the Svelte API it mirrors. An export that can't name one isn't shaped yet.
 
-## Attachments, curried
+## Attachments, one form
 
-Element-bound utilities are one name in two forms. Options only → returns an [attachment](https://svelte.dev/docs/svelte/@attach). Element first → the imperative helper, cleanup returned.
+An element-bound utility returns an [attachment](https://svelte.dev/docs/svelte/@attach) and has no second form. An attachment is a function of the element, so outside a template you call it on one and get its cleanup back.
 
 ```svelte
 <script>
-	// same import, imperative
-	const cleanup = clickOutside(node, () => close());
+	// outside a template
+	const cleanup = clickOutside(() => close())(node);
 </script>
 
 <div {@attach clickOutside(() => close())}>…</div>
@@ -58,17 +58,17 @@ Peer dependencies: `svelte >= 5.40`, plus `@sveltejs/kit >= 2` for the `kenspeck
 Nine exports, two entry points, each documented under [`src/routes/docs/`](src/routes/docs/). `kenspeckle` is Svelte-only; `kenspeckle/kit` adds the SvelteKit
 pieces, so `$app/navigation` never enters the main entry.
 
-| export                                                                  | form                                     |
-| ----------------------------------------------------------------------- | ---------------------------------------- |
-| [`FiniteStateMachine`](src/routes/docs/finite-state-machine/+page.md)   | class, with typed reactive `context`     |
-| [`documentVisible`](src/routes/docs/document-visible/+page.md)          | singleton, `.current`                    |
-| [`copy()` / `copyText()`](src/routes/docs/copy/+page.md)                | attachment + helper                      |
-| [`scrollEdges()`](src/routes/docs/scroll-edges/+page.md)                | attachment + helper, edges to a callback |
-| [`viewTransition()`](src/routes/docs/view-transition/+page.md)          | function; navigation form under `/kit`   |
-| [`viewTransitionName()`](src/routes/docs/view-transition-name/+page.md) | attachment + helper, `/kit`              |
-| [`retreat()`](src/routes/docs/view-transition/+page.md)                 | function, returns a disposer, `/kit`     |
-| [`debounce()`](src/routes/docs/debounce/+page.md)                       | function wrapper                         |
-| [`throttle()`](src/routes/docs/throttle/+page.md)                       | function wrapper                         |
+| export                                                                  | form                                   |
+| ----------------------------------------------------------------------- | -------------------------------------- |
+| [`FiniteStateMachine`](src/routes/docs/finite-state-machine/+page.md)   | class, with typed reactive `context`   |
+| [`documentVisible`](src/routes/docs/document-visible/+page.md)          | singleton, `.current`                  |
+| [`copy()` / `copyText()`](src/routes/docs/copy/+page.md)                | attachment                             |
+| [`scrollEdges()`](src/routes/docs/scroll-edges/+page.md)                | attachment, edges to a callback        |
+| [`viewTransition()`](src/routes/docs/view-transition/+page.md)          | function; navigation form under `/kit` |
+| [`viewTransitionName()`](src/routes/docs/view-transition-name/+page.md) | attachment + helper, `/kit`            |
+| [`retreat()`](src/routes/docs/view-transition/+page.md)                 | function, returns a disposer, `/kit`   |
+| [`debounce()`](src/routes/docs/debounce/+page.md)                       | function wrapper                       |
+| [`throttle()`](src/routes/docs/throttle/+page.md)                       | function wrapper                       |
 
 `FiniteStateMachine` has a typed, `$state`-backed `context` object visible to lifecycle hooks and
 guards — the sidecar-data mechanism every real FSM grows, built in.
@@ -88,8 +88,8 @@ shipped.
 | `AsyncPersistedState` | class over IndexedDB: `await` it, or read `.current`, `.loading`, `.error`, like a remote `query`                   |
 | `CurrentPosition`     | class: `new CurrentPosition(options)`, `.current`                                                                   |
 | `pressedKeys`         | singleton, read like a set: `.has(key)`                                                                             |
-| `clickOutside()`      | attachment + helper                                                                                                 |
-| `shortcut()`          | attachment + helper                                                                                                 |
+| `clickOutside()`      | attachment                                                                                                          |
+| `shortcut()`          | attachment                                                                                                          |
 | `lockScroll`          | attachment ≡ helper, stacked lock counting                                                                          |
 | `dragScroll()`        | attachment                                                                                                          |
 
