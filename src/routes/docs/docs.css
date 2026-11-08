@@ -377,6 +377,42 @@ a:hover {
 	font-size: 0.82em;
 }
 
+.prose table {
+	inline-size: 100%;
+	border-collapse: collapse;
+	font-size: 0.95em;
+	line-height: 1.4;
+}
+
+.prose th,
+.prose td {
+	text-align: start;
+	vertical-align: baseline;
+	padding: var(--space-2xs) var(--space-xs);
+	border-block-end: var(--border-thin) solid var(--color-hairline);
+}
+
+.prose :is(th, td):first-child {
+	padding-inline-start: 0;
+}
+
+.prose th {
+	font-weight: 600;
+	color: var(--color-muted);
+	border-block-end-color: var(--color-ink);
+}
+
+.prose td code {
+	white-space: nowrap;
+}
+
+@media (max-width: 40rem) {
+	.prose table {
+		display: block;
+		overflow-x: auto;
+	}
+}
+
 /* block: copy button (injected onto each code block) */
 .copy-button {
 	position: absolute;
