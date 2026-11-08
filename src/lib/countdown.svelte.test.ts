@@ -1,6 +1,9 @@
 import { flushSync } from 'svelte';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { page } from 'vitest/browser';
+import { render } from 'vitest-browser-svelte';
 import { Countdown } from './countdown.svelte.js';
+import CountdownPendingBoundary from './CountdownPendingBoundary.test.svelte';
 
 /** The `$derived` drops repeat values, so `seen` records only what an effect would act on. */
 function watch(countdown: Countdown) {
@@ -92,7 +95,7 @@ describe('Countdown', () => {
 	});
 
 	describe('Deadline changes', () => {
-		it('should re-arm the pending tick when a read outside an effect sees a new deadline', async () => {
+		it('should leave the pending tick alone when a read outside an effect sees a new deadline', async () => {
 			let deadline = Date.now() + 5000;
 			const countdown = new Countdown(() => deadline);
 			const { seen, cleanup } = watch(countdown);
@@ -103,12 +106,15 @@ describe('Countdown', () => {
 			await advance(299);
 			expect(seen).toEqual([5000]);
 
-			await advance(1);
-			expect(seen).toEqual([5000, 20000]);
+			await advance(701);
+			expect(seen).toEqual([5000, 19300]);
+
+			await advance(300);
+			expect(seen).toEqual([5000, 19300, 19000]);
 			cleanup();
 		});
 
-		it('should push 0 to tracked readers when a read outside an effect sees a deadline moved into the past', async () => {
+		it('should push 0 to tracked readers at the next tick when a plain-variable deadline moves into the past', async () => {
 			let deadline = Date.now() + 5000;
 			const countdown = new Countdown(() => deadline);
 			const { seen, cleanup } = watch(countdown);
@@ -117,6 +123,22 @@ describe('Countdown', () => {
 			expect(countdown.current).toBe(0);
 
 			await advance(1000);
+			expect(seen).toEqual([5000, 0]);
+			cleanup();
+		});
+
+		it('should hold 0 back from tracked readers until the next tick when a plain-variable deadline moves into the past', async () => {
+			let deadline = Date.now() + 5000;
+			const countdown = new Countdown(() => deadline);
+			const { seen, cleanup } = watch(countdown);
+
+			deadline = Date.now() - 1000;
+			expect(countdown.current).toBe(0);
+
+			await advance(999);
+			expect(seen).toEqual([5000]);
+
+			await advance(1);
 			expect(seen).toEqual([5000, 0]);
 			cleanup();
 		});
@@ -238,9 +260,98 @@ describe('Countdown', () => {
 
 			expect(vi.getTimerCount()).toBe(0);
 		});
+
+		it('should leave no timer pending when a $state deadline changes after the last reader is destroyed', async () => {
+			let deadline = $state(Date.now() + 5000);
+			const { cleanup } = watch(new Countdown(() => deadline));
+
+			cleanup();
+			await vi.advanceTimersByTimeAsync(0);
+			deadline = Date.now() + 300;
+			flushSync();
+
+			expect(vi.getTimerCount()).toBe(0);
+		});
+
+		it('should keep ticking for the remaining reader after the first reader is destroyed', async () => {
+			const deadline = Date.now() + 5000;
+			const countdown = new Countdown(() => deadline);
+			const first = watch(countdown);
+			const second = watch(countdown);
+
+			first.cleanup();
+			await advance(1000);
+
+			expect(second.seen).toEqual([5000, 4000]);
+			second.cleanup();
+		});
+
+		it('should keep ticking for a reader outside a pending boundary that holds the first reader', async () => {
+			const deadline = Date.now() + 5000;
+			await render(CountdownPendingBoundary, {
+				countdown: new Countdown(() => deadline),
+				never: new Promise<string>(() => {})
+			});
+			const outside = page.getByTestId('outside');
+			await expect.element(outside).toHaveTextContent('5000');
+
+			await advance(1000);
+
+			await expect.element(outside).toHaveTextContent('4000');
+		});
 	});
 
 	describe('Edge Cases', () => {
+		it("should leave a throwing deadline getter's error to the reader", async () => {
+			let session = $state<{ expiresAt: number } | null>({ expiresAt: Date.now() + 5000 });
+			const countdown = new Countdown(() => session!.expiresAt);
+			const seen: (number | undefined | 'error')[] = [];
+			const cleanup = $effect.root(() => {
+				$effect(() => {
+					try {
+						seen.push(countdown.current);
+					} catch {
+						seen.push('error');
+					}
+				});
+			});
+			flushSync();
+
+			session = null;
+			expect(() => flushSync()).not.toThrow();
+			expect(seen).toEqual([5000, 'error']);
+
+			session = { expiresAt: Date.now() + 2000 };
+			flushSync();
+			await advance(1000);
+
+			expect(seen).toEqual([5000, 'error', 2000, 1000]);
+			cleanup();
+		});
+
+		it('should leave no tick pending while the deadline getter throws', async () => {
+			let session = $state<{ expiresAt: number } | null>({ expiresAt: Date.now() + 5000 });
+			const countdown = new Countdown(() => session!.expiresAt);
+			const cleanup = $effect.root(() => {
+				$effect(() => {
+					try {
+						void countdown.current;
+					} catch {
+						/** The reader owns the error; this test is about the timer. */
+					}
+				});
+			});
+			flushSync();
+
+			session = null;
+			flushSync();
+			expect(vi.getTimerCount()).toBe(0);
+
+			await advance(1000);
+			expect(vi.getTimerCount()).toBe(0);
+			cleanup();
+		});
+
 		it('should read 0 for a NaN deadline', () => {
 			expect(new Countdown(() => Number.NaN).current).toBe(0);
 		});

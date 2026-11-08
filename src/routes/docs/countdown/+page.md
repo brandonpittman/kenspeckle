@@ -22,11 +22,15 @@ const session = new Countdown(() => data.expiresAt);
 <p>{Math.ceil((session.current ?? 0) / 1000)}s left</p>
 ```
 
-Ticks land on whole seconds of time remaining, so a display that rounds up with `Math.ceil` flips on time and the last tick lands exactly on the deadline. Read outside an effect, `current` is computed fresh on every read.
+Read outside an effect, `current` is computed fresh on every read.
 
-The deadline is a getter, so it can change: return a later timestamp and the countdown follows it from the next read. Return `$state`, a prop or `data` from it, so every reader reruns when it changes. A deadline held in a plain variable is noticed only by reads that happen anyway, so one reader can move on while another keeps the old value. While the getter returns `undefined`, `current` is `undefined`. A `NaN` deadline, such as one parsed from a bad date, reads as `0`.
+The deadline is a getter, so it can change: return a later timestamp and the countdown follows it. Return `$state`, a prop or `data` from it, so every reader reruns when it changes. A deadline held in a plain variable reaches a reader only when that reader reruns, at the latest on the next tick, so for up to a second one reader can move on while another keeps the old value. While the getter returns `undefined`, `current` is `undefined`. A `NaN` deadline, such as one parsed from a bad date, reads as `0`.
 
 The timer runs only while an effect or `$derived` reads `current`, and stops when the last one is destroyed. A browser may throttle timers in a tab hidden for a while, Chrome to once a minute after five minutes, so expiry can arrive up to about a minute late there.
+
+## Why not a timer in an effect
+
+A `setInterval` started in an `$effect` ticks a second after it starts, not when a second of time remaining runs out. Ticks here land on whole seconds of time remaining, so a display that rounds up with `Math.ceil` flips on time and the last tick lands exactly on the deadline.
 
 ## Acting on it
 

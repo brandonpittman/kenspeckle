@@ -12,16 +12,11 @@ function remaining(deadline: number | undefined): number | undefined {
 
 export class Countdown {
 	#deadline: () => number | undefined;
-	/** Set only while subscribed, so a read that sees a new deadline can move the pending tick. */
-	#rearm: ((deadline: number | undefined) => void) | undefined;
-	#armed: number | undefined;
 	#shown: number | undefined;
 
 	#subscribe = createSubscriber((update) => {
 		let timer: ReturnType<typeof setTimeout>;
 		const arm = (deadline: number | undefined) => {
-			clearTimeout(timer);
-			this.#armed = deadline;
 			/** Landing on whole seconds left keeps a `Math.ceil(current / 1000)` display flipping on time; rounding up keeps a fractional deadline from truncating to a zero delay that lands short of the boundary. */
 			const delay = Math.ceil((remaining(deadline) ?? 0) % SECOND) || SECOND;
 			timer = setTimeout(() => {
@@ -35,13 +30,27 @@ export class Countdown {
 				arm(next);
 			}, delay);
 		};
-		const deadline = untrack(() => this.#deadline());
-		this.#shown = remaining(deadline);
-		arm(deadline);
-		this.#rearm = arm;
-		return () => {
+		const follow = () => {
 			clearTimeout(timer);
-			this.#rearm = undefined;
+			let deadline: number | undefined;
+			try {
+				deadline = this.#deadline();
+			} catch {
+				/** The error is left to the reader's own read of `current`, which rethrows it inside the reader's boundary; the root has none above it. */
+				return;
+			}
+			this.#shown = remaining(deadline);
+			arm(deadline);
+		};
+		/** The effect below inherits the first reader's boundary and waits while that boundary is pending, so arming here keeps every other reader ticking meanwhile. */
+		follow();
+		/** A root rather than a plain effect, so the watch belongs to every reader together and not to whichever subscribed first. */
+		const stop = $effect.root(() => {
+			$effect(follow);
+		});
+		return () => {
+			stop();
+			clearTimeout(timer);
 		};
 	});
 
@@ -52,13 +61,6 @@ export class Countdown {
 	get current(): number | undefined {
 		if (!BROWSER) return undefined;
 		this.#subscribe();
-		const deadline = this.#deadline();
-		const left = remaining(deadline);
-		if (this.#rearm && !Object.is(deadline, this.#armed)) {
-			this.#rearm(deadline);
-			/** Every tracked reader also tracks the getter, so a reactive deadline change has already rerun them all. */
-			if ($effect.tracking()) this.#shown = left;
-		}
-		return left;
+		return remaining(this.#deadline());
 	}
 }
