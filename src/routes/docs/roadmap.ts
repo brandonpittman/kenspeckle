@@ -58,11 +58,11 @@ export const roadmap: RoadmapGroup[] = [
 			{ name: 'clickOutside', type: 'attachment', blurb: 'fire when a pointer lands outside' },
 			{ name: 'focusWithin', type: 'attachment', blurb: 'report whether focus lives inside' },
 			{
-				name: 'intersected',
+				name: 'intersection',
 				type: 'attachment',
 				blurb: 'IntersectionObserver entries to a callback'
 			},
-			{ name: 'mutated', type: 'attachment', blurb: 'MutationObserver records to a callback' },
+			{ name: 'mutations', type: 'attachment', blurb: 'MutationObserver records to a callback' },
 			{
 				name: 'scrollState',
 				type: 'attachment',

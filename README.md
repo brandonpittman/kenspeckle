@@ -14,7 +14,7 @@ Every export takes the shape Svelte already uses for the same kind of thing. Ask
 3. **Is it a value configured at construction?** A class with `current`, like `new MediaQuery(query)`: `new Idle(60_000)`, `new PersistedState('theme', 'light')`.
 4. **Is it a value that follows another over time?** A class with `.of(fn)`, like `Spring.of(() => number)`, called in an effect root such as component init: `Previous.of(() => count)`. It earns the class only if `current` holds something you couldn't produce where the value is written, the way a tween's in-between frames are. A debounced value fails this: it is a value already written, just later, so `debounce()` at the write site covers it.
 5. **Do you drive it with methods?** A class: `new FiniteStateMachine()`, `new StateHistory()`.
-6. **Is it behavior on an element?** An attachment. An element value flows into your own `$state` through a callback, the way a function binding does (`bind:clientWidth={null, setWidth}`), never through a box the library owns.
+6. **Is it behavior on an element?** An attachment, named for what it does, as `copy` and `fade` are (`autosize`, `dragScroll`), or for the event it answers (`clickOutside`). An element value flows into your own `$state` through a callback, the way a function binding does (`bind:clientWidth={null, setWidth}`), never through a box the library owns, and it is named for that value, as a binding is (`focusWithin`, `intersection`, `mutations`).
 7. **Otherwise**, a plain function, with no `use` prefix, which is a React Hooks rule Svelte doesn't have.
 
 Each shape names the Svelte API it mirrors. An export that can't name one isn't shaped yet.
@@ -36,12 +36,12 @@ An attachment that observes the element hands what it sees to a callback, so the
 
 ```svelte
 <script>
-	import { intersected } from 'kenspeckle';
+	import { intersection } from 'kenspeckle';
 
 	let seen = $state(false);
 </script>
 
-<div {@attach intersected((entry) => (seen = entry.isIntersecting))}>…</div>
+<div {@attach intersection((entry) => (seen = entry.isIntersecting))}>…</div>
 ```
 
 ## Install
@@ -89,8 +89,8 @@ shipped.
 | `pressedKeys`     | singleton, read like a set: `.has(key)`                   | runed `PressedKeys`                                      |
 | `clickOutside()`  | attachment + helper                                       | runed `onClickOutside` · svelte-put `clickoutside`       |
 | `focusWithin()`   | attachment, reports to a callback                         | runed `IsFocusWithin`                                    |
-| `intersected()`   | attachment + helper, entries to a callback                | runed `useIntersectionObserver` · svelte-put `intersect` |
-| `mutated()`       | attachment + helper, records to a callback                | runed `useMutationObserver`                              |
+| `intersection()`  | attachment + helper, entries to a callback                | runed `useIntersectionObserver` · svelte-put `intersect` |
+| `mutations()`     | attachment + helper, records to a callback                | runed `useMutationObserver`                              |
 | `scrollState()`   | attachment, element only, reports to a callback           | runed `ScrollState`                                      |
 | `autosize()`      | attachment                                                | runed `TextareaAutosize`                                 |
 | `shortcut()`      | attachment + helper                                       | svelte-put `shortcut`                                    |
@@ -102,7 +102,7 @@ Dropped, deliberately, because Svelte or Kit already does it:
 - runed's `Context`: Svelte ≥ 5.40's `createContext` returns a typed `[get, set]` pair.
 - runed's `Debounced` / `Throttled`: `debounce()` / `throttle()` writing into a `$state`, with any effect that follows a source kept in the component that owns it.
 - `elementSize`, `elementRect`, `resized`: the dimension bindings (`bind:clientWidth`, `bind:contentRect`, `bind:borderBoxSize`) already measure with a `ResizeObserver`.
-- `inViewport`: `intersected()` with `entry.isIntersecting`.
+- `inViewport`: `intersection()` with `entry.isIntersecting`.
 - `scrollState`'s window form: `<svelte:window bind:scrollY>` and `scrollY.current`.
 - `mounted`: `onMount` setting a `$state`.
 - `listen`: `on()` from `svelte/events`.
