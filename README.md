@@ -7,15 +7,17 @@ Svelte utilities you recognize at sight: each one is shaped the way Svelte shape
 
 ## Shaped like Svelte
 
-Every export takes the shape Svelte already uses for the same kind of thing.
+Every export takes the shape Svelte already uses for the same kind of thing. Ask these in order; the first yes decides:
 
-- **Global browser state is a singleton with `current`**, like `innerWidth` in `svelte/reactivity/window`: `documentVisible.current`, `activeElement.current`. On the server it is `undefined`, as Svelte's are.
-- **A configured value is a class with `current`**, like `new MediaQuery(query)`: `new Idle(60_000)`, `new PersistedState('theme', 'light')`.
-- **A value that follows another is a class with `.of(fn)`**, like `Spring.of(() => number)`, called in an effect root such as component init: `Previous.of(() => count)`.
-- **A thing you drive with methods is a class**: `new FiniteStateMachine()`, `new StateHistory()`.
-- **Element behavior is an attachment.** An element value flows into your own `$state` through a callback, the way a function binding does (`bind:clientWidth={null, setWidth}`), never through a box the library owns.
-- **Everything else is a plain function**, with no `use` prefix, which is a React Hooks rule Svelte doesn't have.
-- **Nothing Svelte or Kit already does.** A binding, `on()`, `onDestroy`, `<svelte:document>` or an `$effect` with a returned cleanup beats a wrapper around it.
+1. **Does Svelte or Kit already do it?** Then nothing ships. A binding, `on()`, `onDestroy`, `<svelte:document>` or an `$effect` with a returned cleanup beats a wrapper around it.
+2. **Is it global browser state?** A singleton with `current`, like `innerWidth` in `svelte/reactivity/window`: `documentVisible.current`, `activeElement.current`. It reads the live value, and on the server it is `undefined`, as Svelte's are.
+3. **Is it a value configured at construction?** A class with `current`, like `new MediaQuery(query)`: `new Idle(60_000)`, `new PersistedState('theme', 'light')`.
+4. **Is it a value that follows another over time?** A class with `.of(fn)`, like `Spring.of(() => number)`, called in an effect root such as component init: `Previous.of(() => count)`. It earns the class only if `current` holds something you couldn't produce where the value is written, the way a tween's in-between frames are. A debounced value fails this: it is a value already written, just later, so `debounce()` at the write site covers it.
+5. **Do you drive it with methods?** A class: `new FiniteStateMachine()`, `new StateHistory()`.
+6. **Is it behavior on an element?** An attachment. An element value flows into your own `$state` through a callback, the way a function binding does (`bind:clientWidth={null, setWidth}`), never through a box the library owns.
+7. **Otherwise**, a plain function, with no `use` prefix, which is a React Hooks rule Svelte doesn't have.
+
+Each shape names the Svelte API it mirrors. An export that can't name one isn't shaped yet.
 
 ## Attachments, curried
 
