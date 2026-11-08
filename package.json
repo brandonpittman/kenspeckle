@@ -8,7 +8,7 @@
 		"type": "git",
 		"url": "git+https://github.com/brandonpittman/kenspeckle.git"
 	},
-	"homepage": "https://github.com/brandonpittman/kenspeckle#readme",
+	"homepage": "https://kenspeckle.brandonpittman.workers.dev/docs",
 	"bugs": "https://github.com/brandonpittman/kenspeckle/issues",
 	"scripts": {
 		"dev": "vite dev",
