@@ -7,15 +7,16 @@ Svelte utilities you recognize at sight: each one is shaped the way Svelte shape
 
 ## Shaped like Svelte
 
-Every export takes the shape Svelte already uses for the same kind of thing. Ask these in order; the first yes decides:
+A utility makes the cut only if Svelte doesn't already handle it. Handled means a Svelte or Kit API covers it (a binding, `on()`, `onDestroy`, `<svelte:document>`, an `$effect` with a returned cleanup), the platform does (`field-sizing`, `:focus-within`), or a few lines of Svelte do, in which case it becomes a [recipe](src/routes/docs/recipes/+page.md) instead of an export.
 
-1. **Does Svelte or Kit already do it?** Then nothing ships. A binding, `on()`, `onDestroy`, `<svelte:document>` or an `$effect` with a returned cleanup beats a wrapper around it.
-2. **Is it global browser state?** A singleton with `current`, like `innerWidth` in `svelte/reactivity/window`: `documentVisible.current`. It reads the live value, and on the server it is `undefined`, as Svelte's are. Where a `<svelte:document>` or `<svelte:window>` binding already exists, the singleton earns its place only if modules need to read it outside a component: a polling store that pauses in a hidden tab does, and focus logic, which lives with its element, doesn't.
-3. **Is it a value configured at construction?** A class with `current`, like `new MediaQuery(query)`: `new Idle(60_000)`, `new PersistedState('theme', 'light')`.
-4. **Is it a value that follows another over time?** A class with `.of(fn)`, like `Spring.of(() => number)`, called in an effect root such as component init. It earns the class only if `current` holds something you couldn't produce where the value is written, the way a tween's in-between frames are. A debounced value and a previous value both fail this: each is a value already written, so `debounce()` or a saved copy at the write site covers it.
-5. **Do you drive it with methods?** A class: `new FiniteStateMachine()`, `new StateHistory()`.
-6. **Is it behavior on an element?** An attachment, named for what it does, as `copy` and `fade` are (`dragScroll`, `lockScroll`), or for the event it answers (`clickOutside`). An element value flows into your own `$state` through a callback, the way a function binding does (`bind:clientWidth={null, setWidth}`), never through a box the library owns, and it is named for that value, as a binding is (`scrollEdges`).
-7. **Otherwise**, a plain function, with no `use` prefix, which is a React Hooks rule Svelte doesn't have.
+What makes the cut takes the shape Svelte already uses for the same kind of thing. Ask these in order; the first yes decides:
+
+1. **Is it global browser state?** A singleton with `current`, like `innerWidth` in `svelte/reactivity/window`: `documentVisible.current`. It reads the live value, and on the server it is `undefined`, as Svelte's are. Where a `<svelte:document>` or `<svelte:window>` binding already exists, the singleton earns its place only if modules need to read it outside a component: a polling store that pauses in a hidden tab does, and focus logic, which lives with its element, doesn't.
+2. **Is it a value configured at construction?** A class with `current`, like `new MediaQuery(query)`: `new Idle(60_000)`, `new PersistedState('theme', 'light')`.
+3. **Is it a value that follows another over time?** A class with `.of(fn)`, like `Spring.of(() => number)`, called in an effect root such as component init. It earns the class only if `current` holds something you couldn't produce where the value is written, the way a tween's in-between frames are. A debounced value and a previous value both fail this: each is a value already written, so `debounce()` or a saved copy at the write site covers it.
+4. **Do you drive it with methods?** A class: `new FiniteStateMachine()`, `new StateHistory()`.
+5. **Is it behavior on an element?** An attachment, named for what it does, as `copy` and `fade` are (`dragScroll`, `lockScroll`), or for the event it answers (`clickOutside`). An element value flows into your own `$state` through a callback, the way a function binding does (`bind:clientWidth={null, setWidth}`), never through a box the library owns, and it is named for that value, as a binding is (`scrollEdges`).
+6. **Otherwise**, a plain function, with no `use` prefix, which is a React Hooks rule Svelte doesn't have.
 
 Each shape names the Svelte API it mirrors. An export that can't name one isn't shaped yet.
 
@@ -91,7 +92,7 @@ shipped.
 | `lockScroll`      | attachment ≡ helper, stacked lock counting                | new                                                |
 | `dragScroll()`    | attachment                                                | svelte-put `dragscroll`                            |
 
-Dropped, deliberately, because Svelte or Kit already does it:
+Dropped, deliberately, because Svelte, Kit or the platform already handles it:
 
 - runed's `Context`: Svelte ≥ 5.40's `createContext` returns a typed `[get, set]` pair.
 - runed's `Debounced` / `Throttled`: `debounce()` / `throttle()` writing into a `$state`, with any effect that follows a source kept in the component that owns it.
