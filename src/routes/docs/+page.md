@@ -19,3 +19,4 @@ See the [roadmap](/docs/roadmap) for what's shipped and what's coming.
 
 - [viewTransition](/docs/view-transition) — view transitions, with a SvelteKit navigation tier
 - [debounce](/docs/debounce) — debounce any function, with a shared promise
+- [throttle](/docs/throttle) — throttle any function, leading and trailing
