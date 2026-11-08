@@ -99,7 +99,6 @@ shipped.
 | `shortcut()`                                                 | attachment + helper                        | svelte-put `shortcut`                                    |
 | `lockScroll`                                                 | attachment ≡ helper, stacked lock counting | new                                                      |
 | `dragScroll()`                                               | attachment                                 | svelte-put `dragscroll`                                  |
-| `debounced()` / `throttled()`                                | value factory                              | runed `Debounced` / `Throttled`                          |
 | `previous()`                                                 | value factory                              | runed `Previous`                                         |
 | `activeElement()`                                            | value factory                              | runed `ActiveElement`                                    |
 | `pressedKeys()`                                              | value factory                              | runed `PressedKeys`                                      |
@@ -112,7 +111,9 @@ shipped.
 | `watch` / `watchOnce` / `extract` / `onCleanup` / `boolAttr` | unchanged                                  | runed                                                    |
 
 Dropped, deliberately: runed's `Context` — Svelte ≥ 5.40's `createContext` returns a typed
-`[get, set]` pair and covers it. runed's `resource` waits in the backlog — SvelteKit remote functions
+`[get, set]` pair and covers it. runed's `Debounced` / `Throttled` — `debounce()` / `throttle()`
+writing into a `$state` cover them, and the effect that follows a source stays in the component
+that owns it. runed's `resource` waits in the backlog — SvelteKit remote functions
 cover the server-data case; it returns only if a real client-only async need shows up.
 
 ## View transitions

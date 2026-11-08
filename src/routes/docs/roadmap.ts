@@ -52,8 +52,6 @@ export const roadmap: RoadmapGroup[] = [
 			{ name: 'pressedKeys', type: 'value', blurb: 'currently held keys' },
 			{ name: 'persisted', type: 'value', blurb: 'state synced to storage' },
 			{ name: 'animationFrames', type: 'value', blurb: 'a per-frame callback loop' },
-			{ name: 'debounced', type: 'value', blurb: 'a debounced view of a value' },
-			{ name: 'throttled', type: 'value', blurb: 'a throttled view of a value' },
 			{ name: 'geolocation', type: 'value', blurb: 'reactive geolocation' },
 			{ name: 'searchParams', type: 'value', blurb: 'typed, reactive URL search params' },
 			{ name: 'clickOutside', type: 'attachment', blurb: 'fire when a pointer lands outside' },
