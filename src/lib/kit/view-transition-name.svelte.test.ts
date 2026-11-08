@@ -5,7 +5,8 @@ import {
 	viewTransitionName,
 	type ViewTransitionNameOptions
 } from './view-transition-name.js';
-import type { NavigationTarget, OnNavigate } from '@sveltejs/kit';
+import type { NavigationTarget } from '@sveltejs/kit';
+import type { OnNavigate } from './navigation.js';
 
 type RouteId = NonNullable<NavigationTarget['route']['id']>;
 

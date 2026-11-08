@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import * as kit from './kit/index.js';
-import type { OnNavigate } from '@sveltejs/kit';
+import type { OnNavigate } from './kit/navigation.js';
 import type { NavigationTransitionOptions } from './kit/index.js';
 import { endTransition } from './kit/view-transition-name.js';
 

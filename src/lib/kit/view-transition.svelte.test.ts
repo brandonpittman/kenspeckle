@@ -1,7 +1,8 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { isRetreat, navigationTransition, retreat } from './view-transition.js';
 import { endTransition, viewTransitionName } from './view-transition-name.js';
-import type { NavigationTarget, OnNavigate } from '@sveltejs/kit';
+import type { NavigationTarget } from '@sveltejs/kit';
+import type { OnNavigate } from './navigation.js';
 
 type RouteId = NonNullable<NavigationTarget['route']['id']>;
 

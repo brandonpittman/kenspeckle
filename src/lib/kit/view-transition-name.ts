@@ -1,4 +1,4 @@
-import type { OnNavigate } from '@sveltejs/kit';
+import type { OnNavigate } from './navigation.js';
 
 export interface ViewTransitionNameOptions {
 	/** Only claim the name for navigations this returns true for. */

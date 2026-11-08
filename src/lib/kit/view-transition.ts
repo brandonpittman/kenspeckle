@@ -1,7 +1,7 @@
 import { onNavigate } from '$app/navigation';
 import { runViewTransition, type ViewTransitionOptions } from '../view-transition.js';
 import { beginPhase, endTransition } from './view-transition-name.js';
-import type { OnNavigate } from '@sveltejs/kit';
+import type { OnNavigate } from './navigation.js';
 
 export interface NavigationTransitionOptions extends Omit<ViewTransitionOptions, 'retreat'> {
 	onStart?: (navigation: OnNavigate) => void;
