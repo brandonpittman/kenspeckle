@@ -52,13 +52,6 @@ export const utilities: Utility[] = [
 		blurb: 'milliseconds left until a deadline'
 	},
 	{
-		slug: 'idle',
-		href: resolve('/docs/idle'),
-		label: 'Idle',
-		type: 'class',
-		blurb: 'whether the user has gone idle, across tabs'
-	},
-	{
 		slug: 'document-visible',
 		href: resolve('/docs/document-visible'),
 		label: 'documentVisible',

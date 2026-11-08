@@ -15,7 +15,6 @@ export type {
 	StateHandler,
 	Transition
 } from './finite-state-machine.svelte.js';
-export { Idle } from './idle.svelte.js';
 export { PersistedState } from './persisted-state.svelte.js';
 export type { PersistedStateOptions } from './persisted-state.svelte.js';
 export { scrollEdges } from './scroll-edges.js';

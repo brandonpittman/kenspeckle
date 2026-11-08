@@ -8,7 +8,6 @@ See the [roadmap](/docs/roadmap) for what's shipped and what's coming, and the [
 
 - [FiniteStateMachine](/docs/finite-state-machine) — fully typed FSM with reactive context
 - [Countdown](/docs/countdown) — milliseconds left until a deadline
-- [Idle](/docs/idle) — whether the user has gone idle, across tabs
 - [PersistedState](/docs/persisted-state) — a value synced to localStorage or sessionStorage
 
 ## Values
