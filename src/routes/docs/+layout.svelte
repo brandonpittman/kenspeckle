@@ -110,7 +110,7 @@
 				<div class="[ nav-groups ] [ flow ]">
 					{#each groups as group (group.type)}
 						<div>
-							<span class="nav-group-label" id="nav-group-{group.type}" data-type={group.type}>
+							<span class="nav-group-label" id="nav-group-{group.type}">
 								{groupLabels[group.type]}
 							</span>
 							<ul aria-labelledby="nav-group-{group.type}">

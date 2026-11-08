@@ -217,10 +217,9 @@ a:hover {
 	font-weight: 700;
 }
 
-/* type tags, filter chips and nav group labels share one pastel palette, keyed by data-type */
+/* type tags + filter chips share one pastel palette, keyed by data-type */
 .type-tag,
-.filter-chip,
-.nav-group-label {
+.filter-chip {
 	font-family: var(--font-mono);
 	font-size: 0.68rem;
 	font-weight: 600;
@@ -238,29 +237,25 @@ a:hover {
 }
 
 .type-tag[data-type='class'],
-.filter-chip[data-type='class'],
-.nav-group-label[data-type='class'] {
+.filter-chip[data-type='class'] {
 	background: oklch(92% 0.05 275);
 	color: oklch(38% 0.12 275);
 }
 
 .type-tag[data-type='value'],
-.filter-chip[data-type='value'],
-.nav-group-label[data-type='value'] {
+.filter-chip[data-type='value'] {
 	background: oklch(93% 0.05 160);
 	color: oklch(40% 0.09 160);
 }
 
 .type-tag[data-type='attachment'],
-.filter-chip[data-type='attachment'],
-.nav-group-label[data-type='attachment'] {
+.filter-chip[data-type='attachment'] {
 	background: oklch(92% 0.055 45);
 	color: oklch(44% 0.13 40);
 }
 
 .type-tag[data-type='function'],
-.filter-chip[data-type='function'],
-.nav-group-label[data-type='function'] {
+.filter-chip[data-type='function'] {
 	background: oklch(93% 0.05 95);
 	color: oklch(42% 0.09 95);
 }
@@ -270,8 +265,11 @@ a:hover {
 }
 
 .nav-group-label {
-	display: inline-block;
+	display: block;
+	padding-inline: var(--space-3xs);
 	margin-block-end: var(--space-3xs);
+	font-weight: 700;
+	color: var(--color-muted);
 }
 
 .nav-filter {
