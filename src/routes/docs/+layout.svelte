@@ -2,15 +2,8 @@
 	import { afterNavigate } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
-	import { SvelteSet } from 'svelte/reactivity';
 	import { copy } from '$lib/copy.js';
-	import {
-		groupLabels,
-		tagLabels,
-		utilities,
-		utilityTypes,
-		type UtilityType
-	} from './utilities.js';
+	import { groupLabels, utilities, utilityTypes } from './utilities.js';
 	import './docs.css';
 
 	let { children } = $props();
@@ -19,19 +12,10 @@
 
 	let navOpen = $state(false);
 	let prose = $state<HTMLElement>();
-	const active = new SvelteSet<UtilityType>(utilityTypes);
 
-	const groups = $derived(
-		utilityTypes
-			.filter((type) => active.has(type))
-			.map((type) => ({ type, items: utilities.filter((u) => u.type === type) }))
-			.filter((group) => group.items.length)
-	);
-
-	function toggle(type: UtilityType) {
-		if (active.has(type)) active.delete(type);
-		else active.add(type);
-	}
+	const groups = utilityTypes
+		.map((type) => ({ type, items: utilities.filter((u) => u.type === type) }))
+		.filter((group) => group.items.length);
 
 	$effect(() => {
 		const wide = window.matchMedia(wideQuery);
@@ -92,45 +76,27 @@
 				Introduction
 			</a>
 
-			<div class="nav-filter" role="group" aria-label="Filter by type">
-				{#each utilityTypes as type (type)}
-					<button
-						type="button"
-						class="filter-chip"
-						data-type={type}
-						aria-pressed={active.has(type)}
-						onclick={() => toggle(type)}
-					>
-						{tagLabels[type]}
-					</button>
+			<div class="[ nav-groups ] [ flow ]">
+				{#each groups as group (group.type)}
+					<div>
+						<span class="nav-group-label" id="nav-group-{group.type}">
+							{groupLabels[group.type]}
+						</span>
+						<ul aria-labelledby="nav-group-{group.type}">
+							{#each group.items as util (util.slug)}
+								<li>
+									<a
+										href={util.href}
+										aria-current={page.url.pathname === util.href ? 'page' : undefined}
+									>
+										{util.label}
+									</a>
+								</li>
+							{/each}
+						</ul>
+					</div>
 				{/each}
 			</div>
-
-			{#if groups.length}
-				<div class="[ nav-groups ] [ flow ]">
-					{#each groups as group (group.type)}
-						<div>
-							<span class="nav-group-label" id="nav-group-{group.type}">
-								{groupLabels[group.type]}
-							</span>
-							<ul aria-labelledby="nav-group-{group.type}">
-								{#each group.items as util (util.slug)}
-									<li>
-										<a
-											href={util.href}
-											aria-current={page.url.pathname === util.href ? 'page' : undefined}
-										>
-											{util.label}
-										</a>
-									</li>
-								{/each}
-							</ul>
-						</div>
-					{/each}
-				</div>
-			{:else}
-				<p class="nav-empty">No utilities match.</p>
-			{/if}
 
 			<a
 				href={resolve('/docs/recipes')}
